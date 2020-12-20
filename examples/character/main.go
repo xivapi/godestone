@@ -30,16 +30,24 @@ func main() {
 	Avatar:          "{{.Avatar}}",
 	Bio:             "{{.Bio}}",
 	DC:              "{{.DC}}",
+	ID:              {{.ID}},
 	FreeCompanyID:   "{{.FreeCompanyID}}",
 	FreeCompanyName: "{{.FreeCompanyName}}",
 	Gender:          {{.Gender}},
+	GrandCompany:    {
+		NameID: {{.GrandCompany.NameID}}
+		RankID: {{.GrandCompany.RankID}}
+	},
 	GuardianDeity:   {{.GuardianDeity}},
 	Name:            "{{.Name}}",
 	Nameday:         "{{.Nameday}}",
+	ParseDate:       {{.ParseDate}},
 	Portrait:        "{{.Portrait}}",
 	PvPTeamID:       "{{.PvPTeamID}}",
 	Race:            {{.Race}},
 	Server:          "{{.Server}}",
+	Title:           {{.Title}},
+	TitleTop:        {{.TitleTop}},
 	Town:            {{.Town}},
 	Tribe:           {{.Tribe}}
 }`)

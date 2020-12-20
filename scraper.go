@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/data/deity"
+	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/gender"
+	"github.com/karashiiro/godestone/data/grandcompany"
 	"github.com/karashiiro/godestone/data/race"
 	"github.com/karashiiro/godestone/data/town"
 	"github.com/karashiiro/godestone/data/tribe"
@@ -28,7 +31,8 @@ type Scraper struct {
 
 // FetchCharacter returns character information for the provided Lodestone ID.
 func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
-	charData := models.Character{}
+	now := time.Now()
+	charData := models.Character{ID: id, ParseDate: &now}
 
 	if s.charCollector == nil {
 		s.charCollector = colly.NewCollector()
@@ -55,6 +59,19 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 				charData.FreeCompanyID = matches[1]
 				charData.FreeCompanyName = e.Text
 			}
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["GRAND_COMPANY"].(string), func(e *colly.HTMLElement) {
+			gcRawInfo := strings.Split(e.Text, "/")
+			gcName := gcRawInfo[0][0 : len(gcRawInfo[0])-1]
+			gcRankNameParts := strings.Split(gcRawInfo[1][1:], " ")
+			gcRank := gcRankNameParts[len(gcRankNameParts)-1]
+
+			gcID := grandcompany.Parse(gcName)
+			gcRankID := gcrank.Parse(gcRank)
+
+			gc := models.GrandCompanyInfo{NameID: gcID, RankID: gcRankID}
+			charData.GrandCompany = &gc
 		})
 
 		s.charCollector.OnHTML(s.profSelectors.Character["GUARDIAN_DEITY"].(string), func(e *colly.HTMLElement) {
@@ -104,6 +121,12 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 
 			charData.DC = dc
 			charData.Server = world
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["TITLE"].(string), func(e *colly.HTMLElement) {
+			// TODO
+			charData.Title = 0
+			charData.TitleTop = false
 		})
 
 		s.charCollector.OnHTML(s.profSelectors.Character["TOWN"].(string), func(e *colly.HTMLElement) {

@@ -23,10 +23,9 @@ type Character struct {
 	FreeCompanyName   string
 	GearSet           *Gearset
 	Gender            gender.Gender
-	GrandCompany      *GrandCompany
+	GrandCompany      *GrandCompanyInfo
 	GuardianDeity     deity.GuardianDeity
 	ID                uint32
-	Lang              string
 	Name              string
 	Nameday           string
 	ParseDate         *time.Time
