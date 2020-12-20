@@ -3,6 +3,7 @@ package godestone
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
@@ -29,27 +30,35 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 		s.charCollector.UserAgent = s.meta["userAgentDesktop"]
 		s.charCollector.IgnoreRobotsTxt = true
 
-		s.charCollector.OnHTML(s.profSelectors.Character["AVATAR"], func(e *colly.HTMLElement) {
+		s.charCollector.OnHTML(s.profSelectors.Character["AVATAR"].(string), func(e *colly.HTMLElement) {
 			charData.Avatar = e.Attr("src")
 		})
 
-		s.charCollector.OnHTML(s.profSelectors.Character["BIO"], func(e *colly.HTMLElement) {
+		s.charCollector.OnHTML(s.profSelectors.Character["BIO"].(string), func(e *colly.HTMLElement) {
 			charData.Bio = e.Text
 		})
 
-		s.charCollector.OnHTML(s.profSelectors.Character["NAME"], func(e *colly.HTMLElement) {
+		s.charCollector.OnHTML(s.profSelectors.Character["NAME"].(string), func(e *colly.HTMLElement) {
 			charData.Name = e.Text
 		})
 
-		s.charCollector.OnHTML(s.profSelectors.Character["NAMEDAY"], func(e *colly.HTMLElement) {
+		s.charCollector.OnHTML(s.profSelectors.Character["NAMEDAY"].(string), func(e *colly.HTMLElement) {
 			charData.Nameday = e.Text
 		})
 
-		s.charCollector.OnHTML(s.profSelectors.Character["PORTRAIT"], func(e *colly.HTMLElement) {
+		s.charCollector.OnHTML(s.profSelectors.Character["PORTRAIT"].(string), func(e *colly.HTMLElement) {
 			charData.Portrait = e.Attr("src")
 		})
 
-		s.charCollector.OnHTML(s.profSelectors.Character["SERVER"], func(e *colly.HTMLElement) {
+		pvpTeamIDRegex := regexp.MustCompile("/lodestone/pvpteam/(?P<ID>.+)/")
+		s.charCollector.OnHTML(s.profSelectors.Character["PVP_TEAM"].(map[string](interface{}))["NAME"].(string), func(e *colly.HTMLElement) {
+			matches := pvpTeamIDRegex.FindStringSubmatch(e.Attr("href"))
+			if matches != nil {
+				charData.PvPTeamID = matches[1]
+			}
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["SERVER"].(string), func(e *colly.HTMLElement) {
 			server := e.Text
 			serverSplit := strings.Split(server, "(")
 			world := serverSplit[0][0 : len(serverSplit[0])-2]
