@@ -1,6 +1,14 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/karashiiro/godestone/data/deity"
+	"github.com/karashiiro/godestone/data/gender"
+	"github.com/karashiiro/godestone/data/race"
+	"github.com/karashiiro/godestone/data/town"
+	"github.com/karashiiro/godestone/data/tribe"
+)
 
 // Character represents the information available about a character on The Lodestone.
 type Character struct {
@@ -14,9 +22,9 @@ type Character struct {
 	FreeCompanyID     string
 	FreeCompanyName   string
 	GearSet           *Gearset
-	Gender            uint8
+	Gender            gender.Gender
 	GrandCompany      *GrandCompany
-	GuardianDeity     uint8
+	GuardianDeity     deity.GuardianDeity
 	ID                uint32
 	Lang              string
 	Name              string
@@ -24,12 +32,12 @@ type Character struct {
 	ParseDate         *time.Time
 	Portrait          string
 	PvPTeamID         string
-	Race              uint8
+	Race              race.Race
 	Server            string
 	Title             uint32
 	TitleTop          bool
-	Town              uint8
-	Tribe             uint8
+	Town              town.Town
+	Tribe             tribe.Tribe
 }
 
 // CharacterExtended represents enriched information available about a character on The Lodestone.

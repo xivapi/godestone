@@ -27,14 +27,21 @@ func main() {
 
 	tmpl, err := template.New("character").Parse(
 		`{ 
-	Avatar:    "{{.Avatar}}",
-	Bio:       "{{.Bio}}",
-	DC:        "{{.DC}}",
-	Name:      "{{.Name}}",
-	Nameday:   "{{.Nameday}}",
-	Portrait:  "{{.Portrait}}",
-	PvPTeamID: "{{.PvPTeamID}}",
-	Server:    "{{.Server}}"
+	Avatar:          "{{.Avatar}}",
+	Bio:             "{{.Bio}}",
+	DC:              "{{.DC}}",
+	FreeCompanyID:   "{{.FreeCompanyID}}",
+	FreeCompanyName: "{{.FreeCompanyName}}",
+	Gender:          {{.Gender}},
+	GuardianDeity:   {{.GuardianDeity}},
+	Name:            "{{.Name}}",
+	Nameday:         "{{.Nameday}}",
+	Portrait:        "{{.Portrait}}",
+	PvPTeamID:       "{{.PvPTeamID}}",
+	Race:            {{.Race}},
+	Server:          "{{.Server}}",
+	Town:            {{.Town}},
+	Tribe:           {{.Tribe}}
 }`)
 	if err != nil {
 		log.Fatalln(err)

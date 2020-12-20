@@ -7,6 +7,11 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/karashiiro/godestone/data/deity"
+	"github.com/karashiiro/godestone/data/gender"
+	"github.com/karashiiro/godestone/data/race"
+	"github.com/karashiiro/godestone/data/town"
+	"github.com/karashiiro/godestone/data/tribe"
 	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/pack"
 )
@@ -38,6 +43,24 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 			charData.Bio = e.Text
 		})
 
+		fcIDRegex := regexp.MustCompile("/lodestone/freecompany/(?P<ID>.+)/")
+		s.charCollector.OnHTML(s.profSelectors.Character["FREE_COMPANY"].(map[string](interface{}))["NAME"].(string), func(e *colly.HTMLElement) {
+			matches := fcIDRegex.FindStringSubmatch(e.Attr("href"))
+			if matches != nil {
+				/*
+					This could be parsed to a uint64, but I don't know what SE's theoretical cap on Free Companies is and I'd
+					rather this not break in a decade. It's harmless to keep it as a string, anyways, since it needs to be
+					onverted to one to do a Lodestone lookup with it and anyone who wants it as a uint64 can just convert it themselves.
+				*/
+				charData.FreeCompanyID = matches[1]
+				charData.FreeCompanyName = e.Text
+			}
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["GUARDIAN_DEITY"].(string), func(e *colly.HTMLElement) {
+			charData.GuardianDeity = deity.Parse(e.Text)
+		})
+
 		s.charCollector.OnHTML(s.profSelectors.Character["NAME"].(string), func(e *colly.HTMLElement) {
 			charData.Name = e.Text
 		})
@@ -58,6 +81,21 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 			}
 		})
 
+		raceClanGenderRegex := regexp.MustCompile("(?P<Race>.*)<br\\/>(?P<Tribe>.*) \\/ (?P<Gender>.)")
+		s.charCollector.OnHTML(s.profSelectors.Character["RACE_CLAN_GENDER"].(string), func(e *colly.HTMLElement) {
+			rawText, err := e.DOM.Html()
+			if err != nil {
+				return
+			}
+
+			matches := raceClanGenderRegex.FindStringSubmatch(rawText)
+			if matches != nil {
+				charData.Race = race.Parse(matches[1])
+				charData.Tribe = tribe.Parse(matches[2])
+				charData.Gender = gender.Parse(matches[3])
+			}
+		})
+
 		s.charCollector.OnHTML(s.profSelectors.Character["SERVER"].(string), func(e *colly.HTMLElement) {
 			server := e.Text
 			serverSplit := strings.Split(server, "(")
@@ -66,6 +104,10 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 
 			charData.DC = dc
 			charData.Server = world
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["TOWN"].(string), func(e *colly.HTMLElement) {
+			charData.Town = town.Parse(e.Text)
 		})
 	}
 
