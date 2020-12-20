@@ -1,0 +1,3 @@
+[submodule "lodestone-css-selectors"]
+	path = lodestone-css-selectors
+	url = https://github.com/karashiiro/lodestone-css-selectors
