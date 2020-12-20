@@ -9,7 +9,7 @@
 // lodestone-css-selectors/profile/gearset.json
 // lodestone-css-selectors/profile/minion.json
 // lodestone-css-selectors/profile/mount.json
-package assets
+package pack
 
 import (
 	"bytes"
