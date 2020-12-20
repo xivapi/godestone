@@ -2,6 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
+	"strconv"
+	"text/template"
 
 	"github.com/karashiiro/godestone"
 )
@@ -12,10 +15,29 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	c, err := s.FetchCharacter(2831882)
+	id, err := strconv.ParseUint(os.Args[1], 10, 32)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	log.Println(c.Avatar)
+	c, err := s.FetchCharacter(uint32(id))
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	tmpl, err := template.New("character").Parse(
+		`{
+	Avatar:   "{{.Avatar}}",
+	Bio:      "{{.Bio}}",
+	DC:       "{{.DC}}",
+	Name:     "{{.Name}}",
+	Nameday:  "{{.Nameday}}",
+	Portrait: "{{.Portrait}}",
+	Server:   "{{.Server}}"
+}`)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	tmpl.Execute(os.Stdout, c)
 }

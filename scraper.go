@@ -3,6 +3,7 @@ package godestone
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/models"
@@ -30,6 +31,32 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 
 		s.charCollector.OnHTML(s.profSelectors.Character["AVATAR"], func(e *colly.HTMLElement) {
 			charData.Avatar = e.Attr("src")
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["BIO"], func(e *colly.HTMLElement) {
+			charData.Bio = e.Text
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["NAME"], func(e *colly.HTMLElement) {
+			charData.Name = e.Text
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["NAMEDAY"], func(e *colly.HTMLElement) {
+			charData.Nameday = e.Text
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["PORTRAIT"], func(e *colly.HTMLElement) {
+			charData.Portrait = e.Attr("src")
+		})
+
+		s.charCollector.OnHTML(s.profSelectors.Character["SERVER"], func(e *colly.HTMLElement) {
+			server := e.Text
+			serverSplit := strings.Split(server, "(")
+			world := serverSplit[0][0 : len(serverSplit[0])-2]
+			dc := serverSplit[1][0 : len(serverSplit[1])-1]
+
+			charData.DC = dc
+			charData.Server = world
 		})
 	}
 
