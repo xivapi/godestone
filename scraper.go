@@ -6,6 +6,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/karashiiro/godestone/data/grandcompany"
+	"github.com/karashiiro/godestone/data/race"
+	"github.com/karashiiro/godestone/data/tribe"
 	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/pack"
 	"github.com/karashiiro/godestone/selectors"
@@ -80,17 +83,21 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) (*models.Achievements, e
 
 // SearchCharacterOptions defines extra search information that can help to narrow down a search.
 type SearchCharacterOptions struct {
-	Name  string
-	World string
-	DC    string
-	Lang  Lang
+	Name         string
+	World        string
+	DC           string
+	Lang         Lang
+	GrandCompany grandcompany.GrandCompany
+	Race         race.Race
+	Tribe        tribe.Tribe
+	Order        SearchOrder
 }
 
 // SearchCharacters returns a channel of searchable characters.
 func (s *Scraper) SearchCharacters(opts SearchCharacterOptions) chan *models.CharacterSearchResult {
 	output := make(chan *models.CharacterSearchResult)
 
-	uriFormat := "https://na.finalfantasyxiv.com/lodestone/character/?q=%s&worldname=%s&classjob=&race_tribe=&order="
+	uriFormat := "https://na.finalfantasyxiv.com/lodestone/character/?q=%s&worldname=%s&classjob=%s&order=%d"
 
 	name := strings.Replace(opts.Name, " ", "%20", -1)
 
@@ -104,20 +111,34 @@ func (s *Scraper) SearchCharacters(opts SearchCharacterOptions) chan *models.Cha
 		}
 	}
 
-	if opts.Lang == 0 || opts.Lang&JA != 0 {
+	if opts.Lang == None || opts.Lang&JA != 0 {
 		uriFormat += "&blog_lang=ja"
 	}
-	if opts.Lang == 0 || opts.Lang&EN != 0 {
+	if opts.Lang == None || opts.Lang&EN != 0 {
 		uriFormat += "&blog_lang=en"
 	}
-	if opts.Lang == 0 || opts.Lang&DE != 0 {
+	if opts.Lang == None || opts.Lang&DE != 0 {
 		uriFormat += "&blog_lang=de"
 	}
-	if opts.Lang == 0 || opts.Lang&FR != 0 {
+	if opts.Lang == None || opts.Lang&FR != 0 {
 		uriFormat += "&blog_lang=fr"
 	}
 
-	builtURI := fmt.Sprintf(uriFormat, name, worldDC)
+	if opts.Tribe != tribe.None || opts.Race != race.None {
+		raceTribe := ""
+		if opts.Tribe != tribe.None {
+			raceTribe = fmt.Sprintf("tribe_%d", opts.Tribe)
+		} else if opts.Race != race.None {
+			raceTribe = fmt.Sprintf("race_%d", opts.Race)
+		}
+		uriFormat += fmt.Sprintf("&race_tribe=%s", raceTribe)
+	}
+
+	if opts.GrandCompany != grandcompany.None {
+		uriFormat += fmt.Sprintf("&gcid=%d", opts.GrandCompany)
+	}
+
+	builtURI := fmt.Sprintf(uriFormat, name, worldDC, "", opts.Order)
 
 	go func() {
 		searchCollector := s.makeCharacterSearchCollector(output)

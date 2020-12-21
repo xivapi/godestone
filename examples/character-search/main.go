@@ -14,7 +14,8 @@ func main() {
 	}
 
 	opts := godestone.SearchCharacterOptions{
-		Name: os.Args[1] + " " + os.Args[2],
+		Name:  os.Args[1] + " " + os.Args[2],
+		World: os.Args[3],
 	}
 
 	for character := range s.SearchCharacters(opts) {

@@ -56,4 +56,5 @@ type CharacterSearchResult struct {
 	Rank     gcrank.GCRank
 	RankIcon string
 	Server   string
+	DC       string
 }

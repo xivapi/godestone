@@ -11,7 +11,7 @@ import (
 
 func (s *Scraper) makeCharacterSearchCollector(output chan *models.CharacterSearchResult) *colly.Collector {
 	c := colly.NewCollector(
-		colly.MaxDepth(20),
+		colly.MaxDepth(21),
 		colly.UserAgent(s.meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 	)
@@ -22,13 +22,13 @@ func (s *Scraper) makeCharacterSearchCollector(output chan *models.CharacterSear
 	entrySelectors := charSearchSelectors.Entry
 
 	c.OnHTML(charSearchSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {
-		nextURI, uriExists := container.DOM.Find(charSearchSelectors.ListNextButton.Selector).Attr("href")
+		nextURI := charSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
 			nextCharacter := models.CharacterSearchResult{
-				Name:   entrySelectors.Name.ParseThroughChildren(e)[0],
-				Lang:   entrySelectors.Lang.ParseThroughChildren(e)[0],
-				Server: entrySelectors.Server.ParseThroughChildren(e)[0],
+				Name:     entrySelectors.Name.ParseThroughChildren(e)[0],
+				Lang:     entrySelectors.Lang.ParseThroughChildren(e)[0],
+				RankIcon: entrySelectors.RankIcon.ParseThroughChildren(e)[0],
 			}
 
 			idStr := entrySelectors.ID.ParseThroughChildren(e)[0]
@@ -40,13 +40,14 @@ func (s *Scraper) makeCharacterSearchCollector(output chan *models.CharacterSear
 			gcRank := entrySelectors.Rank.ParseThroughChildren(e)[0]
 			nextCharacter.Rank = gcrank.Parse(gcRank)
 
-			rankIcon := entrySelectors.RankIcon.ParseThroughChildren(e)[0]
-			nextCharacter.RankIcon = rankIcon
+			worldDC := entrySelectors.Server.ParseThroughChildren(e)
+			nextCharacter.Server = worldDC[0]
+			nextCharacter.DC = worldDC[1]
 
 			output <- &nextCharacter
 		})
 
-		if uriExists {
+		if nextURI != "" {
 			err := container.Request.Visit(nextURI)
 			if err != nil {
 				output <- &models.CharacterSearchResult{

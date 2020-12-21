@@ -4,7 +4,8 @@ package godestone
 type Lang uint8
 
 const (
-	JA Lang = 1 << iota
+	None Lang = 1 << iota
+	JA
 	EN
 	DE
 	FR
