@@ -1,5 +1,7 @@
 package models
 
+import "github.com/karashiiro/godestone/data/baseparam"
+
 // GearItem represents information about a single gear item on a character.
 type GearItem struct {
 	Creator string
@@ -29,7 +31,7 @@ type GearItemBuild struct {
 
 // GearSet represents the current gear information of a character.
 type GearSet struct {
-	Attributes map[uint8]uint32
+	Attributes map[baseparam.BaseParam]uint32
 	ClassID    uint8
 	Gear       *GearItemBuild
 	GearKey    string

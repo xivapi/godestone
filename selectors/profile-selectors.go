@@ -34,6 +34,7 @@ type AttributeSelectors struct {
 	Piety               SelectorInfo `json:"PIETY"`
 	HP                  SelectorInfo `json:"HP"`
 	MPGPCP              SelectorInfo `json:"MP_GP_CP"`
+	MPGPCPParameterName SelectorInfo `json:"MP_GP_CP_PARAMETER_NAME"`
 }
 
 // CharacterSelectors represents all CSS selectors associated with basic character data.

@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/karashiiro/godestone/data/baseparam"
 	"github.com/karashiiro/godestone/data/deity"
 	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/gender"
@@ -20,6 +21,7 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 	c.UserAgent = s.meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
 
+	// BASIC DATA
 	charSelectors := s.profileSelectors.Character
 
 	c.OnHTML(charSelectors.Avatar.Selector, func(e *colly.HTMLElement) {
@@ -100,6 +102,64 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 
 	charData.GearSet = &models.GearSet{}
 
+	// ATTRIBUTES
+	attributeSelectors := s.profileSelectors.Attributes
+	charData.GearSet.Attributes = map[baseparam.BaseParam]uint32{}
+
+	attributesMap := map[baseparam.BaseParam]*selectors.SelectorInfo{
+		baseparam.Strength:            &attributeSelectors.Strength,
+		baseparam.Dexterity:           &attributeSelectors.Dexterity,
+		baseparam.Vitality:            &attributeSelectors.Vitality,
+		baseparam.Intelligence:        &attributeSelectors.Intelligence,
+		baseparam.Mind:                &attributeSelectors.Mind,
+		baseparam.CriticalHit:         &attributeSelectors.CriticalHitRate,
+		baseparam.Determination:       &attributeSelectors.Determination,
+		baseparam.DirectHitRate:       &attributeSelectors.DirectHitRate,
+		baseparam.Defense:             &attributeSelectors.Defense,
+		baseparam.MagicDefense:        &attributeSelectors.MagicDefense,
+		baseparam.AttackPower:         &attributeSelectors.AttackPower,
+		baseparam.SkillSpeed:          &attributeSelectors.SkillSpeed,
+		baseparam.AttackMagicPotency:  &attributeSelectors.AttackMagicPotency,
+		baseparam.HealingMagicPotency: &attributeSelectors.HealingMagicPotency,
+		baseparam.SpellSpeed:          &attributeSelectors.SpellSpeed,
+		baseparam.Tenacity:            &attributeSelectors.Tenacity,
+		baseparam.Piety:               &attributeSelectors.Piety,
+		baseparam.HP:                  &attributeSelectors.HP,
+		baseparam.MP:                  &attributeSelectors.MPGPCP,
+		baseparam.GP:                  &attributeSelectors.MPGPCP,
+		baseparam.CP:                  &attributeSelectors.MPGPCP,
+	}
+
+	resourceAttr := "" // MP, GP, or CP
+	c.OnHTML(attributeSelectors.MPGPCPParameterName.Selector, func(e *colly.HTMLElement) {
+		resourceAttr = attributeSelectors.MPGPCPParameterName.Parse(e)[0]
+	})
+
+	for attribute, selector := range attributesMap {
+		currAttribute := attribute
+		currSelector := selector
+
+		c.OnHTML(currSelector.Selector, func(e *colly.HTMLElement) {
+			valStr := currSelector.Parse(e)[0]
+			val, err := strconv.ParseUint(valStr, 10, 32)
+			if err == nil {
+				if currAttribute == baseparam.MP || currAttribute == baseparam.GP || currAttribute == baseparam.CP {
+					switch resourceAttr {
+					case "MP":
+						charData.GearSet.Attributes[baseparam.MP] = uint32(val)
+					case "GP":
+						charData.GearSet.Attributes[baseparam.GP] = uint32(val)
+					case "CP":
+						charData.GearSet.Attributes[baseparam.CP] = uint32(val)
+					}
+				} else {
+					charData.GearSet.Attributes[currAttribute] = uint32(val)
+				}
+			}
+		})
+	}
+
+	// GEAR PIECES
 	partRefs := &models.GearItemBuild{
 		Body:      &models.GearItem{},
 		Bracelets: &models.GearItem{},
