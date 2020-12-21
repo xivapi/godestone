@@ -1,8 +1,8 @@
 package godestone
 
 import (
-	"log"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/gocolly/colly/v2"
@@ -19,19 +19,21 @@ import (
 
 func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector {
 	c := colly.NewCollector()
-	c.UserAgent = s.meta["userAgentDesktop"]
+	c.UserAgent = s.meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
 
-	c.OnHTML(s.profSelectors.Character.Avatar.Selector, func(e *colly.HTMLElement) {
+	charSelectors := s.profSelectors.Character
+
+	c.OnHTML(charSelectors.Avatar.Selector, func(e *colly.HTMLElement) {
 		charData.Avatar = e.Attr("src")
 	})
 
-	c.OnHTML(s.profSelectors.Character.Bio.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.Bio.Selector, func(e *colly.HTMLElement) {
 		charData.Bio = e.Text
 	})
 
-	fcIDRegex := regexp.MustCompile("/lodestone/freecompany/(?P<ID>.+)/")
-	c.OnHTML(s.profSelectors.Character.FreeCompany.Name.Selector, func(e *colly.HTMLElement) {
+	fcIDRegex := regexp.MustCompile(charSelectors.FreeCompany.Name.Regex)
+	c.OnHTML(charSelectors.FreeCompany.Name.Selector, func(e *colly.HTMLElement) {
 		matches := fcIDRegex.FindStringSubmatch(e.Attr("href"))
 		if matches != nil {
 			/*
@@ -44,7 +46,7 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 		}
 	})
 
-	c.OnHTML(s.profSelectors.Character.GrandCompany.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.GrandCompany.Selector, func(e *colly.HTMLElement) {
 		gcRawInfo := strings.Split(e.Text, "/")
 		gcName := gcRawInfo[0][0 : len(gcRawInfo[0])-1]
 		gcRankNameParts := strings.Split(gcRawInfo[1][1:], " ")
@@ -57,32 +59,32 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 		charData.GrandCompany = &gc
 	})
 
-	c.OnHTML(s.profSelectors.Character.GuardianDeity.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.GuardianDeity.Selector, func(e *colly.HTMLElement) {
 		charData.GuardianDeity = deity.Parse(e.Text)
 	})
 
-	c.OnHTML(s.profSelectors.Character.Name.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.Name.Selector, func(e *colly.HTMLElement) {
 		charData.Name = e.Text
 	})
 
-	c.OnHTML(s.profSelectors.Character.Nameday.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.Nameday.Selector, func(e *colly.HTMLElement) {
 		charData.Nameday = e.Text
 	})
 
-	c.OnHTML(s.profSelectors.Character.Portrait.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.Portrait.Selector, func(e *colly.HTMLElement) {
 		charData.Portrait = e.Attr("src")
 	})
 
-	pvpTeamIDRegex := regexp.MustCompile("/lodestone/pvpteam/(?P<ID>.+)/")
-	c.OnHTML(s.profSelectors.Character.PvPTeam.Name.Selector, func(e *colly.HTMLElement) {
+	pvpTeamIDRegex := regexp.MustCompile(charSelectors.PvPTeam.Name.Regex)
+	c.OnHTML(charSelectors.PvPTeam.Name.Selector, func(e *colly.HTMLElement) {
 		matches := pvpTeamIDRegex.FindStringSubmatch(e.Attr("href"))
 		if matches != nil {
 			charData.PvPTeamID = matches[1]
 		}
 	})
 
-	raceClanGenderRegex := regexp.MustCompile("(?P<Race>.*)<br\\/>(?P<Tribe>.*) \\/ (?P<Gender>.)")
-	c.OnHTML(s.profSelectors.Character.RaceClanGender.Selector, func(e *colly.HTMLElement) {
+	raceClanGenderRegex := regexp.MustCompile(charSelectors.RaceClanGender.Regex)
+	c.OnHTML(charSelectors.RaceClanGender.Selector, func(e *colly.HTMLElement) {
 		rawText, err := e.DOM.Html()
 		if err != nil {
 			return
@@ -96,7 +98,7 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 		}
 	})
 
-	c.OnHTML(s.profSelectors.Character.Server.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.Server.Selector, func(e *colly.HTMLElement) {
 		server := e.Text
 		serverSplit := strings.Split(server, "(")
 		world := serverSplit[0][0 : len(serverSplit[0])-2]
@@ -106,13 +108,13 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 		charData.Server = world
 	})
 
-	c.OnHTML(s.profSelectors.Character.Title.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.Title.Selector, func(e *colly.HTMLElement) {
 		// TODO
 		charData.Title = 0
 		charData.TitleTop = false
 	})
 
-	c.OnHTML(s.profSelectors.Character.Town.Selector, func(e *colly.HTMLElement) {
+	c.OnHTML(charSelectors.Town.Selector, func(e *colly.HTMLElement) {
 		charData.Town = town.Parse(e.Text)
 	})
 
@@ -174,7 +176,6 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 
 		materiaCallback := func(e *colly.HTMLElement) {
 			currRef.Materia = append(currRef.Materia, 0)
-			log.Println(currRef.Materia)
 		}
 		c.OnHTML(currSelector.Materia1.Selector, materiaCallback)
 		c.OnHTML(currSelector.Materia2.Selector, materiaCallback)
@@ -189,6 +190,17 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 
 	c.OnHTML(partSelectors.SoulCrystal.Name.Selector, func(e *colly.HTMLElement) {
 		partRefs.SoulCrystal.ID = 0
+	})
+
+	activeClassJobLevelRegex := regexp.MustCompile(charSelectors.ActiveClassJobLevel.Regex)
+	c.OnHTML(charSelectors.ActiveClassJobLevel.Selector, func(e *colly.HTMLElement) {
+		matches := activeClassJobLevelRegex.FindStringSubmatch(e.Text)
+		if matches != nil {
+			level, err := strconv.ParseUint(matches[1], 10, 8)
+			if err != nil {
+				charData.GearSet.Level = uint8(level)
+			}
+		}
 	})
 
 	return c
