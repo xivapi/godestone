@@ -1,6 +1,7 @@
 package godestone
 
 import (
+	"log"
 	"regexp"
 	"strings"
 
@@ -117,7 +118,25 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 
 	charData.GearSet = &models.GearSet{}
 
-	partRefs := &models.GearItemBuild{}
+	partRefs := &models.GearItemBuild{
+		Body:      &models.GearItem{},
+		Bracelets: &models.GearItem{},
+		Earrings:  &models.GearItem{},
+		Feet:      &models.GearItem{},
+		Hands:     &models.GearItem{},
+		Head:      &models.GearItem{},
+		Legs:      &models.GearItem{},
+		MainHand:  &models.GearItem{},
+		Necklace:  &models.GearItem{},
+		OffHand:   &models.GearItem{},
+		Ring1:     &models.GearItem{},
+		Ring2:     &models.GearItem{},
+		SoulCrystal: &models.GearItem{
+			Materia: make([]uint32, 0),
+		},
+		Waist: &models.GearItem{},
+	}
+
 	charData.GearSet.Gear = partRefs
 	partSelectors := s.profSelectors.GearSet
 	parts := map[*models.GearItem]*selectors.GearSelectors{
@@ -137,28 +156,34 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 	}
 
 	for partRef, partSelector := range parts {
-		partRef.Materia = []uint32{}
-		c.OnHTML(partSelector.CreatorName.Selector, func(e *colly.HTMLElement) {
-			partRef.Creator = e.Text
+		// Closures are fun
+		currRef := partRef
+		currSelector := partSelector
+
+		currRef.Materia = make([]uint32, 0)
+
+		c.OnHTML(currSelector.CreatorName.Selector, func(e *colly.HTMLElement) {
+			currRef.Creator = e.Text
 		})
-		c.OnHTML(partSelector.Stain.Selector, func(e *colly.HTMLElement) {
-			partRef.Dye = 0
+		c.OnHTML(currSelector.Stain.Selector, func(e *colly.HTMLElement) {
+			currRef.Dye = 0
 		})
-		c.OnHTML(partSelector.Name.Selector, func(e *colly.HTMLElement) {
-			partRef.ID = 0
+		c.OnHTML(currSelector.Name.Selector, func(e *colly.HTMLElement) {
+			currRef.ID = 0
 		})
 
 		materiaCallback := func(e *colly.HTMLElement) {
-			partRef.Materia = append(partRef.Materia, 0)
+			currRef.Materia = append(currRef.Materia, 0)
+			log.Println(currRef.Materia)
 		}
-		c.OnHTML(partSelector.Materia1.Selector, materiaCallback)
-		c.OnHTML(partSelector.Materia2.Selector, materiaCallback)
-		c.OnHTML(partSelector.Materia3.Selector, materiaCallback)
-		c.OnHTML(partSelector.Materia4.Selector, materiaCallback)
-		c.OnHTML(partSelector.Materia5.Selector, materiaCallback)
+		c.OnHTML(currSelector.Materia1.Selector, materiaCallback)
+		c.OnHTML(currSelector.Materia2.Selector, materiaCallback)
+		c.OnHTML(currSelector.Materia3.Selector, materiaCallback)
+		c.OnHTML(currSelector.Materia4.Selector, materiaCallback)
+		c.OnHTML(currSelector.Materia5.Selector, materiaCallback)
 
-		c.OnHTML(partSelector.MirageName.Selector, func(e *colly.HTMLElement) {
-			partRef.Mirage = 0
+		c.OnHTML(currSelector.MirageName.Selector, func(e *colly.HTMLElement) {
+			currRef.Mirage = 0
 		})
 	}
 
