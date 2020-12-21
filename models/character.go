@@ -21,7 +21,7 @@ type Character struct {
 	DC                string
 	FreeCompanyID     string
 	FreeCompanyName   string
-	GearSet           *Gearset
+	GearSet           *GearSet
 	Gender            gender.Gender
 	GrandCompany      *GrandCompanyInfo
 	GuardianDeity     deity.GuardianDeity

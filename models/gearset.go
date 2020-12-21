@@ -27,8 +27,8 @@ type GearItemBuild struct {
 	Waist       *GearItem
 }
 
-// Gearset represents the current gear information of a character.
-type Gearset struct {
+// GearSet represents the current gear information of a character.
+type GearSet struct {
 	Attributes map[uint8]uint32
 	ClassID    uint8
 	Gear       *GearItemBuild
