@@ -16,7 +16,7 @@ func (s *Scraper) makeCharacterSearchCollector(name string, world string) *colly
 
 	c.OnHTML(charSearchSelectors.Entries.Selector, func(e *colly.HTMLElement) {
 		name := e.DOM.ChildrenFiltered(charSearchSelectors.Entry.Name.Selector)
-		log.Println(name.Text)
+		log.Println(name.Text())
 	})
 
 	return c
