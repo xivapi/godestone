@@ -8,8 +8,9 @@ import (
 
 // CharacterSearchSelectors contains the CSS selectors for the character search interface.
 type CharacterSearchSelectors struct {
-	Entries SelectorInfo `json:"ENTRIES"`
-	Entry   struct {
+	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
+	Entry            struct {
+		Root     SelectorInfo `json:"ROOT"`
 		Avatar   SelectorInfo `json:"AVATAR"`
 		ID       SelectorInfo `json:"ID"`
 		Lang     SelectorInfo `json:"LANG"`
@@ -19,6 +20,7 @@ type CharacterSearchSelectors struct {
 		Server   SelectorInfo `json:"SERVER"`
 	}
 	ListNextButton SelectorInfo `json:"LIST_NEXT_BUTTON"`
+	PageInfo       SelectorInfo `json:"PAGE_INFO"`
 }
 
 // SearchSelectors contains the CSS selectors for the search interface.

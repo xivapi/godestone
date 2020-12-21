@@ -15,7 +15,7 @@ func (s *Scraper) makeMountCollector() *colly.Collector {
 
 	c.OnHTML(mountSelectors.List.Selector, func(e1 *colly.HTMLElement) {
 		e1.ForEach(mountSelectors.Name.Selector, func(i int, e2 *colly.HTMLElement) {
-			log.Println(e2.Text)
+			log.Println(mountSelectors.Name.Parse(e2)[0])
 		})
 	})
 

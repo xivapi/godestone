@@ -3,6 +3,7 @@ package godestone
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/karashiiro/godestone/models"
@@ -75,6 +76,67 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) (*models.Achievements, e
 	achievementCollector.Wait()
 
 	return &achievements, nil
+}
+
+// SearchCharacterOptions defines extra search information that can help to narrow down a search.
+type SearchCharacterOptions struct {
+	Name  string
+	World string
+	DC    string
+	Lang  Lang
+}
+
+// SearchCharacters returns a channel of searchable characters.
+func (s *Scraper) SearchCharacters(opts SearchCharacterOptions) chan *models.CharacterSearchResult {
+	output := make(chan *models.CharacterSearchResult)
+
+	uriFormat := "https://na.finalfantasyxiv.com/lodestone/character/?q=%s&worldname=%s&classjob=&race_tribe=&order="
+
+	name := strings.Replace(opts.Name, " ", "%20", -1)
+
+	worldDC := opts.DC
+	if len(opts.World) != 0 {
+		worldDC = opts.World
+	} else {
+		// DCs have the _dc_ prefix attached to them
+		if len(worldDC) != 0 && !strings.HasPrefix(worldDC, "_dc_") {
+			worldDC = "_dc_" + worldDC
+		}
+	}
+
+	if opts.Lang == 0 || opts.Lang&JA != 0 {
+		uriFormat += "&blog_lang=ja"
+	}
+	if opts.Lang == 0 || opts.Lang&EN != 0 {
+		uriFormat += "&blog_lang=en"
+	}
+	if opts.Lang == 0 || opts.Lang&DE != 0 {
+		uriFormat += "&blog_lang=de"
+	}
+	if opts.Lang == 0 || opts.Lang&FR != 0 {
+		uriFormat += "&blog_lang=fr"
+	}
+
+	builtURI := fmt.Sprintf(uriFormat, name, worldDC)
+
+	go func() {
+		searchCollector := s.makeCharacterSearchCollector(output)
+
+		err := searchCollector.Visit(builtURI)
+		if err != nil {
+			output <- &models.CharacterSearchResult{
+				Error: err,
+			}
+			close(output)
+			return
+		}
+
+		searchCollector.Wait()
+
+		close(output)
+	}()
+
+	return output
 }
 
 // NewScraper creates a new instance of the Scraper.

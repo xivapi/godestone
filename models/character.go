@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/karashiiro/godestone/data/deity"
+	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/gender"
 	"github.com/karashiiro/godestone/data/race"
 	"github.com/karashiiro/godestone/data/town"
@@ -42,4 +43,17 @@ type Character struct {
 // CharacterExtended represents enriched information available about a character on The Lodestone.
 type CharacterExtended struct {
 	//
+}
+
+// CharacterSearchResult contains data from the character search page about a character.
+type CharacterSearchResult struct {
+	Error error
+
+	Avatar   string
+	ID       uint32
+	Lang     string
+	Name     string
+	Rank     gcrank.GCRank
+	RankIcon string
+	Server   string
 }

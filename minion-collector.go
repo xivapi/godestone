@@ -15,7 +15,7 @@ func (s *Scraper) makeMinionCollector() *colly.Collector {
 
 	c.OnHTML(minionSelectors.List.Selector, func(e1 *colly.HTMLElement) {
 		e1.ForEach(minionSelectors.Name.Selector, func(i int, e2 *colly.HTMLElement) {
-			log.Println(e2.Text)
+			log.Println(minionSelectors.Name.Parse(e2)[0])
 		})
 	})
 

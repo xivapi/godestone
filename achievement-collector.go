@@ -17,17 +17,16 @@ func (s *Scraper) makeAchievementCollector(achievements *models.Achievements) *c
 
 	achievements.List = make([]*models.AchievementInfo, 0)
 
-	var nextButton *colly.HTMLElement
+	nextURI := ""
 	c.OnHTML(achievementSelectors.ListNextButton.Selector, func(e *colly.HTMLElement) {
-		nextButton = e
+		nextURI = achievementSelectors.ListNextButton.Parse(e)[0]
 	})
 
 	c.OnHTML(achievementSelectors.List.Selector, func(e1 *colly.HTMLElement) {
 		e1.ForEach(achievementSelectors.ID.Selector, func(i int, e2 *colly.HTMLElement) {
-			log.Println(e2.Attr("href"))
+			id := achievementSelectors.ID.Parse(e2)[0]
+			log.Println(id)
 		})
-
-		nextURI := nextButton.Attr("href")
 		e1.Request.Visit(nextURI)
 	})
 

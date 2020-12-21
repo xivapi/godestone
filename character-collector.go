@@ -1,9 +1,7 @@
 package godestone
 
 import (
-	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/data/deity"
@@ -25,37 +23,33 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 	charSelectors := s.profileSelectors.Character
 
 	c.OnHTML(charSelectors.Avatar.Selector, func(e *colly.HTMLElement) {
-		charData.Avatar = e.Attr("src")
+		charData.Avatar = charSelectors.Avatar.Parse(e)[0]
 	})
 
 	c.OnHTML(charSelectors.Bio.Selector, func(e *colly.HTMLElement) {
-		charData.Bio = e.Text
+		charData.Bio = charSelectors.Bio.Parse(e)[0]
 	})
 
-	fcIDRegex := regexp.MustCompile(charSelectors.FreeCompany.Name.Regex)
 	c.OnHTML(charSelectors.FreeCompany.Name.Selector, func(e *colly.HTMLElement) {
-		matches := fcIDRegex.FindStringSubmatch(e.Attr("href"))
-		if matches != nil {
+		fcID := charSelectors.FreeCompany.Name.Parse(e)[0]
+		if fcID != "" {
 			/*
 				This could be parsed to a uint64, but I don't know what SE's theoretical cap on Free Companies is and I'd
 				rather this not break in a decade. It's harmless to keep it as a string, anyways, since it needs to be
 				onverted to one to do a Lodestone lookup with it and anyone who wants it as a uint64 can just convert it themselves.
 			*/
-			charData.FreeCompanyID = matches[1]
+			charData.FreeCompanyID = fcID
 			charData.FreeCompanyName = e.Text
 		}
 	})
 
 	c.OnHTML(charSelectors.GrandCompany.Selector, func(e *colly.HTMLElement) {
-		gcRawInfo := strings.Split(e.Text, "/")
-		gcName := gcRawInfo[0][0 : len(gcRawInfo[0])-1]
-		gcRankNameParts := strings.Split(gcRawInfo[1][1:], " ")
-		gcRank := gcRankNameParts[len(gcRankNameParts)-1]
+		values := charSelectors.GrandCompany.Parse(e)
 
-		gcID := grandcompany.Parse(gcName)
-		gcRankID := gcrank.Parse(gcRank)
+		gcName := grandcompany.Parse(values[0])
+		gcRank := gcrank.Parse(values[1])
 
-		gc := models.GrandCompanyInfo{NameID: gcID, RankID: gcRankID}
+		gc := models.GrandCompanyInfo{NameID: gcName, RankID: gcRank}
 		charData.GrandCompany = &gc
 	})
 
@@ -64,48 +58,34 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 	})
 
 	c.OnHTML(charSelectors.Name.Selector, func(e *colly.HTMLElement) {
-		charData.Name = e.Text
+		charData.Name = charSelectors.Name.Parse(e)[0]
 	})
 
 	c.OnHTML(charSelectors.Nameday.Selector, func(e *colly.HTMLElement) {
-		charData.Nameday = e.Text
+		charData.Nameday = charSelectors.Nameday.Parse(e)[0]
 	})
 
 	c.OnHTML(charSelectors.Portrait.Selector, func(e *colly.HTMLElement) {
-		charData.Portrait = e.Attr("src")
+		charData.Portrait = charSelectors.Portrait.Parse(e)[0]
 	})
 
-	pvpTeamIDRegex := regexp.MustCompile(charSelectors.PvPTeam.Name.Regex)
 	c.OnHTML(charSelectors.PvPTeam.Name.Selector, func(e *colly.HTMLElement) {
-		matches := pvpTeamIDRegex.FindStringSubmatch(e.Attr("href"))
-		if matches != nil {
-			charData.PvPTeamID = matches[1]
-		}
+		charData.PvPTeamID = charSelectors.PvPTeam.Name.Parse(e)[0]
 	})
 
-	raceClanGenderRegex := regexp.MustCompile(charSelectors.RaceClanGender.Regex)
 	c.OnHTML(charSelectors.RaceClanGender.Selector, func(e *colly.HTMLElement) {
-		rawText, err := e.DOM.Html()
-		if err != nil {
-			return
-		}
+		values := charSelectors.RaceClanGender.ParseInnerHTML(e)
 
-		matches := raceClanGenderRegex.FindStringSubmatch(rawText)
-		if matches != nil {
-			charData.Race = race.Parse(matches[1])
-			charData.Tribe = tribe.Parse(matches[2])
-			charData.Gender = gender.Parse(matches[3])
-		}
+		charData.Race = race.Parse(values[0])
+		charData.Tribe = tribe.Parse(values[1])
+		charData.Gender = gender.Parse(values[2])
 	})
 
 	c.OnHTML(charSelectors.Server.Selector, func(e *colly.HTMLElement) {
-		server := e.Text
-		serverSplit := strings.Split(server, "(")
-		world := serverSplit[0][0 : len(serverSplit[0])-2]
-		dc := serverSplit[1][0 : len(serverSplit[1])-1]
+		values := charSelectors.Server.Parse(e)
 
-		charData.DC = dc
-		charData.Server = world
+		charData.Server = values[0]
+		charData.DC = values[1]
 	})
 
 	c.OnHTML(charSelectors.Title.Selector, func(e *colly.HTMLElement) {
@@ -165,7 +145,7 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 		currRef.Materia = make([]uint32, 0)
 
 		c.OnHTML(currSelector.CreatorName.Selector, func(e *colly.HTMLElement) {
-			currRef.Creator = e.Text
+			currRef.Creator = currSelector.CreatorName.Parse(e)[0]
 		})
 		c.OnHTML(currSelector.Stain.Selector, func(e *colly.HTMLElement) {
 			currRef.Dye = 0
@@ -192,14 +172,11 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 		partRefs.SoulCrystal.ID = 0
 	})
 
-	activeClassJobLevelRegex := regexp.MustCompile(charSelectors.ActiveClassJobLevel.Regex)
 	c.OnHTML(charSelectors.ActiveClassJobLevel.Selector, func(e *colly.HTMLElement) {
-		matches := activeClassJobLevelRegex.FindStringSubmatch(e.Text)
-		if matches != nil {
-			level, err := strconv.ParseUint(matches[1], 10, 8)
-			if err != nil {
-				charData.GearSet.Level = uint8(level)
-			}
+		levelStr := charSelectors.ActiveClassJobLevel.Parse(e)[0]
+		level, err := strconv.ParseUint(levelStr, 10, 8)
+		if err != nil {
+			charData.GearSet.Level = uint8(level)
 		}
 	})
 
