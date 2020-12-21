@@ -14,6 +14,7 @@ import (
 type Scraper struct {
 	meta             *models.Meta
 	profileSelectors *selectors.ProfileSelectors
+	searchSelectors  *selectors.SearchSelectors
 }
 
 // FetchCharacter returns character information for the provided Lodestone ID.
@@ -83,6 +84,11 @@ func NewScraper() (*Scraper, error) {
 		return nil, err
 	}
 
+	searchSelectors, err := selectors.LoadSearchSelectors()
+	if err != nil {
+		return nil, err
+	}
+
 	metaBytes, err := pack.Asset("meta.json")
 	if err != nil {
 		return nil, err
@@ -93,5 +99,6 @@ func NewScraper() (*Scraper, error) {
 	return &Scraper{
 		meta:             &meta,
 		profileSelectors: profileSelectors,
+		searchSelectors:  searchSelectors,
 	}, nil
 }
