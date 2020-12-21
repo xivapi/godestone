@@ -13,7 +13,7 @@ func (s *Scraper) makeAchievementCollector(achievements *models.Achievements) *c
 	c.IgnoreRobotsTxt = true
 	c.MaxDepth = 100 // Should be set to ceil(nAchievements / 50)
 
-	achievementSelectors := s.profSelectors.Achievements
+	achievementSelectors := s.profileSelectors.Achievements
 
 	achievements.List = make([]*models.AchievementInfo, 0)
 

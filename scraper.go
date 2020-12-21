@@ -12,8 +12,8 @@ import (
 
 // Scraper is the object through which interactions with The Lodestone are made.
 type Scraper struct {
-	meta          *models.Meta
-	profSelectors *selectors.ProfileSelectors
+	meta             *models.Meta
+	profileSelectors *selectors.ProfileSelectors
 }
 
 // FetchCharacter returns character information for the provided Lodestone ID.
@@ -78,7 +78,7 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) (*models.Achievements, e
 
 // NewScraper creates a new instance of the Scraper.
 func NewScraper() (*Scraper, error) {
-	profSelectors, err := selectors.LoadProfileSelectors()
+	profileSelectors, err := selectors.LoadProfileSelectors()
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func NewScraper() (*Scraper, error) {
 	json.Unmarshal(metaBytes, &meta)
 
 	return &Scraper{
-		meta:          &meta,
-		profSelectors: profSelectors,
+		meta:             &meta,
+		profileSelectors: profileSelectors,
 	}, nil
 }

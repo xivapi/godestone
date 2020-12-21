@@ -11,7 +11,7 @@ func (s *Scraper) makeMountCollector() *colly.Collector {
 	c.UserAgent = s.meta.UserAgentMobile
 	c.IgnoreRobotsTxt = true
 
-	mountSelectors := s.profSelectors.Mount
+	mountSelectors := s.profileSelectors.Mount
 
 	c.OnHTML(mountSelectors.List.Selector, func(e1 *colly.HTMLElement) {
 		e1.ForEach(mountSelectors.Name.Selector, func(i int, e2 *colly.HTMLElement) {

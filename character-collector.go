@@ -22,7 +22,7 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 	c.UserAgent = s.meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
 
-	charSelectors := s.profSelectors.Character
+	charSelectors := s.profileSelectors.Character
 
 	c.OnHTML(charSelectors.Avatar.Selector, func(e *colly.HTMLElement) {
 		charData.Avatar = e.Attr("src")
@@ -140,7 +140,7 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 	}
 
 	charData.GearSet.Gear = partRefs
-	partSelectors := s.profSelectors.GearSet
+	partSelectors := s.profileSelectors.GearSet
 	parts := map[*models.GearItem]*selectors.GearSelectors{
 		partRefs.MainHand:  &partSelectors.MainHand,
 		partRefs.OffHand:   &partSelectors.OffHand,
