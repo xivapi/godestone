@@ -62,6 +62,20 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 	return nil, nil
 }
 
+// FetchCharacterAchievements returns unlocked achievement information for the provided Lodestone ID.
+func (s *Scraper) FetchCharacterAchievements(id uint32) (*models.Achievements, error) {
+	achievements := models.Achievements{}
+
+	achievementCollector := s.makeAchievementCollector(&achievements)
+	err := achievementCollector.Visit("https://na.finalfantasyxiv.com/lodestone/character/" + fmt.Sprint(id) + "/achievement/")
+	if err != nil {
+		return nil, err
+	}
+	achievementCollector.Wait()
+
+	return &achievements, nil
+}
+
 // NewScraper creates a new instance of the Scraper.
 func NewScraper() (*Scraper, error) {
 	profSelectors, err := selectors.LoadProfileSelectors()
