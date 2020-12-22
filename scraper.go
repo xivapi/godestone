@@ -24,7 +24,7 @@ type Scraper struct {
 // FetchCharacter returns character information for the provided Lodestone ID.
 func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	now := time.Now()
-	charData := models.Character{ID: id, ParseDate: &now}
+	charData := models.Character{ID: id, ParseDate: now}
 
 	charCollector := s.makeCharCollector(&charData)
 	err := charCollector.Visit("https://na.finalfantasyxiv.com/lodestone/character/" + fmt.Sprint(id))
@@ -68,17 +68,26 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 }
 
 // FetchCharacterAchievements returns unlocked achievement information for the provided Lodestone ID.
-func (s *Scraper) FetchCharacterAchievements(id uint32) (*models.Achievements, error) {
-	achievements := models.Achievements{}
+func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.AchievementInfo {
+	output := make(chan *models.AchievementInfo)
 
-	achievementCollector := s.makeAchievementCollector(&achievements)
-	err := achievementCollector.Visit("https://na.finalfantasyxiv.com/lodestone/character/" + fmt.Sprint(id) + "/achievement/")
-	if err != nil {
-		return nil, err
-	}
-	achievementCollector.Wait()
+	go func() {
+		achievementCollector := s.makeAchievementCollector(output)
+		err := achievementCollector.Visit("https://na.finalfantasyxiv.com/lodestone/character/" + fmt.Sprint(id) + "/achievement/")
+		if err != nil {
+			output <- &models.AchievementInfo{
+				Error: err,
+			}
+			close(output)
+			return
+		}
 
-	return &achievements, nil
+		achievementCollector.Wait()
+
+		close(output)
+	}()
+
+	return output
 }
 
 // SearchCharacterOptions defines extra search information that can help to narrow down a search.

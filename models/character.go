@@ -29,7 +29,7 @@ type Character struct {
 	ID                uint32
 	Name              string
 	Nameday           string
-	ParseDate         *time.Time
+	ParseDate         time.Time
 	Portrait          string
 	PvPTeamID         string
 	Race              race.Race
