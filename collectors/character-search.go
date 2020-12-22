@@ -1,4 +1,4 @@
-package godestone
+package collectors
 
 import (
 	"strconv"
@@ -7,18 +7,20 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/models"
+	"github.com/karashiiro/godestone/selectors"
 )
 
-func (s *Scraper) makeCharacterSearchCollector(output chan *models.CharacterSearchResult) *colly.Collector {
+// BuildCharacterSearchCollector builds the collector used for processing the page.
+func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors.SearchSelectors, output chan *models.CharacterSearchResult) *colly.Collector {
 	c := colly.NewCollector(
 		colly.MaxDepth(21),
-		colly.UserAgent(s.meta.UserAgentDesktop),
+		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 	)
 	dur, _ := time.ParseDuration("60s")
 	c.SetRequestTimeout(dur)
 
-	charSearchSelectors := s.searchSelectors.Character
+	charSearchSelectors := searchSelectors.Character
 	entrySelectors := charSearchSelectors.Entry
 
 	c.OnHTML(charSearchSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {

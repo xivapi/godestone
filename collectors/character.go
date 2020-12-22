@@ -1,4 +1,4 @@
-package godestone
+package collectors
 
 import (
 	"strconv"
@@ -16,13 +16,14 @@ import (
 	"github.com/karashiiro/godestone/selectors"
 )
 
-func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector {
+// BuildCharacterCollector builds the collector used for processing the page.
+func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, charData *models.Character) *colly.Collector {
 	c := colly.NewCollector()
-	c.UserAgent = s.meta.UserAgentDesktop
+	c.UserAgent = meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
 
 	// BASIC DATA
-	charSelectors := s.profileSelectors.Character
+	charSelectors := profSelectors.Character
 
 	c.OnHTML(charSelectors.Avatar.Selector, func(e *colly.HTMLElement) {
 		charData.Avatar = charSelectors.Avatar.Parse(e)[0]
@@ -103,7 +104,7 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 	charData.GearSet = &models.GearSet{}
 
 	// ATTRIBUTES
-	attributeSelectors := s.profileSelectors.Attributes
+	attributeSelectors := profSelectors.Attributes
 	charData.GearSet.Attributes = map[baseparam.BaseParam]uint32{}
 
 	attributesMap := map[baseparam.BaseParam]*selectors.SelectorInfo{
@@ -180,7 +181,7 @@ func (s *Scraper) makeCharCollector(charData *models.Character) *colly.Collector
 	}
 
 	charData.GearSet.Gear = partRefs
-	partSelectors := s.profileSelectors.GearSet
+	partSelectors := profSelectors.GearSet
 	parts := map[*models.GearItem]*selectors.GearSelectors{
 		partRefs.MainHand:  &partSelectors.MainHand,
 		partRefs.OffHand:   &partSelectors.OffHand,

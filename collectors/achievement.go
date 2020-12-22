@@ -1,4 +1,4 @@
-package godestone
+package collectors
 
 import (
 	"strconv"
@@ -6,15 +6,17 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/models"
+	"github.com/karashiiro/godestone/selectors"
 )
 
-func (s *Scraper) makeAchievementCollector(output chan *models.AchievementInfo) *colly.Collector {
+// BuildAchievementCollector builds the collector used for processing the page.
+func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, output chan *models.AchievementInfo) *colly.Collector {
 	c := colly.NewCollector()
-	c.UserAgent = s.meta.UserAgentDesktop
+	c.UserAgent = meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
 	c.MaxDepth = 100 // Should be set to ceil(nAchievements / 50)
 
-	achievementSelectors := s.profileSelectors.Achievements
+	achievementSelectors := profSelectors.Achievements
 
 	nextURI := ""
 	c.OnHTML(achievementSelectors.ListNextButton.Selector, func(e *colly.HTMLElement) {
