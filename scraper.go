@@ -14,10 +14,11 @@ import (
 
 // Scraper is the object through which interactions with The Lodestone are made.
 type Scraper struct {
-	meta             *models.Meta
-	profileSelectors *selectors.ProfileSelectors
-	pvpTeamSelectors *selectors.PVPTeamSelectors
-	searchSelectors  *selectors.SearchSelectors
+	meta               *models.Meta
+	linkshellSelectors *selectors.LinkshellSelectors
+	profileSelectors   *selectors.ProfileSelectors
+	pvpTeamSelectors   *selectors.PVPTeamSelectors
+	searchSelectors    *selectors.SearchSelectors
 }
 
 // FetchCharacter returns character information for the provided Lodestone ID.
@@ -89,6 +90,21 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 	}()
 
 	return output
+}
+
+// FetchLinkshell returns linkshell information for the provided linkshell ID.
+func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
+	now := time.Now()
+	ls := models.Linkshell{ID: id, ParseDate: now}
+
+	lsCollector := collectors.BuildLinkshellCollector(s.meta, s.linkshellSelectors, &ls)
+	err := lsCollector.Visit("https://na.finalfantasyxiv.com/lodestone/linkshell/" + fmt.Sprint(id))
+	if err != nil {
+		return nil, err
+	}
+	lsCollector.Wait()
+
+	return &ls, nil
 }
 
 // FetchPVPTeam returns PVP team information for the provided PVP team ID.
@@ -208,6 +224,11 @@ func (s *Scraper) SearchPVPTeams(opts SearchPVPTeamOptions) chan *models.PVPTeam
 
 // NewScraper creates a new instance of the Scraper.
 func NewScraper() (*Scraper, error) {
+	lsSelectors, err := selectors.LoadLinkshellSelectors()
+	if err != nil {
+		return nil, err
+	}
+
 	profileSelectors, err := selectors.LoadProfileSelectors()
 	if err != nil {
 		return nil, err
@@ -231,9 +252,10 @@ func NewScraper() (*Scraper, error) {
 	json.Unmarshal(metaBytes, &meta)
 
 	return &Scraper{
-		meta:             &meta,
-		profileSelectors: profileSelectors,
-		pvpTeamSelectors: pvpTeamSelectors,
-		searchSelectors:  searchSelectors,
+		meta:               &meta,
+		linkshellSelectors: lsSelectors,
+		profileSelectors:   profileSelectors,
+		pvpTeamSelectors:   pvpTeamSelectors,
+		searchSelectors:    searchSelectors,
 	}, nil
 }
