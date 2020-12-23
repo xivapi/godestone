@@ -1,5 +1,9 @@
 package gcrank
 
+import (
+	"strings"
+)
+
 // GCRank is the Grand Company rank of a character.
 type GCRank uint8
 
@@ -29,6 +33,9 @@ const (
 
 // Parse returns the primitive representation of the provided GC rank.
 func Parse(input string) GCRank {
+	input = strings.Replace(input, "Storm ", "", -1)
+	input = strings.Replace(input, "Flame ", "", -1)
+	input = strings.Replace(input, "Serpent ", "", -1)
 	switch input {
 	case "Private Third Class":
 		return PrivateThirdClass
