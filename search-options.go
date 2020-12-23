@@ -9,6 +9,17 @@ import (
 	"github.com/karashiiro/godestone/data/tribe"
 )
 
+// ActiveMemberRange represents the active member range filter of a search.
+type ActiveMemberRange string
+
+// Active member range for searches.
+const (
+	OneToTen         ActiveMemberRange = "1-10"
+	ElevenToThirty   ActiveMemberRange = "11-30"
+	ThirtyOneToFifty ActiveMemberRange = "31-50"
+	FiftyOnePlus     ActiveMemberRange = "51-"
+)
+
 // LinkshellSearchOrder represents the search result ordering of a Lodestone CWLS search.
 type LinkshellSearchOrder uint8
 
@@ -20,24 +31,13 @@ const (
 	OrderLinkshellMembershipLowToHigh
 )
 
-// LinkshellActiveMemberRange represents the active member range filter of a Lodestone CWLS search.
-type LinkshellActiveMemberRange string
-
-// Active member range for linkshell and CWLS searches.
-const (
-	OneToTen         LinkshellActiveMemberRange = "1-10"
-	ElevenToThirty   LinkshellActiveMemberRange = "11-30"
-	ThirtyOneToFifty LinkshellActiveMemberRange = "31-50"
-	FiftyOnePlus     LinkshellActiveMemberRange = "51-"
-)
-
 // SearchLinkshellOptions defines extra search information that can help to narrow down a linkshell search.
 type SearchLinkshellOptions struct {
 	Name                      string
 	World                     string
 	DC                        string
 	Order                     LinkshellSearchOrder
-	ActiveMembers             LinkshellActiveMemberRange
+	ActiveMembers             ActiveMemberRange
 	CommunityFinderRecruiting bool
 }
 
@@ -62,7 +62,7 @@ type SearchCWLSOptions struct {
 	Name                      string
 	DC                        string
 	Order                     LinkshellSearchOrder
-	ActiveMembers             LinkshellActiveMemberRange
+	ActiveMembers             ActiveMemberRange
 	CommunityFinderRecruiting bool
 }
 
