@@ -24,5 +24,6 @@ func main() {
 			log.Fatalln(achievement.Error)
 		}
 		log.Println(achievement)
+		log.Println(achievement.TotalAchievementInfo)
 	}
 }
