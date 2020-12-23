@@ -23,5 +23,6 @@ func main() {
 		}
 
 		log.Println(pvpTeam)
+		log.Println(pvpTeam.CrestLayers)
 	}
 }
