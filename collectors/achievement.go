@@ -18,7 +18,7 @@ func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.Profi
 
 	achievementSelectors := profSelectors.Achievements
 
-	var totalAchievements uint32 = 0
+	var totalAchievements uint32
 	c.OnHTML(achievementSelectors.TotalAchievements.Selector, func(e *colly.HTMLElement) {
 		taStr := achievementSelectors.TotalAchievements.Parse(e)[0]
 		ta, err := strconv.ParseUint(taStr, 10, 32)
@@ -27,7 +27,7 @@ func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.Profi
 		}
 	})
 
-	var totalAchievementPoints uint32 = 0
+	var totalAchievementPoints uint32
 	c.OnHTML(achievementSelectors.AchievementPoints.Selector, func(e *colly.HTMLElement) {
 		apStr := achievementSelectors.AchievementPoints.Parse(e)[0]
 		ap, err := strconv.ParseUint(apStr, 10, 32)
