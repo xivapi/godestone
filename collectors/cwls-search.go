@@ -26,7 +26,7 @@ func BuildCWLSSearchCollector(meta *models.Meta, searchSelectors *selectors.Sear
 		nextURI := cwlsSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
-			nextCharacter := models.CWLSSearchResult{
+			nextCWLS := models.CWLSSearchResult{
 				Name: entrySelectors.Name.ParseThroughChildren(e)[0],
 				ID:   entrySelectors.ID.ParseThroughChildren(e)[0],
 				DC:   entrySelectors.DC.ParseThroughChildren(e)[0],
@@ -35,10 +35,10 @@ func BuildCWLSSearchCollector(meta *models.Meta, searchSelectors *selectors.Sear
 			activeMembersStr := entrySelectors.ActiveMembers.ParseThroughChildren(e)[0]
 			activeMembers, err := strconv.ParseUint(activeMembersStr, 10, 32)
 			if err == nil {
-				nextCharacter.ActiveMembers = uint32(activeMembers)
+				nextCWLS.ActiveMembers = uint32(activeMembers)
 			}
 
-			output <- &nextCharacter
+			output <- &nextCWLS
 		})
 
 		if nextURI != "javascript:void(0);" {

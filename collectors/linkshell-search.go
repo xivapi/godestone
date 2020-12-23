@@ -26,22 +26,22 @@ func BuildLinkshellSearchCollector(meta *models.Meta, searchSelectors *selectors
 		nextURI := lsSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
-			nextCharacter := models.LinkshellSearchResult{
+			nextLinkshell := models.LinkshellSearchResult{
 				Name: entrySelectors.Name.ParseThroughChildren(e)[0],
 				ID:   entrySelectors.ID.ParseThroughChildren(e)[0],
 			}
 
 			server := entrySelectors.Server.ParseThroughChildren(e)
-			nextCharacter.World = server[0]
-			nextCharacter.DC = server[1]
+			nextLinkshell.World = server[0]
+			nextLinkshell.DC = server[1]
 
 			activeMembersStr := entrySelectors.ActiveMembers.ParseThroughChildren(e)[0]
 			activeMembers, err := strconv.ParseUint(activeMembersStr, 10, 32)
 			if err == nil {
-				nextCharacter.ActiveMembers = uint32(activeMembers)
+				nextLinkshell.ActiveMembers = uint32(activeMembers)
 			}
 
-			output <- &nextCharacter
+			output <- &nextLinkshell
 		})
 
 		if nextURI != "javascript:void(0);" {

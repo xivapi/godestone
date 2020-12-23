@@ -165,6 +165,31 @@ func (s *Scraper) SearchLinkshells(opts SearchLinkshellOptions) chan *models.Lin
 	return output
 }
 
+// SearchPVPTeams returns a channel of searchable PVP teams.
+func (s *Scraper) SearchPVPTeams(opts SearchPVPTeamOptions) chan *models.PVPTeamSearchResult {
+	output := make(chan *models.PVPTeamSearchResult)
+
+	uri := opts.buildURI()
+	go func() {
+		searchCollector := collectors.BuildPVPTeamSearchCollector(s.meta, s.searchSelectors, output)
+
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			output <- &models.PVPTeamSearchResult{
+				Error: err,
+			}
+			close(output)
+			return
+		}
+
+		searchCollector.Wait()
+
+		close(output)
+	}()
+
+	return output
+}
+
 // NewScraper creates a new instance of the Scraper.
 func NewScraper() (*Scraper, error) {
 	profileSelectors, err := selectors.LoadProfileSelectors()

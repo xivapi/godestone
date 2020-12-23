@@ -18,7 +18,7 @@ type CharacterSearchSelectors struct {
 		Rank     SelectorInfo `json:"RANK"`
 		RankIcon SelectorInfo `json:"RANK_ICON"`
 		Server   SelectorInfo `json:"SERVER"`
-	}
+	} `json:"ENTRY"`
 	ListNextButton SelectorInfo `json:"LIST_NEXT_BUTTON"`
 	PageInfo       SelectorInfo `json:"PAGE_INFO"`
 }
@@ -32,7 +32,7 @@ type CWLSSearchSelectors struct {
 		Name          SelectorInfo `json:"NAME"`
 		DC            SelectorInfo `json:"DC"`
 		ActiveMembers SelectorInfo `json:"ACTIVE_MEMBERS"`
-	}
+	} `json:"ENTRY"`
 	ListNextButton SelectorInfo `json:"LIST_NEXT_BUTTON"`
 	PageInfo       SelectorInfo `json:"PAGE_INFO"`
 }
@@ -46,7 +46,25 @@ type LinkshellSearchSelectors struct {
 		Name          SelectorInfo `json:"NAME"`
 		Server        SelectorInfo `json:"SERVER"`
 		ActiveMembers SelectorInfo `json:"ACTIVE_MEMBERS"`
-	}
+	} `json:"ENTRY"`
+	ListNextButton SelectorInfo `json:"LIST_NEXT_BUTTON"`
+	PageInfo       SelectorInfo `json:"PAGE_INFO"`
+}
+
+// PVPTeamSearchSelectors contains the CSS selectors for the PVP team search interface.
+type PVPTeamSearchSelectors struct {
+	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
+	Entry            struct {
+		Root        SelectorInfo `json:"ROOT"`
+		ID          SelectorInfo `json:"ID"`
+		Name        SelectorInfo `json:"NAME"`
+		DC          SelectorInfo `json:"DC"`
+		CrestLayers struct {
+			Bottom SelectorInfo `json:"BOTTOM"`
+			Middle SelectorInfo `json:"MIDDLE"`
+			Top    SelectorInfo `json:"TOP"`
+		} `json:"CREST_LAYERS"`
+	} `json:"ENTRY"`
 	ListNextButton SelectorInfo `json:"LIST_NEXT_BUTTON"`
 	PageInfo       SelectorInfo `json:"PAGE_INFO"`
 }
@@ -56,6 +74,7 @@ type SearchSelectors struct {
 	Character *CharacterSearchSelectors
 	CWLS      *CWLSSearchSelectors
 	Linkshell *LinkshellSearchSelectors
+	PVPTeam   *PVPTeamSearchSelectors
 }
 
 // LoadSearchSelectors loads the CSS selectors for the search interface.
@@ -81,9 +100,17 @@ func LoadSearchSelectors() (*SearchSelectors, error) {
 	lsSearchSelectors := LinkshellSearchSelectors{}
 	json.Unmarshal(lsBytes, &lsSearchSelectors)
 
+	pvpTeamBytes, err := pack.Asset("search/pvpteam.json")
+	if err != nil {
+		return nil, err
+	}
+	pvpTeamSearchSelectors := PVPTeamSearchSelectors{}
+	json.Unmarshal(pvpTeamBytes, &pvpTeamSearchSelectors)
+
 	return &SearchSelectors{
 		Character: &charaSearchSelectors,
 		CWLS:      &cwlsSearchSelectors,
 		Linkshell: &lsSearchSelectors,
+		PVPTeam:   &pvpTeamSearchSelectors,
 	}, nil
 }

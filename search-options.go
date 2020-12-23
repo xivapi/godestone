@@ -14,10 +14,10 @@ type LinkshellSearchOrder uint8
 
 // Search ordering for linkshell and CWLS searches.
 const (
-	OrderLinkshellNameAToZ            LinkshellSearchOrder = 1
-	OrderLinkshellNameZToA            LinkshellSearchOrder = 2
-	OrderLinkshellMembershipHighToLow LinkshellSearchOrder = 3
-	OrderLinkshellMembershipLowToHigh LinkshellSearchOrder = 4
+	OrderLinkshellNameAToZ LinkshellSearchOrder = iota + 1
+	OrderLinkshellNameZToA
+	OrderLinkshellMembershipHighToLow
+	OrderLinkshellMembershipLowToHigh
 )
 
 // LinkshellActiveMemberRange represents the active member range filter of a Lodestone CWLS search.
@@ -80,17 +80,48 @@ func (s *SearchCWLSOptions) buildURI() string {
 	return builtURI
 }
 
+// PVPTeamSearchOrder represents the search result ordering of a Lodestone CWLS search.
+type PVPTeamSearchOrder uint8
+
+// Search ordering for PVP Team searches.
+const (
+	OrderPVPTeamNameAToZ PVPTeamSearchOrder = iota + 1
+	OrderPVPTeamNameZToA
+)
+
+// SearchPVPTeamOptions defines extra search information that can help to narrow down a PVP team search.
+type SearchPVPTeamOptions struct {
+	Name                      string
+	DC                        string
+	Order                     PVPTeamSearchOrder
+	CommunityFinderRecruiting bool
+}
+
+func (s *SearchPVPTeamOptions) buildURI() string {
+	uriFormat := "https://na.finalfantasyxiv.com/lodestone/pvpteam/?q=%s&dcname=%s&cf_public=%d&order=%d"
+
+	name := strings.Replace(s.Name, " ", "%20", -1)
+
+	cfPublic := 0
+	if s.CommunityFinderRecruiting {
+		cfPublic = 1
+	}
+
+	builtURI := fmt.Sprintf(uriFormat, name, s.DC, cfPublic, s.Order)
+	return builtURI
+}
+
 // CharacterSearchOrder represents the search result ordering of a Lodestone character search.
 type CharacterSearchOrder uint8
 
 // Search ordering for character searches.
 const (
-	OrderCharaNameAToZ        CharacterSearchOrder = 1
-	OrderCharaNameZToA        CharacterSearchOrder = 2
-	OrderCharaWorldAtoZ       CharacterSearchOrder = 3
-	OrderCharaWorldZtoA       CharacterSearchOrder = 4
-	OrderCharaLevelDescending CharacterSearchOrder = 5
-	OrderCharaLevelAscending  CharacterSearchOrder = 6
+	OrderCharaNameAToZ CharacterSearchOrder = iota + 1
+	OrderCharaNameZToA
+	OrderCharaWorldAtoZ
+	OrderCharaWorldZtoA
+	OrderCharaLevelDescending
+	OrderCharaLevelAscending
 )
 
 // SearchCharacterOptions defines extra search information that can help to narrow down a search.
