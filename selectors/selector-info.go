@@ -2,6 +2,7 @@ package selectors
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
@@ -16,13 +17,18 @@ type SelectorInfo struct {
 	loadedRegex *regexp.Regexp
 }
 
+func transformRegexForGolang(regex string) string {
+	return strings.Replace(regex, "\\s+", "[\\s\\x{00A0}]+", -1)
+}
+
 func (si *SelectorInfo) runRegexIfExists(text string) []string {
 	if si.Regex == "" {
 		return nil
 	}
 
 	if si.loadedRegex == nil {
-		si.loadedRegex = regexp.MustCompile(si.Regex)
+		transformedRegex := transformRegexForGolang(si.Regex)
+		si.loadedRegex = regexp.MustCompile(transformedRegex)
 	}
 
 	matches := si.loadedRegex.FindStringSubmatch(text)
