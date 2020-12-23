@@ -43,7 +43,7 @@ func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors
 			nextCharacter.Rank = gcrank.Parse(gcRank)
 
 			worldDC := entrySelectors.Server.ParseThroughChildren(e)
-			nextCharacter.Server = worldDC[0]
+			nextCharacter.World = worldDC[0]
 			nextCharacter.DC = worldDC[1]
 
 			output <- &nextCharacter

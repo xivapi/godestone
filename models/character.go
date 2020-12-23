@@ -33,11 +33,11 @@ type Character struct {
 	Portrait          string
 	PvPTeamID         string
 	Race              race.Race
-	Server            string
 	Title             uint32
 	TitleTop          bool
 	Town              town.Town
 	Tribe             tribe.Tribe
+	World             string
 }
 
 // CharacterExtended represents enriched information available about a character on The Lodestone.
@@ -55,6 +55,6 @@ type CharacterSearchResult struct {
 	Name     string
 	Rank     gcrank.GCRank
 	RankIcon string
-	Server   string
+	World    string
 	DC       string
 }

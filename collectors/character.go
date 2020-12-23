@@ -87,7 +87,7 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 	c.OnHTML(charSelectors.Server.Selector, func(e *colly.HTMLElement) {
 		values := charSelectors.Server.Parse(e)
 
-		charData.Server = values[0]
+		charData.World = values[0]
 		charData.DC = values[1]
 	})
 

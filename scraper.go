@@ -16,6 +16,7 @@ import (
 type Scraper struct {
 	meta             *models.Meta
 	profileSelectors *selectors.ProfileSelectors
+	pvpTeamSelectors *selectors.PVPTeamSelectors
 	searchSelectors  *selectors.SearchSelectors
 }
 
@@ -88,6 +89,21 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 	}()
 
 	return output
+}
+
+// FetchPVPTeam returns PVP team information for the provided PVP team ID.
+func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
+	now := time.Now()
+	pvpTeam := models.PVPTeam{ID: id, ParseDate: now}
+
+	pvpTeamCollector := collectors.BuildPVPTeamCollector(s.meta, s.pvpTeamSelectors, &pvpTeam)
+	err := pvpTeamCollector.Visit("https://na.finalfantasyxiv.com/lodestone/pvpteam/" + fmt.Sprint(id))
+	if err != nil {
+		return nil, err
+	}
+	pvpTeamCollector.Wait()
+
+	return &pvpTeam, nil
 }
 
 // SearchCharacters returns a channel of searchable characters.
@@ -197,6 +213,11 @@ func NewScraper() (*Scraper, error) {
 		return nil, err
 	}
 
+	pvpTeamSelectors, err := selectors.LoadPVPTeamSelectors()
+	if err != nil {
+		return nil, err
+	}
+
 	searchSelectors, err := selectors.LoadSearchSelectors()
 	if err != nil {
 		return nil, err
@@ -212,6 +233,7 @@ func NewScraper() (*Scraper, error) {
 	return &Scraper{
 		meta:             &meta,
 		profileSelectors: profileSelectors,
+		pvpTeamSelectors: pvpTeamSelectors,
 		searchSelectors:  searchSelectors,
 	}, nil
 }

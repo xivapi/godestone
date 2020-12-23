@@ -11,10 +11,11 @@ import (
 
 // BuildAchievementCollector builds the collector used for processing the page.
 func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, output chan *models.AchievementInfo) *colly.Collector {
-	c := colly.NewCollector()
-	c.UserAgent = meta.UserAgentDesktop
-	c.IgnoreRobotsTxt = true
-	c.MaxDepth = 100 // Should be set to ceil(nAchievements / 50) + 1
+	c := colly.NewCollector(
+		colly.UserAgent(meta.UserAgentDesktop),
+		colly.IgnoreRobotsTxt(),
+		colly.MaxDepth(100), // Should be set to ceil(nAchievements / 50) + 1
+	)
 
 	achievementSelectors := profSelectors.Achievements
 
