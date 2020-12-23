@@ -15,6 +15,7 @@ import (
 // Scraper is the object through which interactions with The Lodestone are made.
 type Scraper struct {
 	meta               *models.Meta
+	cwlsSelectors      *selectors.CWLSSelectors
 	linkshellSelectors *selectors.LinkshellSelectors
 	profileSelectors   *selectors.ProfileSelectors
 	pvpTeamSelectors   *selectors.PVPTeamSelectors
@@ -105,6 +106,21 @@ func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
 	lsCollector.Wait()
 
 	return &ls, nil
+}
+
+// FetchCWLS returns CWLS information for the provided CWLS ID.
+func (s *Scraper) FetchCWLS(id string) (*models.CWLS, error) {
+	now := time.Now()
+	cwls := models.CWLS{ID: id, ParseDate: now}
+
+	cwlsCollector := collectors.BuildCWLSCollector(s.meta, s.cwlsSelectors, &cwls)
+	err := cwlsCollector.Visit("https://na.finalfantasyxiv.com/lodestone/crossworld_linkshell/" + fmt.Sprint(id))
+	if err != nil {
+		return nil, err
+	}
+	cwlsCollector.Wait()
+
+	return &cwls, nil
 }
 
 // FetchPVPTeam returns PVP team information for the provided PVP team ID.
@@ -224,6 +240,11 @@ func (s *Scraper) SearchPVPTeams(opts SearchPVPTeamOptions) chan *models.PVPTeam
 
 // NewScraper creates a new instance of the Scraper.
 func NewScraper() (*Scraper, error) {
+	cwlsSelectors, err := selectors.LoadCWLSSelectors()
+	if err != nil {
+		return nil, err
+	}
+
 	lsSelectors, err := selectors.LoadLinkshellSelectors()
 	if err != nil {
 		return nil, err
@@ -253,6 +274,7 @@ func NewScraper() (*Scraper, error) {
 
 	return &Scraper{
 		meta:               &meta,
+		cwlsSelectors:      cwlsSelectors,
 		linkshellSelectors: lsSelectors,
 		profileSelectors:   profileSelectors,
 		pvpTeamSelectors:   pvpTeamSelectors,

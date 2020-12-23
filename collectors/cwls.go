@@ -9,25 +9,29 @@ import (
 	"github.com/karashiiro/godestone/selectors"
 )
 
-// BuildLinkshellCollector builds the collector used for processing the page.
-func BuildLinkshellCollector(meta *models.Meta, lsSelectors *selectors.LinkshellSelectors, ls *models.Linkshell) *colly.Collector {
+// BuildCWLSCollector builds the collector used for processing the page.
+func BuildCWLSCollector(meta *models.Meta, cwlsSelectors *selectors.CWLSSelectors, cwls *models.CWLS) *colly.Collector {
 	c := colly.NewCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 	)
 
-	basicSelectors := lsSelectors.Basic
+	basicSelectors := cwlsSelectors.Basic
 	c.OnHTML(basicSelectors.Name.Selector, func(e *colly.HTMLElement) {
-		ls.Name = basicSelectors.Name.Parse(e)[0]
+		cwls.Name = basicSelectors.Name.Parse(e)[0]
 	})
 
-	ls.Members = []*models.LinkshellMember{}
-	membersSelectors := lsSelectors.Members
+	c.OnHTML(basicSelectors.DC.Selector, func(e *colly.HTMLElement) {
+		cwls.DC = basicSelectors.DC.Parse(e)[0]
+	})
+
+	cwls.Members = []*models.CWLSMember{}
+	membersSelectors := cwlsSelectors.Members
 	c.OnHTML(membersSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {
 		nextURI := membersSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(membersSelectors.Entry.Root.Selector, func(i int, e *colly.HTMLElement) {
-			member := &models.LinkshellMember{
+			member := &models.CWLSMember{
 				Avatar:            membersSelectors.Entry.Avatar.ParseThroughChildren(e)[0],
 				Name:              membersSelectors.Entry.Name.ParseThroughChildren(e)[0],
 				Rank:              gcrank.Parse(membersSelectors.Entry.Rank.ParseThroughChildren(e)[0]),
@@ -46,7 +50,7 @@ func BuildLinkshellCollector(meta *models.Meta, lsSelectors *selectors.Linkshell
 				member.ID = uint32(id)
 			}
 
-			ls.Members = append(ls.Members, member)
+			cwls.Members = append(cwls.Members, member)
 		})
 
 		if nextURI != "javascript:void(0);" {
