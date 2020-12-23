@@ -49,7 +49,7 @@ func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors
 			output <- &nextCharacter
 		})
 
-		if nextURI != "" {
+		if nextURI != "javascript:void(0);" {
 			err := container.Request.Visit(nextURI)
 			if err != nil {
 				output <- &models.CharacterSearchResult{

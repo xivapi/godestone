@@ -3,8 +3,9 @@ package godestone
 // Lang represents character language.
 type Lang uint8
 
+// Language
 const (
-	None Lang = 1 << iota
+	NoneLang Lang = 1 << iota
 	JA
 	EN
 	DE

@@ -115,6 +115,31 @@ func (s *Scraper) SearchCharacters(opts SearchCharacterOptions) chan *models.Cha
 	return output
 }
 
+// SearchCWLS returns a channel of searchable crossworld linkshells.
+func (s *Scraper) SearchCWLS(opts SearchCWLSOptions) chan *models.CWLSSearchResult {
+	output := make(chan *models.CWLSSearchResult)
+
+	uri := opts.buildURI()
+	go func() {
+		searchCollector := collectors.BuildCWLSSearchCollector(s.meta, s.searchSelectors, output)
+
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			output <- &models.CWLSSearchResult{
+				Error: err,
+			}
+			close(output)
+			return
+		}
+
+		searchCollector.Wait()
+
+		close(output)
+	}()
+
+	return output
+}
+
 // NewScraper creates a new instance of the Scraper.
 func NewScraper() (*Scraper, error) {
 	profileSelectors, err := selectors.LoadProfileSelectors()
