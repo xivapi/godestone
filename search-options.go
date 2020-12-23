@@ -9,34 +9,60 @@ import (
 	"github.com/karashiiro/godestone/data/tribe"
 )
 
-// CWLSSearchOrder represents the search result ordering of a Lodestone CWLS search.
-type CWLSSearchOrder uint8
+// LinkshellSearchOrder represents the search result ordering of a Lodestone CWLS search.
+type LinkshellSearchOrder uint8
 
-// Search ordering for CWLS searches.
+// Search ordering for linkshell and CWLS searches.
 const (
-	OrderCWLSNameAToZ            CWLSSearchOrder = 1
-	OrderCWLSNameZToA            CWLSSearchOrder = 2
-	OrderCWLSMembershipHighToLow CWLSSearchOrder = 3
-	OrderCWLSMembershipLowToHigh CWLSSearchOrder = 4
+	OrderLinkshellNameAToZ            LinkshellSearchOrder = 1
+	OrderLinkshellNameZToA            LinkshellSearchOrder = 2
+	OrderLinkshellMembershipHighToLow LinkshellSearchOrder = 3
+	OrderLinkshellMembershipLowToHigh LinkshellSearchOrder = 4
 )
 
-// CWLSActiveMemberRange represents the active member range filter of a Lodestone CWLS search.
-type CWLSActiveMemberRange string
+// LinkshellActiveMemberRange represents the active member range filter of a Lodestone CWLS search.
+type LinkshellActiveMemberRange string
 
-// Active member range for CWLS searches.
+// Active member range for linkshell and CWLS searches.
 const (
-	OneToTen         CWLSActiveMemberRange = "1-10"
-	ElevenToThirty   CWLSActiveMemberRange = "11-30"
-	ThirtyOneToFifty CWLSActiveMemberRange = "31-50"
-	FiftyOnePlus     CWLSActiveMemberRange = "51-"
+	OneToTen         LinkshellActiveMemberRange = "1-10"
+	ElevenToThirty   LinkshellActiveMemberRange = "11-30"
+	ThirtyOneToFifty LinkshellActiveMemberRange = "31-50"
+	FiftyOnePlus     LinkshellActiveMemberRange = "51-"
 )
 
-// SearchCWLSOptions defines extra search information that can help to narrow down a search.
+// SearchLinkshellOptions defines extra search information that can help to narrow down a linkshell search.
+type SearchLinkshellOptions struct {
+	Name                      string
+	World                     string
+	DC                        string
+	Order                     LinkshellSearchOrder
+	ActiveMembers             LinkshellActiveMemberRange
+	CommunityFinderRecruiting bool
+}
+
+func (s *SearchLinkshellOptions) buildURI() string {
+	uriFormat := "https://na.finalfantasyxiv.com/lodestone/linkshell/?q=%s&worldname=%s&character_count=%s&cf_public=%d&order=%d"
+
+	name := strings.Replace(s.Name, " ", "%20", -1)
+
+	worldDC := parseWorldDC(s.World, s.DC)
+
+	cfPublic := 0
+	if s.CommunityFinderRecruiting {
+		cfPublic = 1
+	}
+
+	builtURI := fmt.Sprintf(uriFormat, name, worldDC, s.ActiveMembers, cfPublic, s.Order)
+	return builtURI
+}
+
+// SearchCWLSOptions defines extra search information that can help to narrow down a CWLS search.
 type SearchCWLSOptions struct {
 	Name                      string
 	DC                        string
-	Order                     CWLSSearchOrder
-	ActiveMembers             CWLSActiveMemberRange
+	Order                     LinkshellSearchOrder
+	ActiveMembers             LinkshellActiveMemberRange
 	CommunityFinderRecruiting bool
 }
 
@@ -84,15 +110,7 @@ func (s *SearchCharacterOptions) buildURI() string {
 
 	name := strings.Replace(s.Name, " ", "%20", -1)
 
-	worldDC := s.DC
-	if len(s.World) != 0 {
-		worldDC = s.World
-	} else {
-		// DCs have the _dc_ prefix attached to them
-		if len(worldDC) != 0 && !strings.HasPrefix(worldDC, "_dc_") {
-			worldDC = "_dc_" + worldDC
-		}
-	}
+	worldDC := parseWorldDC(s.World, s.DC)
 
 	if s.Lang == NoneLang || s.Lang&JA != 0 {
 		uriFormat += "&blog_lang=ja"
@@ -123,4 +141,17 @@ func (s *SearchCharacterOptions) buildURI() string {
 
 	builtURI := fmt.Sprintf(uriFormat, name, worldDC, "", s.Order)
 	return builtURI
+}
+
+func parseWorldDC(world string, dc string) string {
+	worldDC := dc
+	if len(world) != 0 {
+		worldDC = world
+	} else {
+		// DCs have the _dc_ prefix attached to them
+		if len(worldDC) != 0 && !strings.HasPrefix(worldDC, "_dc_") {
+			worldDC = "_dc_" + worldDC
+		}
+	}
+	return worldDC
 }

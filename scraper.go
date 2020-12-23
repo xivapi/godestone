@@ -140,6 +140,31 @@ func (s *Scraper) SearchCWLS(opts SearchCWLSOptions) chan *models.CWLSSearchResu
 	return output
 }
 
+// SearchLinkshells returns a channel of searchable linkshells.
+func (s *Scraper) SearchLinkshells(opts SearchLinkshellOptions) chan *models.LinkshellSearchResult {
+	output := make(chan *models.LinkshellSearchResult)
+
+	uri := opts.buildURI()
+	go func() {
+		searchCollector := collectors.BuildLinkshellSearchCollector(s.meta, s.searchSelectors, output)
+
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			output <- &models.LinkshellSearchResult{
+				Error: err,
+			}
+			close(output)
+			return
+		}
+
+		searchCollector.Wait()
+
+		close(output)
+	}()
+
+	return output
+}
+
 // NewScraper creates a new instance of the Scraper.
 func NewScraper() (*Scraper, error) {
 	profileSelectors, err := selectors.LoadProfileSelectors()
