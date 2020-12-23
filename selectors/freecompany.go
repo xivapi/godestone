@@ -59,15 +59,16 @@ type FreeCompanyFocusSelectors struct {
 
 // FreeCompanyFocusListSelectors contains the CSS selectors for the focus list on the Free Company page.
 type FreeCompanyFocusListSelectors struct {
-	RolePlaying FreeCompanyFocusSelectors `json:"RP"`
-	Leveling    FreeCompanyFocusSelectors `json:"LEVELING"`
-	Casual      FreeCompanyFocusSelectors `json:"CASUAL"`
-	Hardcore    FreeCompanyFocusSelectors `json:"HARDCORE"`
-	Dungeons    FreeCompanyFocusSelectors `json:"DUNGEONS"`
-	Guildhests  FreeCompanyFocusSelectors `json:"GUILDHESTS"`
-	Trials      FreeCompanyFocusSelectors `json:"TRIALS"`
-	Raids       FreeCompanyFocusSelectors `json:"RAIDS"`
-	PVP         FreeCompanyFocusSelectors `json:"PVP"`
+	NotSpecified SelectorInfo              `json:"NOT_SPECIFIED"`
+	RolePlaying  FreeCompanyFocusSelectors `json:"RP"`
+	Leveling     FreeCompanyFocusSelectors `json:"LEVELING"`
+	Casual       FreeCompanyFocusSelectors `json:"CASUAL"`
+	Hardcore     FreeCompanyFocusSelectors `json:"HARDCORE"`
+	Dungeons     FreeCompanyFocusSelectors `json:"DUNGEONS"`
+	Guildhests   FreeCompanyFocusSelectors `json:"GUILDHESTS"`
+	Trials       FreeCompanyFocusSelectors `json:"TRIALS"`
+	Raids        FreeCompanyFocusSelectors `json:"RAIDS"`
+	PVP          FreeCompanyFocusSelectors `json:"PVP"`
 }
 
 // FreeCompanyAlignmentSelectors contains the CSS selectors for a single Grand Company Alignment on the Free Company page.
@@ -86,17 +87,19 @@ type FreeCompanyAlignmentListSelectors struct {
 
 // FreeCompanySeekingSelectors contains the CSS selectors for a single seeking status on the Free Company page.
 type FreeCompanySeekingSelectors struct {
-	Name    SelectorInfo `json:"NAME"`
-	Enabled SelectorInfo `json:"ENABLED"`
+	Name   SelectorInfo `json:"NAME"`
+	Icon   SelectorInfo `json:"ICON"`
+	Status SelectorInfo `json:"STATUS"`
 }
 
 // FreeCompanySeekingListSelectors contains the CSS selectors for the seeking status list on the Free Company page.
 type FreeCompanySeekingListSelectors struct {
-	Tank     FreeCompanySeekingSelectors `json:"TANK"`
-	Healer   FreeCompanySeekingSelectors `json:"HEALER"`
-	DPS      FreeCompanySeekingSelectors `json:"DPS"`
-	Crafter  FreeCompanySeekingSelectors `json:"CRAFTER"`
-	Gatherer FreeCompanySeekingSelectors `json:"GATHERER"`
+	NotSpecified SelectorInfo                `json:"NOT_SPECIFIED"`
+	Tank         FreeCompanySeekingSelectors `json:"TANK"`
+	Healer       FreeCompanySeekingSelectors `json:"HEALER"`
+	DPS          FreeCompanySeekingSelectors `json:"DPS"`
+	Crafter      FreeCompanySeekingSelectors `json:"CRAFTER"`
+	Gatherer     FreeCompanySeekingSelectors `json:"GATHERER"`
 }
 
 // FreeCompanySelectors contains the CSS selectors for the Free Company page.

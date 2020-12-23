@@ -16,6 +16,7 @@ import (
 type Scraper struct {
 	meta               *models.Meta
 	cwlsSelectors      *selectors.CWLSSelectors
+	fcSelectors        *selectors.FreeCompanySelectors
 	linkshellSelectors *selectors.LinkshellSelectors
 	profileSelectors   *selectors.ProfileSelectors
 	pvpTeamSelectors   *selectors.PVPTeamSelectors
@@ -136,6 +137,21 @@ func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
 	pvpTeamCollector.Wait()
 
 	return &pvpTeam, nil
+}
+
+// FetchFreeCompany returns Free Company information for the provided PVP team ID.
+func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
+	now := time.Now()
+	fc := models.FreeCompany{ID: id, ParseDate: now}
+
+	fcCollector := collectors.BuildFreeCompanyCollector(s.meta, s.fcSelectors, &fc)
+	err := fcCollector.Visit("https://na.finalfantasyxiv.com/lodestone/freecompany/" + fmt.Sprint(id))
+	if err != nil {
+		return nil, err
+	}
+	fcCollector.Wait()
+
+	return &fc, nil
 }
 
 // SearchCharacters returns a channel of searchable characters.
@@ -265,6 +281,11 @@ func NewScraper() (*Scraper, error) {
 		return nil, err
 	}
 
+	fcSelectors, err := selectors.LoadFreeCompanySelectors()
+	if err != nil {
+		return nil, err
+	}
+
 	metaBytes, err := pack.Asset("meta.json")
 	if err != nil {
 		return nil, err
@@ -275,6 +296,7 @@ func NewScraper() (*Scraper, error) {
 	return &Scraper{
 		meta:               &meta,
 		cwlsSelectors:      cwlsSelectors,
+		fcSelectors:        fcSelectors,
 		linkshellSelectors: lsSelectors,
 		profileSelectors:   profileSelectors,
 		pvpTeamSelectors:   pvpTeamSelectors,

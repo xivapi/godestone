@@ -74,7 +74,7 @@ type FreeCompanySeekingInfo struct {
 type FreeCompany struct {
 	Active            FreeCompanyActiveState
 	ActiveMemberCount uint32
-	Crest             *CrestLayers
+	CrestLayers       *CrestLayers
 	DC                string
 	Estate            *Estate
 	Focus             []*FreeCompanyFocusInfo
