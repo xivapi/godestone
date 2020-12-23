@@ -3,6 +3,7 @@ package gcrank
 // GCRank is the Grand Company rank of a character.
 type GCRank uint8
 
+// FFXIV Grand Company rank.
 const (
 	None GCRank = iota
 	PrivateThirdClass

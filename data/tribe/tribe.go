@@ -3,6 +3,7 @@ package tribe
 // Tribe is the specific race of a character.
 type Tribe = uint8
 
+// FFXIV tribe.
 const (
 	None Tribe = iota
 	Midlander

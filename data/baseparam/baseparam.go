@@ -3,6 +3,7 @@ package baseparam
 // BaseParam represents a stat value of a character
 type BaseParam uint8
 
+// FFXIV attribute.
 const (
 	None BaseParam = iota
 	Strength

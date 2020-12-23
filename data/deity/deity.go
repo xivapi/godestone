@@ -3,6 +3,7 @@ package deity
 // GuardianDeity is one of the twelve guardian deities a character can be associated with.
 type GuardianDeity uint8
 
+// FFXIV guardian deity.
 const (
 	None GuardianDeity = iota
 	HalonetheFury

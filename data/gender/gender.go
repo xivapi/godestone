@@ -3,6 +3,7 @@ package gender
 // Gender is the gender of a character
 type Gender uint8
 
+// FFXIV Gender.
 const (
 	None Gender = iota
 	Male

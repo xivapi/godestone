@@ -3,6 +3,7 @@ package grandcompany
 // GrandCompany is the native representation of a Grand Company.
 type GrandCompany uint8
 
+// FFXIV Grand Company.
 const (
 	None GrandCompany = iota
 	Maelstrom

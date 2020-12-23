@@ -3,6 +3,7 @@ package race
 // Race is the general race of a character.
 type Race uint8
 
+// FFXIV race.
 const (
 	None Race = iota
 	Hyur

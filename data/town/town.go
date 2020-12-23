@@ -3,6 +3,7 @@ package town
 // Town is one of the major cities.
 type Town uint8
 
+// FFXIV town.
 const (
 	Nowheresville Town = iota
 	LimsaLominsa
