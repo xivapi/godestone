@@ -14,9 +14,27 @@ func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.Profi
 	c := colly.NewCollector()
 	c.UserAgent = meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
-	c.MaxDepth = 100 // Should be set to ceil(nAchievements / 50)
+	c.MaxDepth = 100 // Should be set to ceil(nAchievements / 50) + 1
 
 	achievementSelectors := profSelectors.Achievements
+
+	var totalAchievements uint32 = 0
+	c.OnHTML(achievementSelectors.TotalAchievements.Selector, func(e *colly.HTMLElement) {
+		taStr := achievementSelectors.TotalAchievements.Parse(e)[0]
+		ta, err := strconv.ParseUint(taStr, 10, 32)
+		if err == nil {
+			totalAchievements = uint32(ta)
+		}
+	})
+
+	var totalAchievementPoints uint32 = 0
+	c.OnHTML(achievementSelectors.AchievementPoints.Selector, func(e *colly.HTMLElement) {
+		apStr := achievementSelectors.AchievementPoints.Parse(e)[0]
+		ap, err := strconv.ParseUint(apStr, 10, 32)
+		if err == nil {
+			totalAchievementPoints = uint32(ap)
+		}
+	})
 
 	nextURI := ""
 	c.OnHTML(achievementSelectors.ListNextButton.Selector, func(e *colly.HTMLElement) {
@@ -25,7 +43,10 @@ func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.Profi
 
 	c.OnHTML(achievementSelectors.List.Selector, func(e1 *colly.HTMLElement) {
 		e1.ForEach(achievementSelectors.Entry.Selector, func(i int, e2 *colly.HTMLElement) {
-			nextAchievement := &models.AchievementInfo{}
+			nextAchievement := &models.AchievementInfo{
+				TotalAchievements:      totalAchievements,
+				TotalAchievementPoints: totalAchievementPoints,
+			}
 
 			idStr := achievementSelectors.ID.ParseThroughChildren(e2)[0]
 			id, err := strconv.ParseUint(idStr, 10, 32)
