@@ -25,19 +25,25 @@ type Character struct {
 	GearSet           *GearSet
 	Gender            gender.Gender
 	GrandCompany      *GrandCompanyInfo
-	GuardianDeity     deity.GuardianDeity
-	ID                uint32
-	Name              string
-	Nameday           string
-	ParseDate         time.Time
-	Portrait          string
-	PvPTeamID         string
-	Race              race.Race
-	Title             uint32
-	TitleTop          bool
-	Town              town.Town
-	Tribe             tribe.Tribe
-	World             string
+	GuardianDeity     *struct {
+		Name deity.GuardianDeity
+		Icon string
+	}
+	ID        uint32
+	Name      string
+	Nameday   string
+	ParseDate time.Time
+	Portrait  string
+	PvPTeamID string
+	Race      race.Race
+	Title     uint32
+	TitleTop  bool
+	Town      *struct {
+		Name town.Town
+		Icon string
+	}
+	Tribe tribe.Tribe
+	World string
 }
 
 // CharacterExtended represents enriched information available about a character on The Lodestone.

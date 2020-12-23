@@ -56,8 +56,15 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 		charData.GrandCompany = &gc
 	})
 
-	c.OnHTML(charSelectors.GuardianDeity.Selector, func(e *colly.HTMLElement) {
-		charData.GuardianDeity = deity.Parse(e.Text)
+	charData.GuardianDeity = &struct {
+		Name deity.GuardianDeity
+		Icon string
+	}{}
+	c.OnHTML(charSelectors.GuardianDeity.Name.Selector, func(e *colly.HTMLElement) {
+		charData.GuardianDeity.Name = deity.Parse(charSelectors.GuardianDeity.Name.Parse(e)[0])
+	})
+	c.OnHTML(charSelectors.GuardianDeity.Icon.Selector, func(e *colly.HTMLElement) {
+		charData.GuardianDeity.Icon = charSelectors.GuardianDeity.Icon.Parse(e)[0]
 	})
 
 	c.OnHTML(charSelectors.Name.Selector, func(e *colly.HTMLElement) {
@@ -97,8 +104,15 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 		charData.TitleTop = false
 	})
 
-	c.OnHTML(charSelectors.Town.Selector, func(e *colly.HTMLElement) {
-		charData.Town = town.Parse(e.Text)
+	charData.Town = &struct {
+		Name town.Town
+		Icon string
+	}{}
+	c.OnHTML(charSelectors.Town.Name.Selector, func(e *colly.HTMLElement) {
+		charData.Town.Name = town.Parse(charSelectors.Town.Name.Parse(e)[0])
+	})
+	c.OnHTML(charSelectors.Town.Icon.Selector, func(e *colly.HTMLElement) {
+		charData.Town.Icon = charSelectors.Town.Icon.Parse(e)[0]
 	})
 
 	charData.GearSet = &models.GearSet{}

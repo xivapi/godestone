@@ -59,11 +59,14 @@ type CharacterSelectors struct {
 		} `json:"ICON_LAYERS"`
 	} `json:"FREE_COMPANY"`
 	GrandCompany  SelectorInfo `json:"GRAND_COMPANY"`
-	GuardianDeity SelectorInfo `json:"GUARDIAN_DEITY"`
-	Name          SelectorInfo `json:"NAME"`
-	Nameday       SelectorInfo `json:"NAMEDAY"`
-	Portrait      SelectorInfo `json:"PORTRAIT"`
-	PvPTeam       struct {
+	GuardianDeity struct {
+		Name SelectorInfo `json:"NAME"`
+		Icon SelectorInfo `json:"ICON"`
+	} `json:"GUARDIAN_DEITY"`
+	Name     SelectorInfo `json:"NAME"`
+	Nameday  SelectorInfo `json:"NAMEDAY"`
+	Portrait SelectorInfo `json:"PORTRAIT"`
+	PvPTeam  struct {
 		Name       SelectorInfo `json:"NAME"`
 		IconLayers struct {
 			Bottom SelectorInfo `json:"BOTTOM"`
@@ -74,7 +77,10 @@ type CharacterSelectors struct {
 	RaceClanGender SelectorInfo `json:"RACE_CLAN_GENDER"`
 	Server         SelectorInfo `json:"SERVER"`
 	Title          SelectorInfo `json:"TITLE"`
-	Town           SelectorInfo `json:"TOWN"`
+	Town           struct {
+		Name SelectorInfo `json:"NAME"`
+		Icon SelectorInfo `json:"ICON"`
+	} `json:"TOWN"`
 }
 
 // MinionSelectors represents all CSS selectors associated with character minions.
