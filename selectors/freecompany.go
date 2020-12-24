@@ -38,8 +38,8 @@ type FreeCompanyBasicSelectors struct {
 
 // FreeCompanyMemberSelectors contains the CSS selectors for the member list on the Free Company page.
 type FreeCompanyMemberSelectors struct {
-	Root SelectorInfo `json:"ROOT"`
-	Entry            struct {
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
 		Root     SelectorInfo `json:"ROOT"`
 		Avatar   SelectorInfo `json:"AVATAR"`
 		ID       SelectorInfo `json:"ID"`
@@ -48,6 +48,7 @@ type FreeCompanyMemberSelectors struct {
 		RankIcon SelectorInfo `json:"RANK_ICON"`
 		Server   SelectorInfo `json:"SERVER"`
 	} `json:"ENTRY"`
+	ListNextButton SelectorInfo `json:"LIST_NEXT_BUTTON"`
 }
 
 // FreeCompanyFocusSelectors contains the CSS selectors for a single focus on the Free Company page.

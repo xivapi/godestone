@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/reputation"
 	"github.com/karashiiro/godestone/data/role"
 
@@ -68,6 +69,19 @@ type FreeCompanySeekingInfo struct {
 	Icon   string
 	Kind   role.Role
 	Status bool
+}
+
+// FreeCompanyMember represents information about a Free Company member.
+type FreeCompanyMember struct {
+	Error error
+
+	Avatar   string
+	ID       uint32
+	Name     string
+	Rank     gcrank.GCRank
+	RankIcon string
+	World    string
+	DC       string
 }
 
 // FreeCompany represents all of the basic information about an FC.
