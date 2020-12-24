@@ -22,7 +22,7 @@ func BuildCWLSSearchCollector(meta *models.Meta, searchSelectors *selectors.Sear
 	cwlsSearchSelectors := searchSelectors.CWLS
 	entrySelectors := cwlsSearchSelectors.Entry
 
-	c.OnHTML(cwlsSearchSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {
+	c.OnHTML(cwlsSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := cwlsSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {

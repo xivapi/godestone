@@ -20,7 +20,7 @@ type PVPTeamBasicSelectors struct {
 
 // PVPTeamMemberSelectors contains the CSS selectors for the member list on the PVP team page.
 type PVPTeamMemberSelectors struct {
-	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
+	Root SelectorInfo `json:"ROOT"`
 	Entry            struct {
 		Root     SelectorInfo `json:"ROOT"`
 		Avatar   SelectorInfo `json:"AVATAR"`

@@ -13,7 +13,7 @@ type LinkshellBasicSelectors struct {
 
 // LinkshellMemberSelectors contains the CSS selectors for the member list on the linkshell page.
 type LinkshellMemberSelectors struct {
-	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
+	Root SelectorInfo `json:"ROOT"`
 	Entry            struct {
 		Root              SelectorInfo `json:"ROOT"`
 		Avatar            SelectorInfo `json:"AVATAR"`

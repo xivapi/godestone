@@ -49,7 +49,7 @@ func BuildPVPTeamCollector(meta *models.Meta, pvpTeamSelectors *selectors.PVPTea
 
 	pvpTeam.Members = []*models.PVPTeamMember{}
 	membersSelectors := pvpTeamSelectors.Members
-	c.OnHTML(membersSelectors.EntriesContainer.Selector, func(e1 *colly.HTMLElement) {
+	c.OnHTML(membersSelectors.Root.Selector, func(e1 *colly.HTMLElement) {
 		e1.ForEach(membersSelectors.Entry.Root.Selector, func(i int, e2 *colly.HTMLElement) {
 			member := &models.PVPTeamMember{
 				Avatar:   membersSelectors.Entry.Avatar.ParseThroughChildren(e2)[0],

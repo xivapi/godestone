@@ -27,7 +27,7 @@ func BuildCWLSCollector(meta *models.Meta, cwlsSelectors *selectors.CWLSSelector
 
 	cwls.Members = []*models.CWLSMember{}
 	membersSelectors := cwlsSelectors.Members
-	c.OnHTML(membersSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {
+	c.OnHTML(membersSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := membersSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(membersSelectors.Entry.Root.Selector, func(i int, e *colly.HTMLElement) {

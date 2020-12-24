@@ -23,7 +23,7 @@ func BuildLinkshellCollector(meta *models.Meta, lsSelectors *selectors.Linkshell
 
 	ls.Members = []*models.LinkshellMember{}
 	membersSelectors := lsSelectors.Members
-	c.OnHTML(membersSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {
+	c.OnHTML(membersSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := membersSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(membersSelectors.Entry.Root.Selector, func(i int, e *colly.HTMLElement) {

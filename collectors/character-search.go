@@ -23,7 +23,7 @@ func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors
 	charSearchSelectors := searchSelectors.Character
 	entrySelectors := charSearchSelectors.Entry
 
-	c.OnHTML(charSearchSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {
+	c.OnHTML(charSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := charSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {

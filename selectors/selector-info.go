@@ -13,6 +13,7 @@ type SelectorInfo struct {
 	Selector  string `json:"selector"`
 	Regex     string `json:"regex,omitempty"`
 	Attribute string `json:"attribute,omitempty"`
+	Multiple  bool   `json:"multiple,omitempty"`
 
 	loadedRegex *regexp.Regexp
 }

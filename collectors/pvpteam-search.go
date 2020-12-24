@@ -21,7 +21,7 @@ func BuildPVPTeamSearchCollector(meta *models.Meta, searchSelectors *selectors.S
 	pvpTeamSearchSelectors := searchSelectors.PVPTeam
 	entrySelectors := pvpTeamSearchSelectors.Entry
 
-	c.OnHTML(pvpTeamSearchSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {
+	c.OnHTML(pvpTeamSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := pvpTeamSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {

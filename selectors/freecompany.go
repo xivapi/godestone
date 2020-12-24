@@ -38,7 +38,7 @@ type FreeCompanyBasicSelectors struct {
 
 // FreeCompanyMemberSelectors contains the CSS selectors for the member list on the Free Company page.
 type FreeCompanyMemberSelectors struct {
-	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
+	Root SelectorInfo `json:"ROOT"`
 	Entry            struct {
 		Root     SelectorInfo `json:"ROOT"`
 		Avatar   SelectorInfo `json:"AVATAR"`

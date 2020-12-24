@@ -14,7 +14,7 @@ type CWLSBasicSelectors struct {
 
 // CWLSMemberSelectors contains the CSS selectors for the member list on the CWLS page.
 type CWLSMemberSelectors struct {
-	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
+	Root SelectorInfo `json:"ROOT"`
 	Entry            struct {
 		Root              SelectorInfo `json:"ROOT"`
 		Avatar            SelectorInfo `json:"AVATAR"`

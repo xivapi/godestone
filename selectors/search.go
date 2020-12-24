@@ -8,8 +8,8 @@ import (
 
 // CharacterSearchSelectors contains the CSS selectors for the character search interface.
 type CharacterSearchSelectors struct {
-	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
-	Entry            struct {
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
 		Root     SelectorInfo `json:"ROOT"`
 		Avatar   SelectorInfo `json:"AVATAR"`
 		ID       SelectorInfo `json:"ID"`
@@ -25,8 +25,8 @@ type CharacterSearchSelectors struct {
 
 // CWLSSearchSelectors contains the CSS selectors for the CWLS search interface.
 type CWLSSearchSelectors struct {
-	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
-	Entry            struct {
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
 		Root          SelectorInfo `json:"ROOT"`
 		ID            SelectorInfo `json:"ID"`
 		Name          SelectorInfo `json:"NAME"`
@@ -39,8 +39,8 @@ type CWLSSearchSelectors struct {
 
 // LinkshellSearchSelectors contains the CSS selectors for the linkshell search interface.
 type LinkshellSearchSelectors struct {
-	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
-	Entry            struct {
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
 		Root          SelectorInfo `json:"ROOT"`
 		ID            SelectorInfo `json:"ID"`
 		Name          SelectorInfo `json:"NAME"`
@@ -53,8 +53,8 @@ type LinkshellSearchSelectors struct {
 
 // PVPTeamSearchSelectors contains the CSS selectors for the PVP team search interface.
 type PVPTeamSearchSelectors struct {
-	EntriesContainer SelectorInfo `json:"ENTRIES_CONTAINER"`
-	Entry            struct {
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
 		Root        SelectorInfo `json:"ROOT"`
 		ID          SelectorInfo `json:"ID"`
 		Name        SelectorInfo `json:"NAME"`

@@ -22,7 +22,7 @@ func BuildLinkshellSearchCollector(meta *models.Meta, searchSelectors *selectors
 	lsSearchSelectors := searchSelectors.Linkshell
 	entrySelectors := lsSearchSelectors.Entry
 
-	c.OnHTML(lsSearchSelectors.EntriesContainer.Selector, func(container *colly.HTMLElement) {
+	c.OnHTML(lsSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := lsSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
