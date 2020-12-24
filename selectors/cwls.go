@@ -37,14 +37,14 @@ type CWLSSelectors struct {
 
 // LoadCWLSSelectors loads the CSS selectors for the CWLS page.
 func LoadCWLSSelectors() (*CWLSSelectors, error) {
-	basicBytes, err := pack.Asset("linkshell/crossworld/cwls.json")
+	basicBytes, err := pack.Asset("cwls/cwls.json")
 	if err != nil {
 		return nil, err
 	}
 	basicSelectors := CWLSBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, err := pack.Asset("linkshell/crossworld/members.json")
+	membersBytes, err := pack.Asset("cwls/members.json")
 	if err != nil {
 		return nil, err
 	}
