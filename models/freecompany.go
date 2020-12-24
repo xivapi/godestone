@@ -16,6 +16,8 @@ type FreeCompanyActiveState string
 // Active state for an FC.
 const (
 	FCActiveNotSpecified FreeCompanyActiveState = "Not specified"
+	FCActiveWeekdaysOnly FreeCompanyActiveState = "Weekdays Only"
+	FCActiveWeekendsOnly FreeCompanyActiveState = "Weekends Only"
 	FCActiveAlways       FreeCompanyActiveState = "Always"
 )
 
@@ -24,8 +26,8 @@ type FreeCompanyRecruitingState string
 
 // Recruiting state for an FC.
 const (
-	FCActiveClosed FreeCompanyRecruitingState = "Closed"
-	FCActiveOpen   FreeCompanyRecruitingState = "Open"
+	FCRecruitmentClosed FreeCompanyRecruitingState = "Closed"
+	FCRecruitmentOpen   FreeCompanyRecruitingState = "Open"
 )
 
 // FreeCompanyFocus is an FC's focus.
@@ -105,4 +107,21 @@ type FreeCompany struct {
 	Slogan            string
 	Tag               string
 	World             string
+}
+
+// FreeCompanySearchResult represents all of the searchable information about an FC.
+type FreeCompanySearchResult struct {
+	Error error
+
+	Active        FreeCompanyActiveState
+	ActiveMembers uint32
+	CrestLayers   *CrestLayers
+	DC            string
+	Estate        string
+	Formed        time.Time
+	GrandCompany  grandcompany.GrandCompany
+	ID            string
+	Name          string
+	Recruitment   FreeCompanyRecruitingState
+	World         string
 }

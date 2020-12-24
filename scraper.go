@@ -178,6 +178,31 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 	return output
 }
 
+// SearchFreeCompanies returns a channel of searchable Free Companies.
+func (s *Scraper) SearchFreeCompanies(opts SearchFreeCompanyOptions) chan *models.FreeCompanySearchResult {
+	output := make(chan *models.FreeCompanySearchResult)
+
+	uri := opts.buildURI()
+	go func() {
+		searchCollector := collectors.BuildFreeCompanySearchCollector(s.meta, s.searchSelectors, output)
+
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			output <- &models.FreeCompanySearchResult{
+				Error: err,
+			}
+			close(output)
+			return
+		}
+
+		searchCollector.Wait()
+
+		close(output)
+	}()
+
+	return output
+}
+
 // SearchCharacters returns a channel of searchable characters.
 func (s *Scraper) SearchCharacters(opts SearchCharacterOptions) chan *models.CharacterSearchResult {
 	output := make(chan *models.CharacterSearchResult)
