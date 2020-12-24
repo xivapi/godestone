@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/karashiiro/godestone/collectors"
+	"github.com/karashiiro/godestone/search"
 
 	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/pack"
@@ -179,10 +180,10 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 }
 
 // SearchFreeCompanies returns a channel of searchable Free Companies.
-func (s *Scraper) SearchFreeCompanies(opts SearchFreeCompanyOptions) chan *models.FreeCompanySearchResult {
+func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *models.FreeCompanySearchResult {
 	output := make(chan *models.FreeCompanySearchResult)
 
-	uri := opts.buildURI()
+	uri := opts.BuildURI()
 	go func() {
 		searchCollector := collectors.BuildFreeCompanySearchCollector(s.meta, s.searchSelectors, output)
 
@@ -204,10 +205,10 @@ func (s *Scraper) SearchFreeCompanies(opts SearchFreeCompanyOptions) chan *model
 }
 
 // SearchCharacters returns a channel of searchable characters.
-func (s *Scraper) SearchCharacters(opts SearchCharacterOptions) chan *models.CharacterSearchResult {
+func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.CharacterSearchResult {
 	output := make(chan *models.CharacterSearchResult)
 
-	uri := opts.buildURI()
+	uri := opts.BuildURI()
 	go func() {
 		searchCollector := collectors.BuildCharacterSearchCollector(s.meta, s.searchSelectors, output)
 
@@ -229,10 +230,10 @@ func (s *Scraper) SearchCharacters(opts SearchCharacterOptions) chan *models.Cha
 }
 
 // SearchCWLS returns a channel of searchable crossworld linkshells.
-func (s *Scraper) SearchCWLS(opts SearchCWLSOptions) chan *models.CWLSSearchResult {
+func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchResult {
 	output := make(chan *models.CWLSSearchResult)
 
-	uri := opts.buildURI()
+	uri := opts.BuildURI()
 	go func() {
 		searchCollector := collectors.BuildCWLSSearchCollector(s.meta, s.searchSelectors, output)
 
@@ -254,10 +255,10 @@ func (s *Scraper) SearchCWLS(opts SearchCWLSOptions) chan *models.CWLSSearchResu
 }
 
 // SearchLinkshells returns a channel of searchable linkshells.
-func (s *Scraper) SearchLinkshells(opts SearchLinkshellOptions) chan *models.LinkshellSearchResult {
+func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.LinkshellSearchResult {
 	output := make(chan *models.LinkshellSearchResult)
 
-	uri := opts.buildURI()
+	uri := opts.BuildURI()
 	go func() {
 		searchCollector := collectors.BuildLinkshellSearchCollector(s.meta, s.searchSelectors, output)
 
@@ -279,10 +280,10 @@ func (s *Scraper) SearchLinkshells(opts SearchLinkshellOptions) chan *models.Lin
 }
 
 // SearchPVPTeams returns a channel of searchable PVP teams.
-func (s *Scraper) SearchPVPTeams(opts SearchPVPTeamOptions) chan *models.PVPTeamSearchResult {
+func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTeamSearchResult {
 	output := make(chan *models.PVPTeamSearchResult)
 
-	uri := opts.buildURI()
+	uri := opts.BuildURI()
 	go func() {
 		searchCollector := collectors.BuildPVPTeamSearchCollector(s.meta, s.searchSelectors, output)
 

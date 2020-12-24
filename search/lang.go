@@ -1,4 +1,4 @@
-package godestone
+package search
 
 // Lang represents character language.
 type Lang uint8

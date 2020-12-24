@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/karashiiro/godestone"
+	"github.com/karashiiro/godestone/search"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	opts := godestone.SearchPVPTeamOptions{
+	opts := search.PVPTeamOptions{
 		Name: os.Args[1],
 	}
 

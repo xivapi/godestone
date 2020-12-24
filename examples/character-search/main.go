@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/karashiiro/godestone"
+	"github.com/karashiiro/godestone/search"
 )
 
 func main() {
@@ -13,7 +14,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	opts := godestone.SearchCharacterOptions{
+	opts := search.CharacterOptions{
 		Name:  os.Args[1] + " " + os.Args[2],
 		World: os.Args[3],
 	}

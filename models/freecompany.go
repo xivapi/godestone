@@ -6,50 +6,15 @@ import (
 	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/reputation"
 	"github.com/karashiiro/godestone/data/role"
+	"github.com/karashiiro/godestone/search"
 
 	"github.com/karashiiro/godestone/data/grandcompany"
-)
-
-// FreeCompanyActiveState is the active state of an FC.
-type FreeCompanyActiveState string
-
-// Active state for an FC.
-const (
-	FCActiveNotSpecified FreeCompanyActiveState = "Not specified"
-	FCActiveWeekdaysOnly FreeCompanyActiveState = "Weekdays Only"
-	FCActiveWeekendsOnly FreeCompanyActiveState = "Weekends Only"
-	FCActiveAlways       FreeCompanyActiveState = "Always"
-)
-
-// FreeCompanyRecruitingState is the recruiting state of an FC.
-type FreeCompanyRecruitingState string
-
-// Recruiting state for an FC.
-const (
-	FCRecruitmentClosed FreeCompanyRecruitingState = "Closed"
-	FCRecruitmentOpen   FreeCompanyRecruitingState = "Open"
-)
-
-// FreeCompanyFocus is an FC's focus.
-type FreeCompanyFocus string
-
-// Free Company Focus.
-const (
-	FCFocusRolePlaying FreeCompanyFocus = "Role-playing"
-	FCFocusLeveling    FreeCompanyFocus = "Leveling"
-	FCFocusCasual      FreeCompanyFocus = "Casual"
-	FCFocusHardcore    FreeCompanyFocus = "Hardcore"
-	FCFocusDungeons    FreeCompanyFocus = "Dungeons"
-	FCFocusGuildhests  FreeCompanyFocus = "Guildhests"
-	FCFocusTrials      FreeCompanyFocus = "Trials"
-	FCFocusRaids       FreeCompanyFocus = "Raids"
-	FCFocusPvP         FreeCompanyFocus = "PvP"
 )
 
 // FreeCompanyFocusInfo represents a particular FC's intentions for a focus.
 type FreeCompanyFocusInfo struct {
 	Icon   string
-	Kind   FreeCompanyFocus
+	Kind   search.FreeCompanyFocus
 	Status bool
 }
 
@@ -88,7 +53,7 @@ type FreeCompanyMember struct {
 
 // FreeCompany represents all of the basic information about an FC.
 type FreeCompany struct {
-	Active            FreeCompanyActiveState
+	Active            search.FreeCompanyActiveState
 	ActiveMemberCount uint32
 	CrestLayers       *CrestLayers
 	DC                string
@@ -101,7 +66,7 @@ type FreeCompany struct {
 	ParseDate         time.Time
 	Rank              uint8
 	Ranking           *FreeCompanyRanking
-	Recruitment       FreeCompanyRecruitingState
+	Recruitment       search.FreeCompanyRecruitingState
 	Reputation        []*FreeCompanyReputation
 	Seeking           []*FreeCompanySeekingInfo
 	Slogan            string
@@ -113,7 +78,7 @@ type FreeCompany struct {
 type FreeCompanySearchResult struct {
 	Error error
 
-	Active        FreeCompanyActiveState
+	Active        search.FreeCompanyActiveState
 	ActiveMembers uint32
 	CrestLayers   *CrestLayers
 	DC            string
@@ -122,6 +87,6 @@ type FreeCompanySearchResult struct {
 	GrandCompany  grandcompany.GrandCompany
 	ID            string
 	Name          string
-	Recruitment   FreeCompanyRecruitingState
+	Recruitment   search.FreeCompanyRecruitingState
 	World         string
 }

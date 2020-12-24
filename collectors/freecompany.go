@@ -9,6 +9,7 @@ import (
 	"github.com/karashiiro/godestone/data/reputation"
 	"github.com/karashiiro/godestone/data/role"
 	"github.com/karashiiro/godestone/models"
+	"github.com/karashiiro/godestone/search"
 	"github.com/karashiiro/godestone/selectors"
 )
 
@@ -21,7 +22,7 @@ func BuildFreeCompanyCollector(meta *models.Meta, fcSelectors *selectors.FreeCom
 
 	basicSelectors := fcSelectors.Basic
 	c.OnHTML(basicSelectors.ActiveState.Selector, func(e *colly.HTMLElement) {
-		fc.Active = models.FreeCompanyActiveState(basicSelectors.ActiveState.Parse(e)[0])
+		fc.Active = search.FreeCompanyActiveState(basicSelectors.ActiveState.Parse(e)[0])
 	})
 	c.OnHTML(basicSelectors.ActiveMemberCount.Selector, func(e *colly.HTMLElement) {
 		membersStr := basicSelectors.ActiveMemberCount.Parse(e)[0]
@@ -48,7 +49,7 @@ func BuildFreeCompanyCollector(meta *models.Meta, fcSelectors *selectors.FreeCom
 		}
 	})
 	c.OnHTML(basicSelectors.Recruitment.Selector, func(e *colly.HTMLElement) {
-		fc.Recruitment = models.FreeCompanyRecruitingState(basicSelectors.Recruitment.Parse(e)[0])
+		fc.Recruitment = search.FreeCompanyRecruitingState(basicSelectors.Recruitment.Parse(e)[0])
 	})
 	c.OnHTML(basicSelectors.Server.Selector, func(e *colly.HTMLElement) {
 		worldDC := basicSelectors.Server.Parse(e)
@@ -129,7 +130,7 @@ func BuildFreeCompanyCollector(meta *models.Meta, fcSelectors *selectors.FreeCom
 			info.Icon = curFocus.Icon.Parse(e)[0]
 		})
 		c.OnHTML(curFocus.Name.Selector, func(e *colly.HTMLElement) {
-			info.Kind = models.FreeCompanyFocus(curFocus.Name.Parse(e)[0])
+			info.Kind = search.FreeCompanyFocus(curFocus.Name.Parse(e)[0])
 		})
 		c.OnHTML(curFocus.Status.Selector, func(e *colly.HTMLElement) {
 			// Dangerous; this can match if the regex is broken because the return value will be an empty string

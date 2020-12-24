@@ -7,6 +7,7 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/data/grandcompany"
 	"github.com/karashiiro/godestone/models"
+	"github.com/karashiiro/godestone/search"
 	"github.com/karashiiro/godestone/selectors"
 )
 
@@ -28,7 +29,7 @@ func BuildFreeCompanySearchCollector(meta *models.Meta, searchSelectors *selecto
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
 			nextFC := models.FreeCompanySearchResult{
-				Active: models.FreeCompanyActiveState(entrySelectors.Active.ParseThroughChildren(e)[0]),
+				Active: search.FreeCompanyActiveState(entrySelectors.Active.ParseThroughChildren(e)[0]),
 				Name:   entrySelectors.Name.ParseThroughChildren(e)[0],
 				ID:     entrySelectors.ID.ParseThroughChildren(e)[0],
 				CrestLayers: &models.CrestLayers{
@@ -38,7 +39,7 @@ func BuildFreeCompanySearchCollector(meta *models.Meta, searchSelectors *selecto
 				},
 				GrandCompany: grandcompany.Parse(entrySelectors.GrandCompany.ParseThroughChildren(e)[0]),
 				Estate:       entrySelectors.EstateBuilt.ParseThroughChildren(e)[0],
-				Recruitment:  models.FreeCompanyRecruitingState(entrySelectors.RecruitmentOpen.ParseThroughChildren(e)[0]),
+				Recruitment:  search.FreeCompanyRecruitingState(entrySelectors.RecruitmentOpen.ParseThroughChildren(e)[0]),
 			}
 
 			server := entrySelectors.Server.ParseThroughChildren(e)
