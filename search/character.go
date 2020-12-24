@@ -35,8 +35,8 @@ type CharacterOptions struct {
 }
 
 // BuildURI returns a constructed URI for the provided search options.
-func (s *CharacterOptions) BuildURI() string {
-	uriFormat := "https://na.finalfantasyxiv.com/lodestone/character/?q=%s&worldname=%s&classjob=%s&order=%d"
+func (s *CharacterOptions) BuildURI(lang string) string {
+	uriFormat := "https://%s.finalfantasyxiv.com/lodestone/character/?q=%s&worldname=%s&classjob=%s&order=%d"
 
 	name := strings.Replace(s.Name, " ", "%20", -1)
 
@@ -69,6 +69,6 @@ func (s *CharacterOptions) BuildURI() string {
 		uriFormat += fmt.Sprintf("&gcid=%d", s.GrandCompany)
 	}
 
-	builtURI := fmt.Sprintf(uriFormat, name, worldDC, "", s.Order)
+	builtURI := fmt.Sprintf(uriFormat, lang, name, worldDC, "", s.Order)
 	return builtURI
 }

@@ -23,8 +23,8 @@ type PVPTeamOptions struct {
 }
 
 // BuildURI returns a constructed URI for the provided search options.
-func (s *PVPTeamOptions) BuildURI() string {
-	uriFormat := "https://na.finalfantasyxiv.com/lodestone/pvpteam/?q=%s&dcname=%s&cf_public=%d&order=%d"
+func (s *PVPTeamOptions) BuildURI(lang string) string {
+	uriFormat := "https://%s.finalfantasyxiv.com/lodestone/pvpteam/?q=%s&dcname=%s&cf_public=%d&order=%d"
 
 	name := strings.Replace(s.Name, " ", "%20", -1)
 
@@ -33,6 +33,6 @@ func (s *PVPTeamOptions) BuildURI() string {
 		cfPublic = 1
 	}
 
-	builtURI := fmt.Sprintf(uriFormat, name, s.DC, cfPublic, s.Order)
+	builtURI := fmt.Sprintf(uriFormat, lang, name, s.DC, cfPublic, s.Order)
 	return builtURI
 }

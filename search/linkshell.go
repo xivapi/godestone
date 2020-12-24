@@ -27,8 +27,8 @@ type LinkshellOptions struct {
 }
 
 // BuildURI returns a constructed URI for the provided search options.
-func (s *LinkshellOptions) BuildURI() string {
-	uriFormat := "https://na.finalfantasyxiv.com/lodestone/linkshell/?q=%s&worldname=%s&character_count=%s&cf_public=%d&order=%d"
+func (s *LinkshellOptions) BuildURI(lang string) string {
+	uriFormat := "https://%s.finalfantasyxiv.com/lodestone/linkshell/?q=%s&worldname=%s&character_count=%s&cf_public=%d&order=%d"
 
 	name := strings.Replace(s.Name, " ", "%20", -1)
 
@@ -39,7 +39,7 @@ func (s *LinkshellOptions) BuildURI() string {
 		cfPublic = 1
 	}
 
-	builtURI := fmt.Sprintf(uriFormat, name, worldDC, s.ActiveMembers, cfPublic, s.Order)
+	builtURI := fmt.Sprintf(uriFormat, lang, name, worldDC, s.ActiveMembers, cfPublic, s.Order)
 	return builtURI
 }
 
@@ -53,8 +53,8 @@ type CWLSOptions struct {
 }
 
 // BuildURI returns a constructed URI for the provided search options.
-func (s *CWLSOptions) BuildURI() string {
-	uriFormat := "https://na.finalfantasyxiv.com/lodestone/crossworld_linkshell/?q=%s&dcname=%s&character_count=%s&cf_public=%d&order=%d"
+func (s *CWLSOptions) BuildURI(lang string) string {
+	uriFormat := "https://%s.finalfantasyxiv.com/lodestone/crossworld_linkshell/?q=%s&dcname=%s&character_count=%s&cf_public=%d&order=%d"
 
 	name := strings.Replace(s.Name, " ", "%20", -1)
 
@@ -63,6 +63,6 @@ func (s *CWLSOptions) BuildURI() string {
 		cfPublic = 1
 	}
 
-	builtURI := fmt.Sprintf(uriFormat, name, s.DC, s.ActiveMembers, cfPublic, s.Order)
+	builtURI := fmt.Sprintf(uriFormat, lang, name, s.DC, s.ActiveMembers, cfPublic, s.Order)
 	return builtURI
 }

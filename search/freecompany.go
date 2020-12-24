@@ -79,8 +79,8 @@ type FreeCompanyOptions struct {
 }
 
 // BuildURI returns a constructed URI for the provided search options.
-func (s *FreeCompanyOptions) BuildURI() string {
-	uriFormat := "https://na.finalfantasyxiv.com/lodestone/freecompany/?q=%s&worldname=%s&character_count=%s&cf_public=%d&activetime=%s&join=%s&house=%s&order=%d"
+func (s *FreeCompanyOptions) BuildURI(lang string) string {
+	uriFormat := "https://%s.finalfantasyxiv.com/lodestone/freecompany/?q=%s&worldname=%s&character_count=%s&cf_public=%d&activetime=%s&join=%s&house=%s&order=%d"
 
 	name := strings.Replace(s.Name, " ", "%20", -1)
 
@@ -110,6 +110,6 @@ func (s *FreeCompanyOptions) BuildURI() string {
 		housingStatus = fmt.Sprint(s.HousingStatus)
 	}
 
-	builtURI := fmt.Sprintf(uriFormat, name, worldDC, s.ActiveMembers, cfPublic, active, join, housingStatus, s.Order)
+	builtURI := fmt.Sprintf(uriFormat, lang, name, worldDC, s.ActiveMembers, cfPublic, active, join, housingStatus, s.Order)
 	return builtURI
 }

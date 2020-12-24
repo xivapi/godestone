@@ -15,6 +15,8 @@ import (
 
 // Scraper is the object through which interactions with The Lodestone are made.
 type Scraper struct {
+	lang SiteLang
+
 	meta               *models.Meta
 	cwlsSelectors      *selectors.CWLSSelectors
 	fcSelectors        *selectors.FreeCompanySelectors
@@ -30,14 +32,14 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	charData := models.Character{ID: id, ParseDate: now}
 
 	charCollector := collectors.BuildCharacterCollector(s.meta, s.profileSelectors, &charData)
-	err := charCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/character/%d", id))
+	err := charCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
 	charCollector.Wait()
 
 	classJobCollector := collectors.BuildClassJobCollector(s.meta, s.profileSelectors, &charData)
-	err = classJobCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/character/%d/class_job/", id))
+	err = classJobCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/class_job/", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +52,7 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 	minionCollector := collectors.BuildMinionCollector(s.meta, s.profileSelectors)
 
-	err := minionCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/character/%d/minion/", id))
+	err := minionCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/minion/", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +65,7 @@ func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 	mountCollector := collectors.BuildMountCollector(s.meta, s.profileSelectors)
 
-	err := mountCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/character/%d/mount/", id))
+	err := mountCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/mount/", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +80,7 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 
 	go func() {
 		achievementCollector := collectors.BuildAchievementCollector(s.meta, s.profileSelectors, output)
-		err := achievementCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/character/%d/achievement/", id))
+		err := achievementCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/achievement/", s.lang, id))
 		if err != nil {
 			output <- &models.AchievementInfo{
 				Error: err,
@@ -101,7 +103,7 @@ func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
 	ls := models.Linkshell{ID: id, ParseDate: now}
 
 	lsCollector := collectors.BuildLinkshellCollector(s.meta, s.linkshellSelectors, &ls)
-	err := lsCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/linkshell/%s", id))
+	err := lsCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/linkshell/%s", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +118,7 @@ func (s *Scraper) FetchCWLS(id string) (*models.CWLS, error) {
 	cwls := models.CWLS{ID: id, ParseDate: now}
 
 	cwlsCollector := collectors.BuildCWLSCollector(s.meta, s.cwlsSelectors, &cwls)
-	err := cwlsCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/crossworld_linkshell/%s", id))
+	err := cwlsCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/crossworld_linkshell/%s", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +133,7 @@ func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
 	pvpTeam := models.PVPTeam{ID: id, ParseDate: now}
 
 	pvpTeamCollector := collectors.BuildPVPTeamCollector(s.meta, s.pvpTeamSelectors, &pvpTeam)
-	err := pvpTeamCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/pvpteam/%s", id))
+	err := pvpTeamCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/pvpteam/%s", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
@@ -146,7 +148,7 @@ func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
 	fc := models.FreeCompany{ID: id, ParseDate: now}
 
 	fcCollector := collectors.BuildFreeCompanyCollector(s.meta, s.fcSelectors, &fc)
-	err := fcCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/freecompany/%s", id))
+	err := fcCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/freecompany/%s", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +164,7 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 	go func() {
 		fcMembersCollector := collectors.BuildFreeCompanyMembersCollector(s.meta, s.fcSelectors, output)
 
-		err := fcMembersCollector.Visit(fmt.Sprintf("https://na.finalfantasyxiv.com/lodestone/freecompany/%s/member/", id))
+		err := fcMembersCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/freecompany/%s/member/", s.lang, id))
 		if err != nil {
 			output <- &models.FreeCompanyMember{
 				Error: err,
@@ -183,7 +185,7 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *models.FreeCompanySearchResult {
 	output := make(chan *models.FreeCompanySearchResult)
 
-	uri := opts.BuildURI()
+	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		searchCollector := collectors.BuildFreeCompanySearchCollector(s.meta, s.searchSelectors, output)
 
@@ -208,7 +210,7 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.CharacterSearchResult {
 	output := make(chan *models.CharacterSearchResult)
 
-	uri := opts.BuildURI()
+	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		searchCollector := collectors.BuildCharacterSearchCollector(s.meta, s.searchSelectors, output)
 
@@ -233,7 +235,7 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchResult {
 	output := make(chan *models.CWLSSearchResult)
 
-	uri := opts.BuildURI()
+	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		searchCollector := collectors.BuildCWLSSearchCollector(s.meta, s.searchSelectors, output)
 
@@ -258,7 +260,7 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.LinkshellSearchResult {
 	output := make(chan *models.LinkshellSearchResult)
 
-	uri := opts.BuildURI()
+	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		searchCollector := collectors.BuildLinkshellSearchCollector(s.meta, s.searchSelectors, output)
 
@@ -283,7 +285,7 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTeamSearchResult {
 	output := make(chan *models.PVPTeamSearchResult)
 
-	uri := opts.BuildURI()
+	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		searchCollector := collectors.BuildPVPTeamSearchCollector(s.meta, s.searchSelectors, output)
 
@@ -305,7 +307,7 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 }
 
 // NewScraper creates a new instance of the Scraper.
-func NewScraper() (*Scraper, error) {
+func NewScraper(lang SiteLang) (*Scraper, error) {
 	cwlsSelectors, err := selectors.LoadCWLSSelectors()
 	if err != nil {
 		return nil, err
@@ -344,6 +346,8 @@ func NewScraper() (*Scraper, error) {
 	json.Unmarshal(metaBytes, &meta)
 
 	return &Scraper{
+		lang: lang,
+
 		meta:               &meta,
 		cwlsSelectors:      cwlsSelectors,
 		fcSelectors:        fcSelectors,
