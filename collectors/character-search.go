@@ -28,6 +28,7 @@ func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
 			nextCharacter := models.CharacterSearchResult{
+				Avatar:   entrySelectors.Avatar.ParseThroughChildren(e)[0],
 				Name:     entrySelectors.Name.ParseThroughChildren(e)[0],
 				Lang:     entrySelectors.Lang.ParseThroughChildren(e)[0],
 				RankIcon: entrySelectors.RankIcon.ParseThroughChildren(e)[0],
@@ -49,7 +50,7 @@ func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors
 			output <- &nextCharacter
 		})
 
-		if nextURI != "javascript:void(0);" {
+		if nextURI != "javascript:void(0);" && nextURI != "" /* "Your search yielded no results." */ {
 			err := container.Request.Visit(nextURI)
 			if err != nil {
 				output <- &models.CharacterSearchResult{

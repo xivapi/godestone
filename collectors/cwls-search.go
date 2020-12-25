@@ -41,7 +41,7 @@ func BuildCWLSSearchCollector(meta *models.Meta, searchSelectors *selectors.Sear
 			output <- &nextCWLS
 		})
 
-		if nextURI != "javascript:void(0);" {
+		if nextURI != "javascript:void(0);" && nextURI != "" /* "Your search yielded no results." */ {
 			err := container.Request.Visit(nextURI)
 			if err != nil {
 				output <- &models.CWLSSearchResult{

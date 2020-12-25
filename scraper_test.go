@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/karashiiro/godestone/search"
 )
 
 var langCodes []SiteLang = []SiteLang{EN, JA, FR, DE, SiteLang("zh")}
@@ -227,6 +229,119 @@ func TestFetchFreeCompanyMembers(t *testing.T) {
 						failIfStringEmpty(t, "Member DC", member.DC)
 					}
 				})
+			}
+		})
+	}
+}
+
+func TestSearchCharacters(t *testing.T) {
+	for _, lang := range langCodes {
+		s, err := NewScraper(lang)
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			opts := search.CharacterOptions{}
+
+			for character := range s.SearchCharacters(opts) {
+				if character.Error != nil {
+					if lang == SiteLang("zh") {
+						return
+					}
+
+					t.Errorf(err.Error())
+				}
+
+				failIfStringEmpty(t, "Character avatar", character.Avatar)
+				failIfNumberZero(t, "Character ID", int64(character.ID))
+				failIfStringEmpty(t, "Character name", character.Name)
+				failIfStringEmpty(t, "Character world", character.World)
+				failIfStringEmpty(t, "Character DC", character.DC)
+			}
+		})
+	}
+}
+
+func TestSearchCWLS(t *testing.T) {
+	for _, lang := range langCodes {
+		s, err := NewScraper(lang)
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			opts := search.CWLSOptions{}
+
+			for cwls := range s.SearchCWLS(opts) {
+				if cwls.Error != nil {
+					if lang == SiteLang("zh") {
+						return
+					}
+
+					t.Errorf(err.Error())
+				}
+
+				failIfStringEmpty(t, "CWLS ID", cwls.ID)
+				failIfStringEmpty(t, "CWLS name", cwls.Name)
+				failIfStringEmpty(t, "CWLS DC", cwls.DC)
+				failIfNumberZero(t, "CWLS active members", int64(cwls.ActiveMembers))
+			}
+		})
+	}
+}
+
+func TestSearchLinkshells(t *testing.T) {
+	for _, lang := range langCodes {
+		s, err := NewScraper(lang)
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			opts := search.LinkshellOptions{}
+
+			for ls := range s.SearchLinkshells(opts) {
+				if ls.Error != nil {
+					if lang == SiteLang("zh") {
+						return
+					}
+
+					t.Errorf(err.Error())
+				}
+
+				failIfStringEmpty(t, "Linkshell ID", ls.ID)
+				failIfStringEmpty(t, "Linkshell name", ls.Name)
+				failIfStringEmpty(t, "Linkshell world", ls.World)
+				failIfStringEmpty(t, "Linkshell DC", ls.DC)
+				failIfNumberZero(t, "Linkshell active members", int64(ls.ActiveMembers))
+			}
+		})
+	}
+}
+
+func TestSearchPVPTeams(t *testing.T) {
+	for _, lang := range langCodes {
+		s, err := NewScraper(lang)
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			opts := search.PVPTeamOptions{}
+
+			for ls := range s.SearchPVPTeams(opts) {
+				if ls.Error != nil {
+					if lang == SiteLang("zh") {
+						return
+					}
+
+					t.Errorf(err.Error())
+				}
+
+				failIfStringEmpty(t, "PVP team ID", ls.ID)
+				failIfStringEmpty(t, "PVP team name", ls.Name)
+				failIfStringEmpty(t, "PVP team DC", ls.DC)
 			}
 		})
 	}

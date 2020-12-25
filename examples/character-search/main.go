@@ -14,9 +14,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	opts := search.CharacterOptions{
-		Name:  os.Args[1] + " " + os.Args[2],
-		World: os.Args[3],
+	opts := search.CharacterOptions{}
+	if len(os.Args) > 1 {
+		opts = search.CharacterOptions{
+			Name:  os.Args[1] + " " + os.Args[2],
+			World: os.Args[3],
+		}
 	}
 
 	for character := range s.SearchCharacters(opts) {
