@@ -15,8 +15,11 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	opts := search.FreeCompanyOptions{
-		Name: os.Args[1],
+	opts := search.FreeCompanyOptions{}
+	if len(os.Args) > 1 {
+		opts = search.FreeCompanyOptions{
+			Name: os.Args[1],
+		}
 	}
 
 	for fc := range s.SearchFreeCompanies(opts) {

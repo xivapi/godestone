@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/karashiiro/godestone/data/grandcompany"
 	"github.com/karashiiro/godestone/search"
 )
 
@@ -23,10 +24,16 @@ func failIfNumberZero(t *testing.T, label string, input int64) {
 }
 
 func failIfOlderThanGameRelease(t *testing.T, label string, input time.Time) {
-	release, _ := time.Parse("2006-Jan-02", "2013-Aug-27")
-
+	release, _ := time.Parse("2006-Jan-02", "2013-Aug-16") // Early access began on the 24th, but there are multiple timestamps for the 16th. Wikipedia probably left something out.
+	inputStr, _ := input.MarshalText()
 	if input.Before(release) {
-		t.Errorf(fmt.Sprintf("%s is older than the game's release date", label))
+		t.Errorf(fmt.Sprintf("%s is older than the game's release date; got %s", label, string(inputStr)))
+	}
+}
+
+func failIfGCInvalid(t *testing.T, label string, input grandcompany.GrandCompany) {
+	if grandcompany.Parse(string(input)) != grandcompany.None {
+		t.Errorf(fmt.Sprintf("%s is not a valid Grand Company; got %s", label, string(input)))
 	}
 }
 
@@ -229,6 +236,39 @@ func TestFetchFreeCompanyMembers(t *testing.T) {
 						failIfStringEmpty(t, "Member DC", member.DC)
 					}
 				})
+			}
+		})
+	}
+}
+
+func TestSearchFreeCompanies(t *testing.T) {
+	for _, lang := range langCodes {
+		s, err := NewScraper(lang)
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			opts := search.FreeCompanyOptions{}
+
+			for fc := range s.SearchFreeCompanies(opts) {
+				if fc.Error != nil {
+					if lang == SiteLang("zh") {
+						return
+					}
+
+					t.Errorf(err.Error())
+				}
+
+				failIfStringEmpty(t, "FC active state", string(fc.Active))
+				failIfNumberZero(t, "FC active members", int64(fc.ActiveMembers))
+				failIfGCInvalid(t, "FC Grand Company", fc.GrandCompany)
+				failIfStringEmpty(t, "FC ID", fc.ID)
+				failIfStringEmpty(t, "FC name", fc.Name)
+				failIfStringEmpty(t, "FC world", fc.World)
+				failIfStringEmpty(t, "FC DC", fc.DC)
+				failIfStringEmpty(t, "FC estate", fc.Estate)
+				failIfOlderThanGameRelease(t, "FC formed", fc.Formed)
 			}
 		})
 	}
