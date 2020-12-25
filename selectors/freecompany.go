@@ -113,39 +113,24 @@ type FreeCompanySelectors struct {
 }
 
 // LoadFreeCompanySelectors loads the CSS selectors for the Free Company page.
-func LoadFreeCompanySelectors() (*FreeCompanySelectors, error) {
-	basicBytes, err := pack.Asset("freecompany/freecompany.json")
-	if err != nil {
-		return nil, err
-	}
+func LoadFreeCompanySelectors() *FreeCompanySelectors {
+	basicBytes, _ := pack.Asset("freecompany/freecompany.json")
 	basicSelectors := FreeCompanyBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, err := pack.Asset("freecompany/members.json")
-	if err != nil {
-		return nil, err
-	}
+	membersBytes, _ := pack.Asset("freecompany/members.json")
 	membersSelectors := FreeCompanyMemberSelectors{}
 	json.Unmarshal(membersBytes, &membersSelectors)
 
-	focusBytes, err := pack.Asset("freecompany/focus.json")
-	if err != nil {
-		return nil, err
-	}
+	focusBytes, _ := pack.Asset("freecompany/focus.json")
 	focusSelectors := FreeCompanyFocusListSelectors{}
 	json.Unmarshal(focusBytes, &focusSelectors)
 
-	repBytes, err := pack.Asset("freecompany/reputation.json")
-	if err != nil {
-		return nil, err
-	}
+	repBytes, _ := pack.Asset("freecompany/reputation.json")
 	repSelectors := FreeCompanyAlignmentListSelectors{}
 	json.Unmarshal(repBytes, &repSelectors)
 
-	seekBytes, err := pack.Asset("freecompany/seeking.json")
-	if err != nil {
-		return nil, err
-	}
+	seekBytes, _ := pack.Asset("freecompany/seeking.json")
 	seekSelectors := FreeCompanySeekingListSelectors{}
 	json.Unmarshal(seekBytes, &seekSelectors)
 
@@ -155,5 +140,5 @@ func LoadFreeCompanySelectors() (*FreeCompanySelectors, error) {
 		Focuses:    &focusSelectors,
 		Reputation: &repSelectors,
 		Seeking:    &seekSelectors,
-	}, nil
+	}
 }

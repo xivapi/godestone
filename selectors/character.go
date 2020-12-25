@@ -192,53 +192,32 @@ type ProfileSelectors struct {
 }
 
 // LoadProfileSelectors loads the profile selectors.
-func LoadProfileSelectors() (*ProfileSelectors, error) {
-	achievementsBytes, err := pack.Asset("profile/achievements.json")
-	if err != nil {
-		return nil, err
-	}
+func LoadProfileSelectors() *ProfileSelectors {
+	achievementsBytes, _ := pack.Asset("profile/achievements.json")
 	achievements := AchievementSelectors{}
 	json.Unmarshal(achievementsBytes, &achievements)
 
-	attributesBytes, err := pack.Asset("profile/attributes.json")
-	if err != nil {
-		return nil, err
-	}
+	attributesBytes, _ := pack.Asset("profile/attributes.json")
 	attributes := AttributeSelectors{}
 	json.Unmarshal(attributesBytes, &attributes)
 
-	characterBytes, err := pack.Asset("profile/character.json")
-	if err != nil {
-		return nil, err
-	}
+	characterBytes, _ := pack.Asset("profile/character.json")
 	character := CharacterSelectors{}
 	json.Unmarshal(characterBytes, &character)
 
-	classJobBytes, err := pack.Asset("profile/classjob.json")
-	if err != nil {
-		return nil, err
-	}
+	classJobBytes, _ := pack.Asset("profile/classjob.json")
 	classJob := ClassJobSelectors{}
 	json.Unmarshal(classJobBytes, &classJob)
 
-	gearsetBytes, err := pack.Asset("profile/gearset.json")
-	if err != nil {
-		return nil, err
-	}
+	gearsetBytes, _ := pack.Asset("profile/gearset.json")
 	gearset := GearSetSelectors{}
 	json.Unmarshal(gearsetBytes, &gearset)
 
-	minionBytes, err := pack.Asset("profile/minion.json")
-	if err != nil {
-		return nil, err
-	}
+	minionBytes, _ := pack.Asset("profile/minion.json")
 	minion := MinionSelectors{}
 	json.Unmarshal(minionBytes, &minion)
 
-	mountBytes, err := pack.Asset("profile/mount.json")
-	if err != nil {
-		return nil, err
-	}
+	mountBytes, _ := pack.Asset("profile/mount.json")
 	mount := MountSelectors{}
 	json.Unmarshal(mountBytes, &mount)
 
@@ -250,5 +229,5 @@ func LoadProfileSelectors() (*ProfileSelectors, error) {
 		GearSet:      &gearset,
 		Minion:       &minion,
 		Mount:        &mount,
-	}, nil
+	}
 }

@@ -103,39 +103,24 @@ type SearchSelectors struct {
 }
 
 // LoadSearchSelectors loads the CSS selectors for the search interface.
-func LoadSearchSelectors() (*SearchSelectors, error) {
-	charaBytes, err := pack.Asset("search/character.json")
-	if err != nil {
-		return nil, err
-	}
+func LoadSearchSelectors() *SearchSelectors {
+	charaBytes, _ := pack.Asset("search/character.json")
 	charaSearchSelectors := CharacterSearchSelectors{}
 	json.Unmarshal(charaBytes, &charaSearchSelectors)
 
-	cwlsBytes, err := pack.Asset("search/cwls.json")
-	if err != nil {
-		return nil, err
-	}
+	cwlsBytes, _ := pack.Asset("search/cwls.json")
 	cwlsSearchSelectors := CWLSSearchSelectors{}
 	json.Unmarshal(cwlsBytes, &cwlsSearchSelectors)
 
-	fcBytes, err := pack.Asset("search/freecompany.json")
-	if err != nil {
-		return nil, err
-	}
+	fcBytes, _ := pack.Asset("search/freecompany.json")
 	fcSearchSelectors := FreeCompanySearchSelectors{}
 	json.Unmarshal(fcBytes, &fcSearchSelectors)
 
-	lsBytes, err := pack.Asset("search/linkshell.json")
-	if err != nil {
-		return nil, err
-	}
+	lsBytes, _ := pack.Asset("search/linkshell.json")
 	lsSearchSelectors := LinkshellSearchSelectors{}
 	json.Unmarshal(lsBytes, &lsSearchSelectors)
 
-	pvpTeamBytes, err := pack.Asset("search/pvpteam.json")
-	if err != nil {
-		return nil, err
-	}
+	pvpTeamBytes, _ := pack.Asset("search/pvpteam.json")
 	pvpTeamSearchSelectors := PVPTeamSearchSelectors{}
 	json.Unmarshal(pvpTeamBytes, &pvpTeamSearchSelectors)
 
@@ -145,5 +130,5 @@ func LoadSearchSelectors() (*SearchSelectors, error) {
 		FreeCompany: &fcSearchSelectors,
 		Linkshell:   &lsSearchSelectors,
 		PVPTeam:     &pvpTeamSearchSelectors,
-	}, nil
+	}
 }

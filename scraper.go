@@ -308,40 +308,14 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 
 // NewScraper creates a new instance of the Scraper.
 func NewScraper(lang SiteLang) (*Scraper, error) {
-	cwlsSelectors, err := selectors.LoadCWLSSelectors()
-	if err != nil {
-		return nil, err
-	}
+	cwlsSelectors := selectors.LoadCWLSSelectors()
+	lsSelectors := selectors.LoadLinkshellSelectors()
+	profileSelectors := selectors.LoadProfileSelectors()
+	pvpTeamSelectors := selectors.LoadPVPTeamSelectors()
+	searchSelectors := selectors.LoadSearchSelectors()
+	fcSelectors := selectors.LoadFreeCompanySelectors()
 
-	lsSelectors, err := selectors.LoadLinkshellSelectors()
-	if err != nil {
-		return nil, err
-	}
-
-	profileSelectors, err := selectors.LoadProfileSelectors()
-	if err != nil {
-		return nil, err
-	}
-
-	pvpTeamSelectors, err := selectors.LoadPVPTeamSelectors()
-	if err != nil {
-		return nil, err
-	}
-
-	searchSelectors, err := selectors.LoadSearchSelectors()
-	if err != nil {
-		return nil, err
-	}
-
-	fcSelectors, err := selectors.LoadFreeCompanySelectors()
-	if err != nil {
-		return nil, err
-	}
-
-	metaBytes, err := pack.Asset("meta.json")
-	if err != nil {
-		return nil, err
-	}
+	metaBytes, _ := pack.Asset("meta.json")
 	meta := models.Meta{}
 	json.Unmarshal(metaBytes, &meta)
 

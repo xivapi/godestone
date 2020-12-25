@@ -14,8 +14,8 @@ type CWLSBasicSelectors struct {
 
 // CWLSMemberSelectors contains the CSS selectors for the member list on the CWLS page.
 type CWLSMemberSelectors struct {
-	Root SelectorInfo `json:"ROOT"`
-	Entry            struct {
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
 		Root              SelectorInfo `json:"ROOT"`
 		Avatar            SelectorInfo `json:"AVATAR"`
 		ID                SelectorInfo `json:"ID"`
@@ -36,23 +36,17 @@ type CWLSSelectors struct {
 }
 
 // LoadCWLSSelectors loads the CSS selectors for the CWLS page.
-func LoadCWLSSelectors() (*CWLSSelectors, error) {
-	basicBytes, err := pack.Asset("cwls/cwls.json")
-	if err != nil {
-		return nil, err
-	}
+func LoadCWLSSelectors() *CWLSSelectors {
+	basicBytes, _ := pack.Asset("cwls/cwls.json")
 	basicSelectors := CWLSBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, err := pack.Asset("cwls/members.json")
-	if err != nil {
-		return nil, err
-	}
+	membersBytes, _ := pack.Asset("cwls/members.json")
 	membersSelectors := CWLSMemberSelectors{}
 	json.Unmarshal(membersBytes, &membersSelectors)
 
 	return &CWLSSelectors{
 		Basic:   &basicSelectors,
 		Members: &membersSelectors,
-	}, nil
+	}
 }

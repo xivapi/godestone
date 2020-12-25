@@ -13,8 +13,8 @@ type LinkshellBasicSelectors struct {
 
 // LinkshellMemberSelectors contains the CSS selectors for the member list on the linkshell page.
 type LinkshellMemberSelectors struct {
-	Root SelectorInfo `json:"ROOT"`
-	Entry            struct {
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
 		Root              SelectorInfo `json:"ROOT"`
 		Avatar            SelectorInfo `json:"AVATAR"`
 		ID                SelectorInfo `json:"ID"`
@@ -35,23 +35,17 @@ type LinkshellSelectors struct {
 }
 
 // LoadLinkshellSelectors loads the CSS selectors for the linkshell page.
-func LoadLinkshellSelectors() (*LinkshellSelectors, error) {
-	basicBytes, err := pack.Asset("linkshell/ls.json")
-	if err != nil {
-		return nil, err
-	}
+func LoadLinkshellSelectors() *LinkshellSelectors {
+	basicBytes, _ := pack.Asset("linkshell/ls.json")
 	basicSelectors := LinkshellBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, err := pack.Asset("linkshell/members.json")
-	if err != nil {
-		return nil, err
-	}
+	membersBytes, _ := pack.Asset("linkshell/members.json")
 	membersSelectors := LinkshellMemberSelectors{}
 	json.Unmarshal(membersBytes, &membersSelectors)
 
 	return &LinkshellSelectors{
 		Basic:   &basicSelectors,
 		Members: &membersSelectors,
-	}, nil
+	}
 }

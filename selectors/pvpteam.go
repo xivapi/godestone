@@ -20,8 +20,8 @@ type PVPTeamBasicSelectors struct {
 
 // PVPTeamMemberSelectors contains the CSS selectors for the member list on the PVP team page.
 type PVPTeamMemberSelectors struct {
-	Root SelectorInfo `json:"ROOT"`
-	Entry            struct {
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
 		Root     SelectorInfo `json:"ROOT"`
 		Avatar   SelectorInfo `json:"AVATAR"`
 		ID       SelectorInfo `json:"ID"`
@@ -40,23 +40,17 @@ type PVPTeamSelectors struct {
 }
 
 // LoadPVPTeamSelectors loads the CSS selectors for the PVP team page.
-func LoadPVPTeamSelectors() (*PVPTeamSelectors, error) {
-	basicBytes, err := pack.Asset("pvpteam/pvpteam.json")
-	if err != nil {
-		return nil, err
-	}
+func LoadPVPTeamSelectors() *PVPTeamSelectors {
+	basicBytes, _ := pack.Asset("pvpteam/pvpteam.json")
 	basicSelectors := PVPTeamBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, err := pack.Asset("pvpteam/members.json")
-	if err != nil {
-		return nil, err
-	}
+	membersBytes, _ := pack.Asset("pvpteam/members.json")
 	membersSelectors := PVPTeamMemberSelectors{}
 	json.Unmarshal(membersBytes, &membersSelectors)
 
 	return &PVPTeamSelectors{
 		Basic:   &basicSelectors,
 		Members: &membersSelectors,
-	}, nil
+	}
 }
