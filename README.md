@@ -7,4 +7,6 @@
 Go scraper for The Lodestone.
 
 ## Development
-To package the submodule as an asset, [go-bindata](https://github.com/go-bindata/go-bindata) is required. With that, just run `pack-selectors.sh` to build the package file.
+To generate FlatBuffer bindings for the data exports submodule, [flatc](https://google.github.io/flatbuffers) is required. Run `gen-flatbuf-bindings.sh` to create the bindings.
+
+To package the submodules as assets, [go-bindata](https://github.com/go-bindata/go-bindata) is required. With that, run `pack-selectors.sh` to build the selectors file, and `pack-dats.sh` to build the game data file.
