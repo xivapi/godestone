@@ -1,4 +1,4 @@
-# godestone-scraper
+# godestone
 
 [![Documentation Badge](https://img.shields.io/badge/docs-pkg.go.dev-007D9C)](https://pkg.go.dev/github.com/karashiiro/godestone)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/28006e7fe175446db0fd8d38c92795b7)](https://app.codacy.com/gh/karashiiro/godestone?utm_source=github.com&utm_medium=referral&utm_content=karashiiro/godestone&utm_campaign=Badge_Grade)
