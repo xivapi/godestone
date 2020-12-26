@@ -79,7 +79,7 @@ type FreeCompanyAlignmentSelectors struct {
 	Rank     SelectorInfo `json:"RANK"`
 }
 
-// FreeCompanyAlignmentListSelectors containes the CSS selectors for all of an FC's Grand Company aLignments.
+// FreeCompanyAlignmentListSelectors contains the CSS selectors for all of an FC's Grand Company aLignments.
 type FreeCompanyAlignmentListSelectors struct {
 	Maelstrom FreeCompanyAlignmentSelectors `json:"MAELSTROM"`
 	Adders    FreeCompanyAlignmentSelectors `json:"ADDERS"`
