@@ -1,3 +1,0 @@
-#!/bin/sh
-go-bindata -o pack/css/selectors.go -prefix "lodestone-css-selectors/" -ignore="(LICENSE|README.md|.git)" lodestone-css-selectors/...
-sed -i "s/package main/package css/g" pack/css/selectors.go
