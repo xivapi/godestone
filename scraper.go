@@ -3,6 +3,7 @@ package godestone
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/karashiiro/godestone/collectors"
@@ -147,28 +148,78 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 
 // FetchCharacterMinions returns unlocked minion information for the provided Lodestone ID.
 func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
-	minionCollector := collectors.BuildMinionCollector(s.meta, s.getProfileSelectors())
+	output := make(chan *models.Minion)
+	errors := make(chan error, 1)
+	done := make(chan bool, 1)
 
-	err := minionCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/minion/", s.lang, id))
-	if err != nil {
-		return nil, err
+	go func() {
+		minionCollector := collectors.BuildMinionCollector(s.meta, s.getProfileSelectors(), s.getMinionTable(), output)
+
+		err := minionCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/minion/", s.lang, id))
+		if err != nil && err.Error() != http.StatusText(http.StatusNotFound) {
+			errors <- err
+		}
+
+		minionCollector.Wait()
+
+		close(output)
+		close(errors)
+
+		done <- true
+		close(done)
+	}()
+
+	minions := []*models.Minion{}
+	for minion := range output {
+		minions = append(minions, minion)
 	}
-	minionCollector.Wait()
 
-	return nil, nil
+	<-done
+	select {
+	case err, ok := <-errors:
+		if ok {
+			return nil, err
+		}
+	}
+	return minions, nil
 }
 
 // FetchCharacterMounts returns unlocked mount information for the provided Lodestone ID.
 func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
-	mountCollector := collectors.BuildMountCollector(s.meta, s.getProfileSelectors())
+	output := make(chan *models.Mount)
+	errors := make(chan error, 1)
+	done := make(chan bool, 1)
 
-	err := mountCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/mount/", s.lang, id))
-	if err != nil {
-		return nil, err
+	go func() {
+		mountCollector := collectors.BuildMountCollector(s.meta, s.getProfileSelectors(), s.getMountTable(), output)
+
+		err := mountCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/mount/", s.lang, id))
+		if err != nil && err.Error() != http.StatusText(http.StatusNotFound) {
+			errors <- err
+		}
+
+		mountCollector.Wait()
+
+		close(output)
+		close(errors)
+
+		done <- true
+		close(done)
+	}()
+
+	mounts := []*models.Mount{}
+	for mount := range output {
+		mounts = append(mounts, mount)
 	}
-	mountCollector.Wait()
 
-	return nil, nil
+	<-done
+	select {
+	case err, ok := <-errors:
+		if ok {
+			return nil, err
+		}
+	}
+	return mounts, nil
 }
 
 // FetchCharacterAchievements returns unlocked achievement information for the provided Lodestone ID.

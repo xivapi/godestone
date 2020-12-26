@@ -37,7 +37,71 @@ func failIfGCInvalid(t *testing.T, label string, input grandcompany.GrandCompany
 	}
 }
 
-var linkshellIds []string = []string{"20547673299961415", "19703248369746483", "10414574138338845"}
+var characterIds = []uint32{11166211, 9426169, 9575452}
+
+func TestFetchCharacterMinions(t *testing.T) {
+	for _, lang := range langCodes {
+		s := NewScraper(lang)
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			for _, id := range characterIds {
+				t.Run("Character ID "+fmt.Sprint(id), func(t *testing.T) {
+					minions, err := s.FetchCharacterMinions(id)
+					if err != nil {
+						if lang == SiteLang("zh") { // A-OK, there is no Chinese website
+							return
+						}
+
+						t.Errorf(err.Error())
+					}
+
+					for _, minion := range minions {
+						failIfNumberZero(t, "Minion ID", int64(minion.ID))
+						failIfStringEmpty(t, "Minion name", minion.Name)
+						failIfStringEmpty(t, "Minion icon", minion.Icon)
+						failIfStringEmpty(t, "Minion English name", minion.NameEN)
+						failIfStringEmpty(t, "Minion Japanese name", minion.NameJA)
+						failIfStringEmpty(t, "Minion German name", minion.NameDE)
+						failIfStringEmpty(t, "Minion French name", minion.NameFR)
+					}
+				})
+			}
+		})
+	}
+}
+
+func TestFetchCharacterMounts(t *testing.T) {
+	for _, lang := range langCodes {
+		s := NewScraper(lang)
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			for _, id := range characterIds {
+				t.Run("Character ID "+fmt.Sprint(id), func(t *testing.T) {
+					mounts, err := s.FetchCharacterMounts(id)
+					if err != nil {
+						if lang == SiteLang("zh") { // A-OK, there is no Chinese website
+							return
+						}
+
+						t.Errorf(err.Error())
+					}
+
+					for _, mount := range mounts {
+						failIfNumberZero(t, "Mount ID", int64(mount.ID))
+						failIfStringEmpty(t, "Mount name", mount.Name)
+						failIfStringEmpty(t, "Mount icon", mount.Icon)
+						failIfStringEmpty(t, "Mount English name", mount.NameEN)
+						failIfStringEmpty(t, "Mount Japanese name", mount.NameJA)
+						failIfStringEmpty(t, "Mount German name", mount.NameDE)
+						failIfStringEmpty(t, "Mount French name", mount.NameFR)
+					}
+				})
+			}
+		})
+	}
+}
+
+var linkshellIds = []string{"20547673299961415", "19703248369746483", "10414574138338845"}
 
 func TestFetchLinkshell(t *testing.T) {
 	for _, lang := range langCodes {
@@ -75,7 +139,7 @@ func TestFetchLinkshell(t *testing.T) {
 	}
 }
 
-var cwlsIds []string = []string{
+var cwlsIds = []string{
 	"4b8af89f50a062b4b15650ecf6583f7ac9ad8065",
 	"4e7baf2e534e3fcd13edf24f554ddeb8b9efa1b5",
 	"3b417d2c5390d9ebf62d35bd63f67fe26eb3d828",
@@ -118,7 +182,7 @@ func TestFetchCWLS(t *testing.T) {
 	}
 }
 
-var pvpTeamIds []string = []string{
+var pvpTeamIds = []string{
 	"253c62269c624bc115902cea98e84fe082b79f85",
 	"a9b97f78cd9a59a6c71adb6d35ca8f902faf12d6",
 	"bbe7823327192ab12ad5b8215f5d07f1b8edabed",
@@ -163,7 +227,7 @@ func TestFetchPVPTeam(t *testing.T) {
 	}
 }
 
-var fcIds []string = []string{
+var fcIds = []string{
 	"9231816286156096656",
 	"9230268173784187532",
 	"9232660711086230486",
