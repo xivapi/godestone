@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/karashiiro/godestone/pack"
+	"github.com/karashiiro/godestone/pack/css"
 )
 
 // LinkshellBasicSelectors contains the CSS selectors for the basic information on the linkshell page.
@@ -36,11 +36,11 @@ type LinkshellSelectors struct {
 
 // LoadLinkshellSelectors loads the CSS selectors for the linkshell page.
 func LoadLinkshellSelectors() *LinkshellSelectors {
-	basicBytes, _ := pack.Asset("linkshell/ls.json")
+	basicBytes, _ := css.Asset("linkshell/ls.json")
 	basicSelectors := LinkshellBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, _ := pack.Asset("linkshell/members.json")
+	membersBytes, _ := css.Asset("linkshell/members.json")
 	membersSelectors := LinkshellMemberSelectors{}
 	json.Unmarshal(membersBytes, &membersSelectors)
 

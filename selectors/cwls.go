@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/karashiiro/godestone/pack"
+	"github.com/karashiiro/godestone/pack/css"
 )
 
 // CWLSBasicSelectors contains the CSS selectors for the basic information on the CWLS page.
@@ -37,11 +37,11 @@ type CWLSSelectors struct {
 
 // LoadCWLSSelectors loads the CSS selectors for the CWLS page.
 func LoadCWLSSelectors() *CWLSSelectors {
-	basicBytes, _ := pack.Asset("cwls/cwls.json")
+	basicBytes, _ := css.Asset("cwls/cwls.json")
 	basicSelectors := CWLSBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, _ := pack.Asset("cwls/members.json")
+	membersBytes, _ := css.Asset("cwls/members.json")
 	membersSelectors := CWLSMemberSelectors{}
 	json.Unmarshal(membersBytes, &membersSelectors)
 

@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/karashiiro/godestone/pack"
+	"github.com/karashiiro/godestone/pack/css"
 )
 
 // AchievementSelectors represents all CSS selectors associated with character achievements.
@@ -193,31 +193,31 @@ type ProfileSelectors struct {
 
 // LoadProfileSelectors loads the profile selectors.
 func LoadProfileSelectors() *ProfileSelectors {
-	achievementsBytes, _ := pack.Asset("profile/achievements.json")
+	achievementsBytes, _ := css.Asset("profile/achievements.json")
 	achievements := AchievementSelectors{}
 	json.Unmarshal(achievementsBytes, &achievements)
 
-	attributesBytes, _ := pack.Asset("profile/attributes.json")
+	attributesBytes, _ := css.Asset("profile/attributes.json")
 	attributes := AttributeSelectors{}
 	json.Unmarshal(attributesBytes, &attributes)
 
-	characterBytes, _ := pack.Asset("profile/character.json")
+	characterBytes, _ := css.Asset("profile/character.json")
 	character := CharacterSelectors{}
 	json.Unmarshal(characterBytes, &character)
 
-	classJobBytes, _ := pack.Asset("profile/classjob.json")
+	classJobBytes, _ := css.Asset("profile/classjob.json")
 	classJob := ClassJobSelectors{}
 	json.Unmarshal(classJobBytes, &classJob)
 
-	gearsetBytes, _ := pack.Asset("profile/gearset.json")
+	gearsetBytes, _ := css.Asset("profile/gearset.json")
 	gearset := GearSetSelectors{}
 	json.Unmarshal(gearsetBytes, &gearset)
 
-	minionBytes, _ := pack.Asset("profile/minion.json")
+	minionBytes, _ := css.Asset("profile/minion.json")
 	minion := MinionSelectors{}
 	json.Unmarshal(minionBytes, &minion)
 
-	mountBytes, _ := pack.Asset("profile/mount.json")
+	mountBytes, _ := css.Asset("profile/mount.json")
 	mount := MountSelectors{}
 	json.Unmarshal(mountBytes, &mount)
 

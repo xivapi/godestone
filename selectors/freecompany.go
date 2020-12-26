@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/karashiiro/godestone/pack"
+	"github.com/karashiiro/godestone/pack/css"
 )
 
 // FreeCompanyBasicSelectors contains the CSS selectors for the basic information on the Free Company page.
@@ -114,23 +114,23 @@ type FreeCompanySelectors struct {
 
 // LoadFreeCompanySelectors loads the CSS selectors for the Free Company page.
 func LoadFreeCompanySelectors() *FreeCompanySelectors {
-	basicBytes, _ := pack.Asset("freecompany/freecompany.json")
+	basicBytes, _ := css.Asset("freecompany/freecompany.json")
 	basicSelectors := FreeCompanyBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, _ := pack.Asset("freecompany/members.json")
+	membersBytes, _ := css.Asset("freecompany/members.json")
 	membersSelectors := FreeCompanyMemberSelectors{}
 	json.Unmarshal(membersBytes, &membersSelectors)
 
-	focusBytes, _ := pack.Asset("freecompany/focus.json")
+	focusBytes, _ := css.Asset("freecompany/focus.json")
 	focusSelectors := FreeCompanyFocusListSelectors{}
 	json.Unmarshal(focusBytes, &focusSelectors)
 
-	repBytes, _ := pack.Asset("freecompany/reputation.json")
+	repBytes, _ := css.Asset("freecompany/reputation.json")
 	repSelectors := FreeCompanyAlignmentListSelectors{}
 	json.Unmarshal(repBytes, &repSelectors)
 
-	seekBytes, _ := pack.Asset("freecompany/seeking.json")
+	seekBytes, _ := css.Asset("freecompany/seeking.json")
 	seekSelectors := FreeCompanySeekingListSelectors{}
 	json.Unmarshal(seekBytes, &seekSelectors)
 
