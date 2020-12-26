@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/karashiiro/godestone/pack"
+	"github.com/karashiiro/godestone/pack/css"
 )
 
 // CharacterSearchSelectors contains the CSS selectors for the character search interface.
@@ -104,23 +104,23 @@ type SearchSelectors struct {
 
 // LoadSearchSelectors loads the CSS selectors for the search interface.
 func LoadSearchSelectors() *SearchSelectors {
-	charaBytes, _ := pack.Asset("search/character.json")
+	charaBytes, _ := css.Asset("search/character.json")
 	charaSearchSelectors := CharacterSearchSelectors{}
 	json.Unmarshal(charaBytes, &charaSearchSelectors)
 
-	cwlsBytes, _ := pack.Asset("search/cwls.json")
+	cwlsBytes, _ := css.Asset("search/cwls.json")
 	cwlsSearchSelectors := CWLSSearchSelectors{}
 	json.Unmarshal(cwlsBytes, &cwlsSearchSelectors)
 
-	fcBytes, _ := pack.Asset("search/freecompany.json")
+	fcBytes, _ := css.Asset("search/freecompany.json")
 	fcSearchSelectors := FreeCompanySearchSelectors{}
 	json.Unmarshal(fcBytes, &fcSearchSelectors)
 
-	lsBytes, _ := pack.Asset("search/linkshell.json")
+	lsBytes, _ := css.Asset("search/linkshell.json")
 	lsSearchSelectors := LinkshellSearchSelectors{}
 	json.Unmarshal(lsBytes, &lsSearchSelectors)
 
-	pvpTeamBytes, _ := pack.Asset("search/pvpteam.json")
+	pvpTeamBytes, _ := css.Asset("search/pvpteam.json")
 	pvpTeamSearchSelectors := PVPTeamSearchSelectors{}
 	json.Unmarshal(pvpTeamBytes, &pvpTeamSearchSelectors)
 

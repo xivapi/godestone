@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/karashiiro/godestone/pack"
+	"github.com/karashiiro/godestone/pack/css"
 )
 
 // PVPTeamBasicSelectors contains the CSS selectors for the basic information on the PVP team page.
@@ -41,11 +41,11 @@ type PVPTeamSelectors struct {
 
 // LoadPVPTeamSelectors loads the CSS selectors for the PVP team page.
 func LoadPVPTeamSelectors() *PVPTeamSelectors {
-	basicBytes, _ := pack.Asset("pvpteam/pvpteam.json")
+	basicBytes, _ := css.Asset("pvpteam/pvpteam.json")
 	basicSelectors := PVPTeamBasicSelectors{}
 	json.Unmarshal(basicBytes, &basicSelectors)
 
-	membersBytes, _ := pack.Asset("pvpteam/members.json")
+	membersBytes, _ := css.Asset("pvpteam/members.json")
 	membersSelectors := PVPTeamMemberSelectors{}
 	json.Unmarshal(membersBytes, &membersSelectors)
 

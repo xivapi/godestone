@@ -25,7 +25,7 @@
 // lodestone-css-selectors/search/freecompany.json
 // lodestone-css-selectors/search/linkshell.json
 // lodestone-css-selectors/search/pvpteam.json
-package pack
+package css
 
 import (
 	"bytes"
@@ -496,7 +496,7 @@ func searchCharacterJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "search/character.json", size: 1429, mode: os.FileMode(438), modTime: time.Unix(1608875210, 0)}
+	info := bindataFileInfo{name: "search/character.json", size: 1429, mode: os.FileMode(438), modTime: time.Unix(1608875457, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/karashiiro/godestone/collectors"
+	"github.com/karashiiro/godestone/pack/css"
 	"github.com/karashiiro/godestone/search"
 
 	"github.com/karashiiro/godestone/models"
-	"github.com/karashiiro/godestone/pack"
 	"github.com/karashiiro/godestone/selectors"
 )
 
@@ -315,7 +315,7 @@ func NewScraper(lang SiteLang) (*Scraper, error) {
 	searchSelectors := selectors.LoadSearchSelectors()
 	fcSelectors := selectors.LoadFreeCompanySelectors()
 
-	metaBytes, _ := pack.Asset("meta.json")
+	metaBytes, _ := css.Asset("meta.json")
 	meta := models.Meta{}
 	json.Unmarshal(metaBytes, &meta)
 
