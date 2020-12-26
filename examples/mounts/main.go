@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -22,6 +23,6 @@ func main() {
 	}
 
 	for _, mount := range m {
-		log.Println(mount.Name)
+		log.Println(mount.Name, fmt.Sprintf("(ID: %d)", mount.ID))
 	}
 }

@@ -2,6 +2,12 @@ package models
 
 // Mount represents a mount.
 type Mount struct {
-	Icon string
+	ID   uint32
 	Name string
+	Icon string
+
+	NameEN string
+	NameDE string
+	NameFR string
+	NameJA string
 }

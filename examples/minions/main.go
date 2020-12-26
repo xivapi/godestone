@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -22,6 +23,6 @@ func main() {
 	}
 
 	for _, minion := range m {
-		log.Println(minion.Name)
+		log.Println(minion.Name, fmt.Sprintf("(ID: %d)", minion.ID))
 	}
 }

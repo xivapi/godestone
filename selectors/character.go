@@ -85,14 +85,22 @@ type CharacterSelectors struct {
 
 // MinionSelectors represents all CSS selectors associated with character minions.
 type MinionSelectors struct {
-	List SelectorInfo `json:"LIST"`
-	Name SelectorInfo `json:"NAME"`
+	Minions struct {
+		Root SelectorInfo `json:"ROOT"`
+		Name SelectorInfo `json:"NAME"`
+		Icon SelectorInfo `json:"ICON"`
+	} `json:"MINIONS"`
+	Total SelectorInfo `json:"TOTAL"`
 }
 
 // MountSelectors represents all CSS selectors associated with character mounts.
 type MountSelectors struct {
-	List SelectorInfo `json:"LIST"`
-	Name SelectorInfo `json:"NAME"`
+	Mounts struct {
+		Root SelectorInfo `json:"ROOT"`
+		Name SelectorInfo `json:"NAME"`
+		Icon SelectorInfo `json:"ICON"`
+	} `json:"MOUNTS"`
+	Total SelectorInfo `json:"TOTAL"`
 }
 
 // GearSelectors represents the selectors associated with a character gear piece.
