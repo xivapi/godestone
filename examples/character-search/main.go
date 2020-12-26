@@ -9,10 +9,7 @@ import (
 )
 
 func main() {
-	s, err := godestone.NewScraper(godestone.EN)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	s := godestone.NewScraper(godestone.EN)
 
 	opts := search.CharacterOptions{}
 	if len(os.Args) > 1 {

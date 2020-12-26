@@ -8,10 +8,7 @@ import (
 )
 
 func main() {
-	s, err := godestone.NewScraper(godestone.EN)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	s := godestone.NewScraper(godestone.EN)
 
 	for member := range s.FetchFreeCompanyMembers(os.Args[1]) {
 		if member.Error != nil {

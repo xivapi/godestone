@@ -9,10 +9,7 @@ import (
 )
 
 func main() {
-	s, err := godestone.NewScraper(godestone.EN)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	s := godestone.NewScraper(godestone.EN)
 
 	fc, err := s.FetchFreeCompany(os.Args[1])
 	if err != nil {
