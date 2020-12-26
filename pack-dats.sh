@@ -1,0 +1,3 @@
+#!/bin/sh
+go-bindata -o pack/gamedata.go -prefix "lodestone-data-exports/pack" -ignore="(LICENSE|README.md|.git|.gitignore|meta.json|LodestoneDataExporter.*|schema|.vscode)" lodestone-data-exports/...
+sed -i "s/package main/package pack/g" pack/gamedata.go
