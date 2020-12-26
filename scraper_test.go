@@ -41,10 +41,7 @@ var linkshellIds []string = []string{"20547673299961415", "19703248369746483", "
 
 func TestFetchLinkshell(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			for _, id := range linkshellIds {
@@ -86,10 +83,7 @@ var cwlsIds []string = []string{
 
 func TestFetchCWLS(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			for _, id := range cwlsIds {
@@ -132,10 +126,7 @@ var pvpTeamIds []string = []string{
 
 func TestFetchPVPTeam(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			for _, id := range pvpTeamIds {
@@ -180,10 +171,7 @@ var fcIds []string = []string{
 
 func TestFetchFreeCompany(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			for _, id := range fcIds {
@@ -212,10 +200,7 @@ func TestFetchFreeCompany(t *testing.T) {
 
 func TestFetchFreeCompanyMembers(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			for _, id := range fcIds {
@@ -226,7 +211,7 @@ func TestFetchFreeCompanyMembers(t *testing.T) {
 								return
 							}
 
-							t.Errorf(err.Error())
+							t.Errorf(member.Error.Error())
 						}
 
 						failIfStringEmpty(t, "Member avatar", member.Avatar)
@@ -243,10 +228,7 @@ func TestFetchFreeCompanyMembers(t *testing.T) {
 
 func TestSearchFreeCompanies(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			opts := search.FreeCompanyOptions{}
@@ -257,7 +239,7 @@ func TestSearchFreeCompanies(t *testing.T) {
 						return
 					}
 
-					t.Errorf(err.Error())
+					t.Errorf(fc.Error.Error())
 				}
 
 				failIfStringEmpty(t, "FC active state", string(fc.Active))
@@ -276,10 +258,7 @@ func TestSearchFreeCompanies(t *testing.T) {
 
 func TestSearchCharacters(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			opts := search.CharacterOptions{}
@@ -290,7 +269,7 @@ func TestSearchCharacters(t *testing.T) {
 						return
 					}
 
-					t.Errorf(err.Error())
+					t.Errorf(character.Error.Error())
 				}
 
 				failIfStringEmpty(t, "Character avatar", character.Avatar)
@@ -305,10 +284,7 @@ func TestSearchCharacters(t *testing.T) {
 
 func TestSearchCWLS(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			opts := search.CWLSOptions{}
@@ -319,7 +295,7 @@ func TestSearchCWLS(t *testing.T) {
 						return
 					}
 
-					t.Errorf(err.Error())
+					t.Errorf(cwls.Error.Error())
 				}
 
 				failIfStringEmpty(t, "CWLS ID", cwls.ID)
@@ -333,10 +309,7 @@ func TestSearchCWLS(t *testing.T) {
 
 func TestSearchLinkshells(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			opts := search.LinkshellOptions{}
@@ -347,7 +320,7 @@ func TestSearchLinkshells(t *testing.T) {
 						return
 					}
 
-					t.Errorf(err.Error())
+					t.Errorf(ls.Error.Error())
 				}
 
 				failIfStringEmpty(t, "Linkshell ID", ls.ID)
@@ -362,10 +335,7 @@ func TestSearchLinkshells(t *testing.T) {
 
 func TestSearchPVPTeams(t *testing.T) {
 	for _, lang := range langCodes {
-		s, err := NewScraper(lang)
-		if err != nil {
-			t.Errorf(err.Error())
-		}
+		s := NewScraper(lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			opts := search.PVPTeamOptions{}
@@ -376,7 +346,7 @@ func TestSearchPVPTeams(t *testing.T) {
 						return
 					}
 
-					t.Errorf(err.Error())
+					t.Errorf(ls.Error.Error())
 				}
 
 				failIfStringEmpty(t, "PVP team ID", ls.ID)
