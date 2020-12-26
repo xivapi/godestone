@@ -27,10 +27,10 @@ type Scraper struct {
 	searchSelectors    *selectors.SearchSelectors
 	fcSelectors        *selectors.FreeCompanySelectors
 
-	items   *exports.ItemTable
-	minions *exports.MinionTable
-	mounts  *exports.MountTable
-	titles  *exports.TitleTable
+	itemTable   *exports.ItemTable
+	minionTable *exports.MinionTable
+	mountTable  *exports.MountTable
+	titleTable  *exports.TitleTable
 }
 
 // NewScraper creates a new instance of the Scraper.
@@ -85,6 +85,42 @@ func (s *Scraper) getFreeCompanySelectors() *selectors.FreeCompanySelectors {
 		s.fcSelectors = selectors.LoadFreeCompanySelectors()
 	}
 	return s.fcSelectors
+}
+
+func (s *Scraper) getItemTable() *exports.ItemTable {
+	if s.itemTable == nil {
+		data, _ := exports.Asset("item_table.bin")
+		itemTable := exports.GetRootAsItemTable(data, 0)
+		s.itemTable = itemTable
+	}
+	return s.itemTable
+}
+
+func (s *Scraper) getMinionTable() *exports.MinionTable {
+	if s.minionTable == nil {
+		data, _ := exports.Asset("minion_table.bin")
+		minionTable := exports.GetRootAsMinionTable(data, 0)
+		s.minionTable = minionTable
+	}
+	return s.minionTable
+}
+
+func (s *Scraper) getMountTable() *exports.MountTable {
+	if s.mountTable == nil {
+		data, _ := exports.Asset("mount_table.bin")
+		mountTable := exports.GetRootAsMountTable(data, 0)
+		s.mountTable = mountTable
+	}
+	return s.mountTable
+}
+
+func (s *Scraper) getTitleTable() *exports.TitleTable {
+	if s.titleTable == nil {
+		data, _ := exports.Asset("title_table.bin")
+		titleTable := exports.GetRootAsTitleTable(data, 0)
+		s.titleTable = titleTable
+	}
+	return s.titleTable
 }
 
 // FetchCharacter returns character information for the provided Lodestone ID.
