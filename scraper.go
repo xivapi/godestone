@@ -29,6 +29,7 @@ type Scraper struct {
 	fcSelectors        *selectors.FreeCompanySelectors
 
 	achievementTable  *exports.AchievementTable
+	classJobTable     *exports.ClassJobTable
 	deityTable        *exports.DeityTable
 	grandCompanyTable *exports.GrandCompanyTable
 	itemTable         *exports.ItemTable
@@ -36,6 +37,7 @@ type Scraper struct {
 	mountTable        *exports.MountTable
 	raceTable         *exports.RaceTable
 	titleTable        *exports.TitleTable
+	townTable         *exports.TownTable
 	tribeTable        *exports.TribeTable
 }
 
@@ -102,6 +104,15 @@ func (s *Scraper) getAchievementTable() *exports.AchievementTable {
 	return s.achievementTable
 }
 
+func (s *Scraper) getClassJobTable() *exports.ClassJobTable {
+	if s.classJobTable == nil {
+		data, _ := exports.Asset("classjob_table.bin")
+		classJobTable := exports.GetRootAsClassJobTable(data, 0)
+		s.classJobTable = classJobTable
+	}
+	return s.classJobTable
+}
+
 func (s *Scraper) getDeityTable() *exports.DeityTable {
 	if s.deityTable == nil {
 		data, _ := exports.Asset("deity_table.bin")
@@ -165,6 +176,15 @@ func (s *Scraper) getTitleTable() *exports.TitleTable {
 	return s.titleTable
 }
 
+func (s *Scraper) getTownTable() *exports.TownTable {
+	if s.townTable == nil {
+		data, _ := exports.Asset("town_table.bin")
+		townTable := exports.GetRootAsTownTable(data, 0)
+		s.townTable = townTable
+	}
+	return s.townTable
+}
+
 func (s *Scraper) getTribeTable() *exports.TribeTable {
 	if s.tribeTable == nil {
 		data, _ := exports.Asset("tribe_table.bin")
@@ -185,6 +205,7 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 		s.getGrandCompanyTable(),
 		s.getItemTable(),
 		s.getTitleTable(),
+		s.getTownTable(),
 		s.getDeityTable(),
 		s.getRaceTable(),
 		s.getTribeTable(),

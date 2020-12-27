@@ -15,17 +15,32 @@ func TribeTableLookup(tribeTable *exports.TribeTable, name string) *exports.Trib
 		tribe := exports.Tribe{}
 		tribeTable.Tribes(&tribe, i)
 
-		nameEn := string(tribe.NameEn())
-		nameDe := string(tribe.NameDe())
-		nameFr := string(tribe.NameFr())
-		nameJa := string(tribe.NameJa())
+		nameMasculineEn := string(tribe.NameMasculineEn())
+		nameMasculineDe := string(tribe.NameMasculineDe())
+		nameMasculineFr := string(tribe.NameMasculineFr())
+		nameMasculineJa := string(tribe.NameMasculineJa())
+		nameFeminineEn := string(tribe.NameFeminineEn())
+		nameFeminineDe := string(tribe.NameFeminineDe())
+		nameFeminineFr := string(tribe.NameFeminineFr())
+		nameFeminineJa := string(tribe.NameFeminineJa())
 
-		nameEnLower := strings.ToLower(nameEn)
-		nameDeLower := strings.ToLower(nameDe)
-		nameFrLower := strings.ToLower(nameFr)
-		nameJaLower := strings.ToLower(nameJa)
+		nameMasculineEnLower := strings.ToLower(nameMasculineEn)
+		nameMasculineDeLower := strings.ToLower(nameMasculineDe)
+		nameMasculineFrLower := strings.ToLower(nameMasculineFr)
+		nameMasculineJaLower := strings.ToLower(nameMasculineJa)
+		nameFeminineEnLower := strings.ToLower(nameFeminineEn)
+		nameFeminineDeLower := strings.ToLower(nameFeminineDe)
+		nameFeminineFrLower := strings.ToLower(nameFeminineFr)
+		nameFeminineJaLower := strings.ToLower(nameFeminineJa)
 
-		if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
+		if nameMasculineEnLower == nameLower ||
+			nameMasculineDeLower == nameLower ||
+			nameMasculineFrLower == nameLower ||
+			nameMasculineJaLower == nameLower ||
+			nameFeminineEnLower == nameLower ||
+			nameFeminineDeLower == nameLower ||
+			nameFeminineFrLower == nameLower ||
+			nameFeminineJaLower == nameLower {
 			return &tribe
 		}
 	}

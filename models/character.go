@@ -5,24 +5,7 @@ import (
 
 	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/gender"
-	"github.com/karashiiro/godestone/data/town"
 )
-
-// Title represents a title that a character can have.
-type Title struct {
-	ID     uint32
-	Name   string
-	Prefix bool
-
-	NameMasculineEN string
-	NameMasculineJA string
-	NameMasculineDE string
-	NameMasculineFR string
-	NameFeminineEN  string
-	NameFeminineJA  string
-	NameFeminineDE  string
-	NameFeminineFR  string
-}
 
 // Character represents the information available about a character on The Lodestone.
 type Character struct {
@@ -45,14 +28,11 @@ type Character struct {
 	ParseDate         time.Time
 	Portrait          string
 	PvPTeamID         string
-	Race              *NamedEntity
-	Title             *Title
-	Town              *struct {
-		Name town.Town
-		Icon string
-	}
-	Tribe *NamedEntity
-	World string
+	Race              *GenderedEntity
+	Title             *GenderedEntity
+	Town              *NamedEntity
+	Tribe             *GenderedEntity
+	World             string
 }
 
 // CharacterSearchResult contains data from the character search page about a character.

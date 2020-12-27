@@ -10,7 +10,6 @@ import (
 	"github.com/karashiiro/godestone/data/baseparam"
 	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/gender"
-	"github.com/karashiiro/godestone/data/town"
 	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
@@ -23,6 +22,7 @@ func BuildCharacterCollector(
 	grandCompanyTable *exports.GrandCompanyTable,
 	itemTable *exports.ItemTable,
 	titleTable *exports.TitleTable,
+	townTable *exports.TownTable,
 	deityTable *exports.DeityTable,
 	raceTable *exports.RaceTable,
 	tribeTable *exports.TribeTable,
@@ -112,25 +112,33 @@ func BuildCharacterCollector(
 		values := charSelectors.RaceClanGender.ParseInnerHTML(e)
 
 		r := lookups.RaceTableLookup(raceTable, values[0])
-		charData.Race = &models.NamedEntity{
+		charData.Race = &models.GenderedEntity{
 			ID:   r.Id(),
 			Name: values[0],
 
-			NameEN: string(r.NameEn()),
-			NameJA: string(r.NameJa()),
-			NameDE: string(r.NameDe()),
-			NameFR: string(r.NameFr()),
+			NameMasculineEN: string(r.NameMasculineEn()),
+			NameFeminineEN:  string(r.NameFeminineEn()),
+			NameMasculineJA: string(r.NameMasculineJa()),
+			NameFeminineJA:  string(r.NameFeminineJa()),
+			NameMasculineDE: string(r.NameMasculineDe()),
+			NameFeminineDE:  string(r.NameFeminineDe()),
+			NameMasculineFR: string(r.NameMasculineFr()),
+			NameFeminineFR:  string(r.NameFeminineFr()),
 		}
 
 		t := lookups.TribeTableLookup(tribeTable, values[1])
-		charData.Tribe = &models.NamedEntity{
+		charData.Tribe = &models.GenderedEntity{
 			ID:   t.Id(),
 			Name: values[0],
 
-			NameEN: string(t.NameEn()),
-			NameJA: string(t.NameJa()),
-			NameDE: string(t.NameDe()),
-			NameFR: string(t.NameFr()),
+			NameMasculineEN: string(t.NameMasculineEn()),
+			NameFeminineEN:  string(t.NameFeminineEn()),
+			NameMasculineJA: string(t.NameMasculineJa()),
+			NameFeminineJA:  string(t.NameFeminineJa()),
+			NameMasculineDE: string(t.NameMasculineDe()),
+			NameFeminineDE:  string(t.NameFeminineDe()),
+			NameMasculineFR: string(t.NameMasculineFr()),
+			NameFeminineFR:  string(t.NameFeminineFr()),
 		}
 
 		charData.Gender = gender.Parse(values[2])
@@ -178,7 +186,7 @@ func BuildCharacterCollector(
 				nameFeminineDeLower == titleTextLower ||
 				nameFeminineFrLower == titleTextLower ||
 				nameFeminineJaLower == titleTextLower {
-				charData.Title = &models.Title{
+				charData.Title = &models.GenderedEntity{
 					ID:     title.Id(),
 					Name:   titleText,
 					Prefix: title.IsPrefix(),
@@ -196,12 +204,17 @@ func BuildCharacterCollector(
 		}
 	})
 
-	charData.Town = &struct {
-		Name town.Town
-		Icon string
-	}{}
+	charData.Town = &models.NamedEntity{}
 	c.OnHTML(charSelectors.Town.Name.Selector, func(e *colly.HTMLElement) {
-		charData.Town.Name = town.Parse(charSelectors.Town.Name.Parse(e)[0])
+		name := charSelectors.Town.Name.Parse(e)[0]
+		t := lookups.TownTableLookup(townTable, name)
+
+		charData.Town.ID = t.Id()
+		charData.Town.Name = name
+		charData.Town.NameEN = string(t.NameEn())
+		charData.Town.NameJA = string(t.NameJa())
+		charData.Town.NameDE = string(t.NameDe())
+		charData.Town.NameFR = string(t.NameFr())
 	})
 	c.OnHTML(charSelectors.Town.Icon.Selector, func(e *colly.HTMLElement) {
 		charData.Town.Icon = charSelectors.Town.Icon.Parse(e)[0]

@@ -66,7 +66,7 @@ func TestFetchCharacter(t *testing.T) {
 					failIfStringEmpty(t, "Character nameday", c.Nameday)
 					failIfStringEmpty(t, "Character portrait", c.Portrait)
 					failIfStringEmpty(t, "Character race", c.Race.Name)
-					failIfNumberZero(t, "Character town", int64(c.Town.Name))
+					failIfStringEmpty(t, "Character town", c.Town.Name)
 					failIfStringEmpty(t, "Character town icon", c.Town.Icon)
 					failIfStringEmpty(t, "Character tribe", c.Tribe.Name)
 					failIfStringEmpty(t, "Character world", c.World)
