@@ -20,12 +20,13 @@ func TownTableLookup(townTable *exports.TownTable, name string) *exports.Town {
 		nameFr := string(town.NameFr())
 		nameJa := string(town.NameJa())
 
-		nameEnLower := strings.ToLower(nameEn)
-		nameDeLower := strings.ToLower(nameDe)
-		nameFrLower := strings.ToLower(nameFr)
-		nameJaLower := strings.ToLower(nameJa)
-
-		if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
+		if listContains(
+			nameLower,
+			nameEn,
+			nameDe,
+			nameFr,
+			nameJa,
+		) {
 			return &town
 		}
 	}

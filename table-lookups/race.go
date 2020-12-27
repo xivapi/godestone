@@ -24,23 +24,17 @@ func RaceTableLookup(raceTable *exports.RaceTable, name string) *exports.Race {
 		nameFeminineFr := string(race.NameFeminineFr())
 		nameFeminineJa := string(race.NameFeminineJa())
 
-		nameMasculineEnLower := strings.ToLower(nameMasculineEn)
-		nameMasculineDeLower := strings.ToLower(nameMasculineDe)
-		nameMasculineFrLower := strings.ToLower(nameMasculineFr)
-		nameMasculineJaLower := strings.ToLower(nameMasculineJa)
-		nameFeminineEnLower := strings.ToLower(nameFeminineEn)
-		nameFeminineDeLower := strings.ToLower(nameFeminineDe)
-		nameFeminineFrLower := strings.ToLower(nameFeminineFr)
-		nameFeminineJaLower := strings.ToLower(nameFeminineJa)
-
-		if nameMasculineEnLower == nameLower ||
-			nameMasculineDeLower == nameLower ||
-			nameMasculineFrLower == nameLower ||
-			nameMasculineJaLower == nameLower ||
-			nameFeminineEnLower == nameLower ||
-			nameFeminineDeLower == nameLower ||
-			nameFeminineFrLower == nameLower ||
-			nameFeminineJaLower == nameLower {
+		if listContains(
+			nameLower,
+			nameMasculineEn,
+			nameMasculineDe,
+			nameMasculineFr,
+			nameMasculineJa,
+			nameFeminineEn,
+			nameFeminineDe,
+			nameFeminineFr,
+			nameFeminineJa,
+		) {
 			return &race
 		}
 	}

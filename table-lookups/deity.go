@@ -20,12 +20,13 @@ func DeityTableLookup(deityTable *exports.DeityTable, name string) *exports.Deit
 		nameFr := string(deity.NameFr())
 		nameJa := string(deity.NameJa())
 
-		nameEnLower := strings.ToLower(nameEn)
-		nameDeLower := strings.ToLower(nameDe)
-		nameFrLower := strings.ToLower(nameFr)
-		nameJaLower := strings.ToLower(nameJa)
-
-		if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
+		if listContains(
+			nameLower,
+			nameEn,
+			nameDe,
+			nameFr,
+			nameJa,
+		) {
 			return &deity
 		}
 	}
