@@ -2,6 +2,7 @@ package collectors
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/data/baseparam"
@@ -13,11 +14,12 @@ import (
 	"github.com/karashiiro/godestone/data/town"
 	"github.com/karashiiro/godestone/data/tribe"
 	"github.com/karashiiro/godestone/models"
+	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
 )
 
 // BuildCharacterCollector builds the collector used for processing the page.
-func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, charData *models.Character) *colly.Collector {
+func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, titleTable *exports.TitleTable, charData *models.Character) *colly.Collector {
 	c := colly.NewCollector()
 	c.UserAgent = meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
@@ -99,9 +101,56 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 	})
 
 	c.OnHTML(charSelectors.Title.Selector, func(e *colly.HTMLElement) {
-		// TODO
-		charData.Title = 0
-		charData.TitleTop = false
+		titleText := charSelectors.Title.Parse(e)[0]
+		titleTextLower := strings.ToLower(titleText)
+
+		nTitles := titleTable.TitlesLength()
+		for i := 0; i < nTitles; i++ {
+			title := exports.Title{}
+			titleTable.Titles(&title, i)
+
+			nameMasculineEn := string(title.NameMasculineEn())
+			nameMasculineDe := string(title.NameMasculineDe())
+			nameMasculineFr := string(title.NameMasculineFr())
+			nameMasculineJa := string(title.NameMasculineJa())
+			nameFeminineEn := string(title.NameFeminineEn())
+			nameFeminineDe := string(title.NameFeminineDe())
+			nameFeminineFr := string(title.NameFeminineFr())
+			nameFeminineJa := string(title.NameFeminineJa())
+
+			nameMasculineEnLower := strings.ToLower(nameMasculineEn)
+			nameMasculineDeLower := strings.ToLower(nameMasculineDe)
+			nameMasculineFrLower := strings.ToLower(nameMasculineFr)
+			nameMasculineJaLower := strings.ToLower(nameMasculineJa)
+			nameFeminineEnLower := strings.ToLower(nameFeminineEn)
+			nameFeminineDeLower := strings.ToLower(nameFeminineDe)
+			nameFeminineFrLower := strings.ToLower(nameFeminineFr)
+			nameFeminineJaLower := strings.ToLower(nameFeminineJa)
+
+			if nameMasculineEnLower == titleTextLower ||
+				nameMasculineDeLower == titleTextLower ||
+				nameMasculineFrLower == titleTextLower ||
+				nameMasculineJaLower == titleTextLower ||
+				nameFeminineEnLower == titleTextLower ||
+				nameFeminineDeLower == titleTextLower ||
+				nameFeminineFrLower == titleTextLower ||
+				nameFeminineJaLower == titleTextLower {
+				charData.Title = &models.Title{
+					ID:     title.Id(),
+					Name:   titleText,
+					Prefix: title.IsPrefix(),
+
+					NameMasculineEN: nameMasculineEn,
+					NameMasculineDE: nameMasculineDe,
+					NameMasculineFR: nameMasculineFr,
+					NameMasculineJA: nameMasculineJa,
+					NameFeminineEN:  nameFeminineEn,
+					NameFeminineDE:  nameFeminineDe,
+					NameFeminineFR:  nameFeminineFr,
+					NameFeminineJA:  nameFeminineJa,
+				}
+			}
+		}
 	})
 
 	charData.Town = &struct {

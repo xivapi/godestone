@@ -11,6 +11,22 @@ import (
 	"github.com/karashiiro/godestone/data/tribe"
 )
 
+// Title represents a title that a character can have.
+type Title struct {
+	ID     uint32
+	Name   string
+	Prefix bool
+
+	NameMasculineEN string
+	NameMasculineJA string
+	NameMasculineDE string
+	NameMasculineFR string
+	NameFeminineEN  string
+	NameFeminineJA  string
+	NameFeminineDE  string
+	NameFeminineFR  string
+}
+
 // Character represents the information available about a character on The Lodestone.
 type Character struct {
 	ActiveClassJob    *ClassJob
@@ -36,8 +52,7 @@ type Character struct {
 	Portrait  string
 	PvPTeamID string
 	Race      race.Race
-	Title     uint32
-	TitleTop  bool
+	Title     *Title
 	Town      *struct {
 		Name town.Town
 		Icon string
