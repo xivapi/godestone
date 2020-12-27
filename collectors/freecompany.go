@@ -189,7 +189,6 @@ func BuildFreeCompanyCollector(
 		rep := &models.FreeCompanyReputation{}
 		c.OnHTML(curRep.Name.Selector, func(e *colly.HTMLElement) {
 			gcName := curRep.Name.Parse(e)[0]
-
 			gc := lookups.GrandCompanyTableLookup(grandCompanyTable, gcName)
 
 			rep.GrandCompany = &models.NamedEntity{
