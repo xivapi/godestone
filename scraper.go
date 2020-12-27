@@ -28,11 +28,15 @@ type Scraper struct {
 	searchSelectors    *selectors.SearchSelectors
 	fcSelectors        *selectors.FreeCompanySelectors
 
-	achievementTable *exports.AchievementTable
-	itemTable        *exports.ItemTable
-	minionTable      *exports.MinionTable
-	mountTable       *exports.MountTable
-	titleTable       *exports.TitleTable
+	achievementTable  *exports.AchievementTable
+	deityTable        *exports.DeityTable
+	grandCompanyTable *exports.GrandCompanyTable
+	itemTable         *exports.ItemTable
+	minionTable       *exports.MinionTable
+	mountTable        *exports.MountTable
+	raceTable         *exports.RaceTable
+	titleTable        *exports.TitleTable
+	tribeTable        *exports.TribeTable
 }
 
 // NewScraper creates a new instance of the Scraper.
@@ -98,6 +102,24 @@ func (s *Scraper) getAchievementTable() *exports.AchievementTable {
 	return s.achievementTable
 }
 
+func (s *Scraper) getDeityTable() *exports.DeityTable {
+	if s.deityTable == nil {
+		data, _ := exports.Asset("deity_table.bin")
+		deityTable := exports.GetRootAsDeityTable(data, 0)
+		s.deityTable = deityTable
+	}
+	return s.deityTable
+}
+
+func (s *Scraper) getGrandCompanyTable() *exports.GrandCompanyTable {
+	if s.grandCompanyTable == nil {
+		data, _ := exports.Asset("gc_table.bin")
+		grandCompanyTable := exports.GetRootAsGrandCompanyTable(data, 0)
+		s.grandCompanyTable = grandCompanyTable
+	}
+	return s.grandCompanyTable
+}
+
 func (s *Scraper) getItemTable() *exports.ItemTable {
 	if s.itemTable == nil {
 		data, _ := exports.Asset("item_table.bin")
@@ -125,6 +147,15 @@ func (s *Scraper) getMountTable() *exports.MountTable {
 	return s.mountTable
 }
 
+func (s *Scraper) getRaceTable() *exports.RaceTable {
+	if s.raceTable == nil {
+		data, _ := exports.Asset("race_table.bin")
+		raceTable := exports.GetRootAsRaceTable(data, 0)
+		s.raceTable = raceTable
+	}
+	return s.raceTable
+}
+
 func (s *Scraper) getTitleTable() *exports.TitleTable {
 	if s.titleTable == nil {
 		data, _ := exports.Asset("title_table.bin")
@@ -134,12 +165,32 @@ func (s *Scraper) getTitleTable() *exports.TitleTable {
 	return s.titleTable
 }
 
+func (s *Scraper) getTribeTable() *exports.TribeTable {
+	if s.tribeTable == nil {
+		data, _ := exports.Asset("tribe_table.bin")
+		tribeTable := exports.GetRootAsTribeTable(data, 0)
+		s.tribeTable = tribeTable
+	}
+	return s.tribeTable
+}
+
 // FetchCharacter returns character information for the provided Lodestone ID.
 func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	now := time.Now()
 	charData := models.Character{ID: id, ParseDate: now}
 
-	charCollector := collectors.BuildCharacterCollector(s.meta, s.getProfileSelectors(), s.getItemTable(), s.getTitleTable(), &charData)
+	charCollector := collectors.BuildCharacterCollector(
+		s.meta,
+		s.getProfileSelectors(),
+		s.getGrandCompanyTable(),
+		s.getItemTable(),
+		s.getTitleTable(),
+		s.getDeityTable(),
+		s.getRaceTable(),
+		s.getTribeTable(),
+		&charData,
+	)
+
 	err := charCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d", s.lang, id))
 	if err != nil {
 		return nil, err
@@ -310,7 +361,13 @@ func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
 	now := time.Now()
 	fc := models.FreeCompany{ID: id, ParseDate: now}
 
-	fcCollector := collectors.BuildFreeCompanyCollector(s.meta, s.getFreeCompanySelectors(), &fc)
+	fcCollector := collectors.BuildFreeCompanyCollector(
+		s.meta,
+		s.getFreeCompanySelectors(),
+		s.getGrandCompanyTable(),
+		&fc,
+	)
+
 	err := fcCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/freecompany/%s", s.lang, id))
 	if err != nil {
 		return nil, err
@@ -347,7 +404,12 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
-		searchCollector := collectors.BuildFreeCompanySearchCollector(s.meta, s.getSearchSelectors(), output)
+		searchCollector := collectors.BuildFreeCompanySearchCollector(
+			s.meta,
+			s.getSearchSelectors(),
+			s.getGrandCompanyTable(),
+			output,
+		)
 
 		err := searchCollector.Visit(uri)
 		if err != nil {
@@ -367,7 +429,13 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.CharacterSearchResult {
 	output := make(chan *models.CharacterSearchResult)
 
-	uri := opts.BuildURI(string(s.lang))
+	uri := opts.BuildURI(
+		s.getGrandCompanyTable(),
+		s.getRaceTable(),
+		s.getTribeTable(),
+		string(s.lang),
+	)
+
 	go func() {
 		searchCollector := collectors.BuildCharacterSearchCollector(s.meta, s.getSearchSelectors(), output)
 

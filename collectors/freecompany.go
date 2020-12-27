@@ -5,16 +5,21 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/data/grandcompany"
 	"github.com/karashiiro/godestone/data/reputation"
 	"github.com/karashiiro/godestone/data/role"
 	"github.com/karashiiro/godestone/models"
-	"github.com/karashiiro/godestone/search"
+	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
+	lookups "github.com/karashiiro/godestone/table-lookups"
 )
 
 // BuildFreeCompanyCollector builds the collector used for processing the page.
-func BuildFreeCompanyCollector(meta *models.Meta, fcSelectors *selectors.FreeCompanySelectors, fc *models.FreeCompany) *colly.Collector {
+func BuildFreeCompanyCollector(
+	meta *models.Meta,
+	fcSelectors *selectors.FreeCompanySelectors,
+	grandCompanyTable *exports.GrandCompanyTable,
+	fc *models.FreeCompany,
+) *colly.Collector {
 	c := colly.NewCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
@@ -22,7 +27,7 @@ func BuildFreeCompanyCollector(meta *models.Meta, fcSelectors *selectors.FreeCom
 
 	basicSelectors := fcSelectors.Basic
 	c.OnHTML(basicSelectors.ActiveState.Selector, func(e *colly.HTMLElement) {
-		fc.Active = search.FreeCompanyActiveState(basicSelectors.ActiveState.Parse(e)[0])
+		fc.Active = models.FreeCompanyActiveState(basicSelectors.ActiveState.Parse(e)[0])
 	})
 	c.OnHTML(basicSelectors.ActiveMemberCount.Selector, func(e *colly.HTMLElement) {
 		membersStr := basicSelectors.ActiveMemberCount.Parse(e)[0]
@@ -49,7 +54,7 @@ func BuildFreeCompanyCollector(meta *models.Meta, fcSelectors *selectors.FreeCom
 		}
 	})
 	c.OnHTML(basicSelectors.Recruitment.Selector, func(e *colly.HTMLElement) {
-		fc.Recruitment = search.FreeCompanyRecruitingState(basicSelectors.Recruitment.Parse(e)[0])
+		fc.Recruitment = models.FreeCompanyRecruitingState(basicSelectors.Recruitment.Parse(e)[0])
 	})
 	c.OnHTML(basicSelectors.Server.Selector, func(e *colly.HTMLElement) {
 		worldDC := basicSelectors.Server.Parse(e)
@@ -130,7 +135,7 @@ func BuildFreeCompanyCollector(meta *models.Meta, fcSelectors *selectors.FreeCom
 			info.Icon = curFocus.Icon.Parse(e)[0]
 		})
 		c.OnHTML(curFocus.Name.Selector, func(e *colly.HTMLElement) {
-			info.Kind = search.FreeCompanyFocus(curFocus.Name.Parse(e)[0])
+			info.Kind = models.FreeCompanyFocus(curFocus.Name.Parse(e)[0])
 		})
 		c.OnHTML(curFocus.Status.Selector, func(e *colly.HTMLElement) {
 			// Dangerous; this can match if the regex is broken because the return value will be an empty string
@@ -183,7 +188,19 @@ func BuildFreeCompanyCollector(meta *models.Meta, fcSelectors *selectors.FreeCom
 
 		rep := &models.FreeCompanyReputation{}
 		c.OnHTML(curRep.Name.Selector, func(e *colly.HTMLElement) {
-			rep.GrandCompany = grandcompany.Parse(curRep.Name.Parse(e)[0])
+			gcName := curRep.Name.Parse(e)[0]
+
+			gc := lookups.GrandCompanyTableLookup(grandCompanyTable, gcName)
+
+			rep.GrandCompany = &models.NamedEntity{
+				ID:   gc.Id(),
+				Name: gcName,
+
+				NameEN: string(gc.NameEn()),
+				NameJA: string(gc.NameJa()),
+				NameDE: string(gc.NameDe()),
+				NameFR: string(gc.NameFr()),
+			}
 		})
 		c.OnHTML(curRep.Progress.Selector, func(e *colly.HTMLElement) {
 			progressStr := curRep.Progress.Parse(e)[0]

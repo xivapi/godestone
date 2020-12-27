@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/karashiiro/godestone/data/grandcompany"
+	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/search"
 )
 
@@ -32,9 +32,9 @@ func failIfOlderThanGameRelease(t *testing.T, label string, input time.Time) {
 	}
 }
 
-func failIfGCInvalid(t *testing.T, label string, input grandcompany.GrandCompany) {
-	if grandcompany.Parse(string(input)) != grandcompany.None {
-		t.Errorf(fmt.Sprintf("%s is not a valid Grand Company; got %s", label, string(input)))
+func failIfGCInvalid(t *testing.T, label string, input *models.NamedEntity) {
+	if input == nil || input.Name == "" {
+		t.Errorf(fmt.Sprintf("%s is not a valid Grand Company; got %s", label, input.Name))
 	}
 }
 
@@ -59,16 +59,16 @@ func TestFetchCharacter(t *testing.T) {
 					failIfStringEmpty(t, "Character avatar", c.Avatar)
 					failIfStringEmpty(t, "Character DC", c.DC)
 					failIfNumberZero(t, "Character gender", int64(c.Gender))
-					failIfNumberZero(t, "Character deity", int64(c.GuardianDeity.Name))
+					failIfStringEmpty(t, "Character deity", c.GuardianDeity.Name)
 					failIfStringEmpty(t, "Character deity icon", c.GuardianDeity.Icon)
 					failIfNumberZero(t, "Character ID", int64(c.ID))
 					failIfStringEmpty(t, "Character name", c.Name)
 					failIfStringEmpty(t, "Character nameday", c.Nameday)
 					failIfStringEmpty(t, "Character portrait", c.Portrait)
-					failIfNumberZero(t, "Character race", int64(c.Race))
+					failIfStringEmpty(t, "Character race", c.Race.Name)
 					failIfNumberZero(t, "Character town", int64(c.Town.Name))
 					failIfStringEmpty(t, "Character town icon", c.Town.Icon)
-					failIfNumberZero(t, "Character tribe", int64(c.Tribe))
+					failIfStringEmpty(t, "Character tribe", c.Tribe.Name)
 					failIfStringEmpty(t, "Character world", c.World)
 				})
 			}

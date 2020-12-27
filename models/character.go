@@ -3,12 +3,9 @@ package models
 import (
 	"time"
 
-	"github.com/karashiiro/godestone/data/deity"
 	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/gender"
-	"github.com/karashiiro/godestone/data/race"
 	"github.com/karashiiro/godestone/data/town"
-	"github.com/karashiiro/godestone/data/tribe"
 )
 
 // Title represents a title that a character can have.
@@ -40,24 +37,21 @@ type Character struct {
 	FreeCompanyName   string
 	GearSet           *GearSet
 	Gender            gender.Gender
-	GrandCompany      *GrandCompanyInfo
-	GuardianDeity     *struct {
-		Name deity.GuardianDeity
-		Icon string
-	}
-	ID        uint32
-	Name      string
-	Nameday   string
-	ParseDate time.Time
-	Portrait  string
-	PvPTeamID string
-	Race      race.Race
-	Title     *Title
-	Town      *struct {
+	GrandCompanyInfo  *GrandCompanyInfo
+	GuardianDeity     *NamedEntity
+	ID                uint32
+	Name              string
+	Nameday           string
+	ParseDate         time.Time
+	Portrait          string
+	PvPTeamID         string
+	Race              *NamedEntity
+	Title             *Title
+	Town              *struct {
 		Name town.Town
 		Icon string
 	}
-	Tribe tribe.Tribe
+	Tribe *NamedEntity
 	World string
 }
 

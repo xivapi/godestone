@@ -4,15 +4,21 @@ import (
 	"strconv"
 	"time"
 
+	lookups "github.com/karashiiro/godestone/table-lookups"
+
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/data/grandcompany"
 	"github.com/karashiiro/godestone/models"
-	"github.com/karashiiro/godestone/search"
+	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
 )
 
 // BuildFreeCompanySearchCollector builds the collector used for processing the page.
-func BuildFreeCompanySearchCollector(meta *models.Meta, searchSelectors *selectors.SearchSelectors, output chan *models.FreeCompanySearchResult) *colly.Collector {
+func BuildFreeCompanySearchCollector(
+	meta *models.Meta,
+	searchSelectors *selectors.SearchSelectors,
+	grandCompanyTable *exports.GrandCompanyTable,
+	output chan *models.FreeCompanySearchResult,
+) *colly.Collector {
 	c := colly.NewCollector(
 		colly.MaxDepth(21),
 		colly.UserAgent(meta.UserAgentDesktop),
@@ -29,7 +35,7 @@ func BuildFreeCompanySearchCollector(meta *models.Meta, searchSelectors *selecto
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
 			nextFC := models.FreeCompanySearchResult{
-				Active: search.FreeCompanyActiveState(entrySelectors.Active.ParseThroughChildren(e)[0]),
+				Active: models.FreeCompanyActiveState(entrySelectors.Active.ParseThroughChildren(e)[0]),
 				Name:   entrySelectors.Name.ParseThroughChildren(e)[0],
 				ID:     entrySelectors.ID.ParseThroughChildren(e)[0],
 				CrestLayers: &models.CrestLayers{
@@ -37,9 +43,24 @@ func BuildFreeCompanySearchCollector(meta *models.Meta, searchSelectors *selecto
 					Middle: entrySelectors.CrestLayers.Middle.ParseThroughChildren(e)[0],
 					Top:    entrySelectors.CrestLayers.Top.ParseThroughChildren(e)[0],
 				},
-				GrandCompany: grandcompany.Parse(entrySelectors.GrandCompany.ParseThroughChildren(e)[0]),
-				Estate:       entrySelectors.EstateBuilt.ParseThroughChildren(e)[0],
-				Recruitment:  search.FreeCompanyRecruitingState(entrySelectors.RecruitmentOpen.ParseThroughChildren(e)[0]),
+				Estate:      entrySelectors.EstateBuilt.ParseThroughChildren(e)[0],
+				Recruitment: models.FreeCompanyRecruitingState(entrySelectors.RecruitmentOpen.ParseThroughChildren(e)[0]),
+			}
+
+			gcName := entrySelectors.GrandCompany.ParseThroughChildren(e)[0]
+			gc := lookups.GrandCompanyTableLookup(grandCompanyTable, gcName)
+
+			nGCs := grandCompanyTable.GrandCompaniesLength()
+			for i := 0; i < nGCs; i++ {
+				nextFC.GrandCompany = &models.NamedEntity{
+					ID:   gc.Id(),
+					Name: gcName,
+
+					NameEN: string(gc.NameEn()),
+					NameJA: string(gc.NameJa()),
+					NameDE: string(gc.NameDe()),
+					NameFR: string(gc.NameFr()),
+				}
 			}
 
 			server := entrySelectors.Server.ParseThroughChildren(e)

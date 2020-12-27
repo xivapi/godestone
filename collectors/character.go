@@ -1,26 +1,33 @@
 package collectors
 
 import (
-	"log"
 	"strconv"
 	"strings"
 
+	lookups "github.com/karashiiro/godestone/table-lookups"
+
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/data/baseparam"
-	"github.com/karashiiro/godestone/data/deity"
 	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/gender"
-	"github.com/karashiiro/godestone/data/grandcompany"
-	"github.com/karashiiro/godestone/data/race"
 	"github.com/karashiiro/godestone/data/town"
-	"github.com/karashiiro/godestone/data/tribe"
 	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
 )
 
 // BuildCharacterCollector builds the collector used for processing the page.
-func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, itemTable *exports.ItemTable, titleTable *exports.TitleTable, charData *models.Character) *colly.Collector {
+func BuildCharacterCollector(
+	meta *models.Meta,
+	profSelectors *selectors.ProfileSelectors,
+	grandCompanyTable *exports.GrandCompanyTable,
+	itemTable *exports.ItemTable,
+	titleTable *exports.TitleTable,
+	deityTable *exports.DeityTable,
+	raceTable *exports.RaceTable,
+	tribeTable *exports.TribeTable,
+	charData *models.Character,
+) *colly.Collector {
 	c := colly.NewCollector()
 	c.UserAgent = meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
@@ -52,19 +59,34 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 	c.OnHTML(charSelectors.GrandCompany.Selector, func(e *colly.HTMLElement) {
 		values := charSelectors.GrandCompany.Parse(e)
 
-		gcName := grandcompany.Parse(values[0])
+		gcName := values[0]
 		gcRank := gcrank.Parse(values[1])
 
-		gc := models.GrandCompanyInfo{NameID: gcName, RankID: gcRank}
-		charData.GrandCompany = &gc
+		mgc := lookups.GrandCompanyTableLookup(grandCompanyTable, gcName)
+		gc := &models.NamedEntity{
+			ID:   mgc.Id(),
+			Name: gcName,
+
+			NameEN: string(mgc.NameEn()),
+			NameJA: string(mgc.NameJa()),
+			NameDE: string(mgc.NameDe()),
+			NameFR: string(mgc.NameFr()),
+		}
+
+		charData.GrandCompanyInfo = &models.GrandCompanyInfo{GrandCompany: gc, RankID: gcRank}
 	})
 
-	charData.GuardianDeity = &struct {
-		Name deity.GuardianDeity
-		Icon string
-	}{}
+	charData.GuardianDeity = &models.NamedEntity{}
 	c.OnHTML(charSelectors.GuardianDeity.Name.Selector, func(e *colly.HTMLElement) {
-		charData.GuardianDeity.Name = deity.Parse(charSelectors.GuardianDeity.Name.Parse(e)[0])
+		name := charSelectors.GuardianDeity.Name.Parse(e)[0]
+		d := lookups.DeityTableLookup(deityTable, name)
+
+		charData.GuardianDeity.ID = d.Id()
+		charData.GuardianDeity.Name = name
+		charData.GuardianDeity.NameEN = string(d.NameEn())
+		charData.GuardianDeity.NameJA = string(d.NameJa())
+		charData.GuardianDeity.NameDE = string(d.NameDe())
+		charData.GuardianDeity.NameFR = string(d.NameFr())
 	})
 	c.OnHTML(charSelectors.GuardianDeity.Icon.Selector, func(e *colly.HTMLElement) {
 		charData.GuardianDeity.Icon = charSelectors.GuardianDeity.Icon.Parse(e)[0]
@@ -89,8 +111,28 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 	c.OnHTML(charSelectors.RaceClanGender.Selector, func(e *colly.HTMLElement) {
 		values := charSelectors.RaceClanGender.ParseInnerHTML(e)
 
-		charData.Race = race.Parse(values[0])
-		charData.Tribe = tribe.Parse(values[1])
+		r := lookups.RaceTableLookup(raceTable, values[0])
+		charData.Race = &models.NamedEntity{
+			ID:   r.Id(),
+			Name: values[0],
+
+			NameEN: string(r.NameEn()),
+			NameJA: string(r.NameJa()),
+			NameDE: string(r.NameDe()),
+			NameFR: string(r.NameFr()),
+		}
+
+		t := lookups.TribeTableLookup(tribeTable, values[1])
+		charData.Tribe = &models.NamedEntity{
+			ID:   t.Id(),
+			Name: values[0],
+
+			NameEN: string(t.NameEn()),
+			NameJA: string(t.NameJa()),
+			NameDE: string(t.NameDe()),
+			NameFR: string(t.NameFr()),
+		}
+
 		charData.Gender = gender.Parse(values[2])
 	})
 
@@ -273,7 +315,7 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 		})
 		c.OnHTML(currSelector.Stain.Selector, func(e *colly.HTMLElement) {
 			name := currSelector.Stain.Parse(e)[0]
-			item := itemTableLookup(itemTable, name)
+			item := lookups.ItemTableLookup(itemTable, name)
 			if item != nil {
 				currRef.Dye = item.Id()
 			}
@@ -286,7 +328,7 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 				name = name[0 : len(name)-3]
 			}
 
-			item := itemTableLookup(itemTable, name)
+			item := lookups.ItemTableLookup(itemTable, name)
 			if item != nil {
 				currRef.Name = name
 				currRef.ID = item.Id()
@@ -307,7 +349,7 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 		for _, materiaSelector := range materiaSelectors {
 			materiaCallback := func(e *colly.HTMLElement) {
 				name := materiaSelector.ParseInnerHTML(e)[0]
-				item := itemTableLookup(itemTable, name)
+				item := lookups.ItemTableLookup(itemTable, name)
 				if item != nil {
 					currRef.Materia = append(currRef.Materia, item.Id())
 				}
@@ -317,7 +359,7 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 
 		c.OnHTML(currSelector.MirageName.Selector, func(e *colly.HTMLElement) {
 			name := currSelector.MirageName.Parse(e)[0]
-			item := itemTableLookup(itemTable, name)
+			item := lookups.ItemTableLookup(itemTable, name)
 			if item != nil {
 				currRef.Mirage = item.Id()
 			}
@@ -326,7 +368,7 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 
 	c.OnHTML(partSelectors.SoulCrystal.Name.Selector, func(e *colly.HTMLElement) {
 		partRefs.SoulCrystal.Name = partSelectors.SoulCrystal.Name.Parse(e)[0]
-		item := itemTableLookup(itemTable, partRefs.SoulCrystal.Name)
+		item := lookups.ItemTableLookup(itemTable, partRefs.SoulCrystal.Name)
 		if item != nil {
 			partRefs.SoulCrystal.ID = item.Id()
 			partRefs.SoulCrystal.NameEN = string(item.NameEn())
@@ -345,31 +387,4 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 	})
 
 	return c
-}
-
-func itemTableLookup(itemTable *exports.ItemTable, name string) *exports.Item {
-	nameLower := strings.ToLower(name)
-
-	nItems := itemTable.ItemsLength()
-	for i := 0; i < nItems; i++ {
-		item := exports.Item{}
-		itemTable.Items(&item, i)
-
-		nameEn := string(item.NameEn())
-		nameDe := string(item.NameDe())
-		nameFr := string(item.NameFr())
-		nameJa := string(item.NameJa())
-
-		nameEnLower := strings.ToLower(nameEn)
-		nameDeLower := strings.ToLower(nameDe)
-		nameFrLower := strings.ToLower(nameFr)
-		nameJaLower := strings.ToLower(nameJa)
-
-		if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
-			return &item
-		}
-	}
-
-	log.Println(name)
-	return nil
 }
