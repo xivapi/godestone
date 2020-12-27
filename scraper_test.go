@@ -40,6 +40,42 @@ func failIfGCInvalid(t *testing.T, label string, input grandcompany.GrandCompany
 
 var characterIds = []uint32{11166211, 9426169, 9575452}
 
+func TestFetchCharacter(t *testing.T) {
+	for _, lang := range langCodes {
+		s := NewScraper(lang)
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			for _, id := range characterIds {
+				t.Run("Character ID "+fmt.Sprint(id), func(t *testing.T) {
+					c, err := s.FetchCharacter(id)
+					if err != nil {
+						if lang == SiteLang("zh") { // A-OK, there is no Chinese website
+							return
+						}
+
+						t.Errorf(err.Error())
+					}
+
+					failIfStringEmpty(t, "Character avatar", c.Avatar)
+					failIfStringEmpty(t, "Character DC", c.DC)
+					failIfNumberZero(t, "Character gender", int64(c.Gender))
+					failIfNumberZero(t, "Character deity", int64(c.GuardianDeity.Name))
+					failIfStringEmpty(t, "Character deity icon", c.GuardianDeity.Icon)
+					failIfNumberZero(t, "Character ID", int64(c.ID))
+					failIfStringEmpty(t, "Character name", c.Name)
+					failIfStringEmpty(t, "Character nameday", c.Nameday)
+					failIfStringEmpty(t, "Character portrait", c.Portrait)
+					failIfNumberZero(t, "Character race", int64(c.Race))
+					failIfNumberZero(t, "Character town", int64(c.Town.Name))
+					failIfStringEmpty(t, "Character town icon", c.Town.Icon)
+					failIfNumberZero(t, "Character tribe", int64(c.Tribe))
+					failIfStringEmpty(t, "Character world", c.World)
+				})
+			}
+		})
+	}
+}
+
 func TestFetchCharacterAchievements(t *testing.T) {
 	for _, lang := range langCodes {
 		s := NewScraper(lang)
@@ -49,7 +85,7 @@ func TestFetchCharacterAchievements(t *testing.T) {
 				t.Run("Character ID "+fmt.Sprint(id), func(t *testing.T) {
 					for achievement := range s.FetchCharacterAchievements(id) {
 						if achievement.Error != nil {
-							if lang == SiteLang("zh") { // A-OK, there is no Chinese website
+							if lang == SiteLang("zh") {
 								return
 							} else if achievement.AllAchievementInfo.Private && achievement.Error.Error() == http.StatusText(http.StatusForbidden) {
 								return
@@ -80,7 +116,7 @@ func TestFetchCharacterMinions(t *testing.T) {
 				t.Run("Character ID "+fmt.Sprint(id), func(t *testing.T) {
 					minions, err := s.FetchCharacterMinions(id)
 					if err != nil {
-						if lang == SiteLang("zh") { // A-OK, there is no Chinese website
+						if lang == SiteLang("zh") {
 							return
 						}
 
@@ -111,7 +147,7 @@ func TestFetchCharacterMounts(t *testing.T) {
 				t.Run("Character ID "+fmt.Sprint(id), func(t *testing.T) {
 					mounts, err := s.FetchCharacterMounts(id)
 					if err != nil {
-						if lang == SiteLang("zh") { // A-OK, there is no Chinese website
+						if lang == SiteLang("zh") {
 							return
 						}
 
@@ -144,7 +180,7 @@ func TestFetchLinkshell(t *testing.T) {
 				t.Run("Linkshell ID "+id, func(t *testing.T) {
 					ls, err := s.FetchLinkshell(id)
 					if err != nil {
-						if lang == SiteLang("zh") { // A-OK, there is no Chinese website
+						if lang == SiteLang("zh") {
 							return
 						}
 
