@@ -3,42 +3,8 @@ package search
 import (
 	"fmt"
 	"strings"
-)
 
-// FreeCompanyActiveState is the active state of an FC.
-type FreeCompanyActiveState string
-
-// Active state for an FC.
-const (
-	FCActiveNotSpecified FreeCompanyActiveState = "Not specified"
-	FCActiveWeekdaysOnly FreeCompanyActiveState = "Weekdays Only"
-	FCActiveWeekendsOnly FreeCompanyActiveState = "Weekends Only"
-	FCActiveAlways       FreeCompanyActiveState = "Always"
-)
-
-// FreeCompanyRecruitingState is the recruiting state of an FC.
-type FreeCompanyRecruitingState string
-
-// Recruiting state for an FC.
-const (
-	FCRecruitmentClosed FreeCompanyRecruitingState = "Closed"
-	FCRecruitmentOpen   FreeCompanyRecruitingState = "Open"
-)
-
-// FreeCompanyFocus is an FC's focus.
-type FreeCompanyFocus string
-
-// Free Company Focus.
-const (
-	FCFocusRolePlaying FreeCompanyFocus = "Role-playing"
-	FCFocusLeveling    FreeCompanyFocus = "Leveling"
-	FCFocusCasual      FreeCompanyFocus = "Casual"
-	FCFocusHardcore    FreeCompanyFocus = "Hardcore"
-	FCFocusDungeons    FreeCompanyFocus = "Dungeons"
-	FCFocusGuildhests  FreeCompanyFocus = "Guildhests"
-	FCFocusTrials      FreeCompanyFocus = "Trials"
-	FCFocusRaids       FreeCompanyFocus = "Raids"
-	FCFocusPvP         FreeCompanyFocus = "PvP"
+	"github.com/karashiiro/godestone/models"
 )
 
 // FreeCompanySearchOrder represents the search result ordering of a Lodestone Free Company search.
@@ -70,8 +36,8 @@ type FreeCompanyOptions struct {
 	Name                      string
 	World                     string
 	DC                        string
-	ActiveTime                FreeCompanyActiveState
-	Recruitment               FreeCompanyRecruitingState
+	ActiveTime                models.FreeCompanyActiveState
+	Recruitment               models.FreeCompanyRecruitingState
 	Order                     FreeCompanySearchOrder
 	HousingStatus             FreeCompanyHousingStatus
 	ActiveMembers             ActiveMemberRange
@@ -92,16 +58,16 @@ func (s *FreeCompanyOptions) BuildURI(lang string) string {
 	}
 
 	join := ""
-	if s.Recruitment == FCRecruitmentOpen {
+	if s.Recruitment == models.FCRecruitmentOpen {
 		join = "1"
-	} else if s.Recruitment == FCRecruitmentClosed {
+	} else if s.Recruitment == models.FCRecruitmentClosed {
 		join = "0"
 	}
 
 	active := ""
-	if s.ActiveTime == FCActiveWeekdaysOnly {
+	if s.ActiveTime == models.FCActiveWeekdaysOnly {
 		active = "1"
-	} else if s.ActiveTime == FCActiveWeekendsOnly {
+	} else if s.ActiveTime == models.FCActiveWeekendsOnly {
 		active = "2"
 	}
 

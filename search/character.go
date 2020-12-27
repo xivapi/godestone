@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/karashiiro/godestone/data/grandcompany"
-	"github.com/karashiiro/godestone/data/race"
-	"github.com/karashiiro/godestone/data/tribe"
+	"github.com/karashiiro/godestone/pack/exports"
+	lookups "github.com/karashiiro/godestone/table-lookups"
 )
 
 // CharacterSearchOrder represents the search result ordering of a Lodestone character search.
@@ -28,14 +27,19 @@ type CharacterOptions struct {
 	World        string
 	DC           string
 	Lang         Lang
-	GrandCompany grandcompany.GrandCompany
-	Race         race.Race
-	Tribe        tribe.Tribe
+	GrandCompany string
+	Race         string
+	Tribe        string
 	Order        CharacterSearchOrder
 }
 
 // BuildURI returns a constructed URI for the provided search options.
-func (s *CharacterOptions) BuildURI(lang string) string {
+func (s *CharacterOptions) BuildURI(
+	grandCompanyTable *exports.GrandCompanyTable,
+	raceTable *exports.RaceTable,
+	tribeTable *exports.TribeTable,
+	lang string,
+) string {
 	uriFormat := "https://%s.finalfantasyxiv.com/lodestone/character/?q=%s&worldname=%s&classjob=%s&order=%d"
 
 	name := strings.Replace(s.Name, " ", "%20", -1)
@@ -55,18 +59,21 @@ func (s *CharacterOptions) BuildURI(lang string) string {
 		uriFormat += "&blog_lang=fr"
 	}
 
-	if s.Tribe != tribe.None || s.Race != race.None {
+	if s.Tribe != "" || s.Race != "" {
 		raceTribe := ""
-		if s.Tribe != tribe.None {
-			raceTribe = fmt.Sprintf("tribe_%d", s.Tribe)
-		} else if s.Race != race.None {
-			raceTribe = fmt.Sprintf("race_%d", s.Race)
+		if s.Tribe != "" {
+			t := lookups.TribeTableLookup(tribeTable, s.Tribe)
+			raceTribe = fmt.Sprintf("tribe_%d", t.Id())
+		} else if s.Race != "" {
+			r := lookups.RaceTableLookup(raceTable, s.Race)
+			raceTribe = fmt.Sprintf("race_%d", r.Id())
 		}
 		uriFormat += fmt.Sprintf("&race_tribe=%s", raceTribe)
 	}
 
-	if s.GrandCompany != grandcompany.None {
-		uriFormat += fmt.Sprintf("&gcid=%d", s.GrandCompany)
+	if s.GrandCompany != "" {
+		gc := lookups.GrandCompanyTableLookup(grandCompanyTable, s.GrandCompany)
+		uriFormat += fmt.Sprintf("&gcid=%d", gc.Id())
 	}
 
 	builtURI := fmt.Sprintf(uriFormat, lang, name, worldDC, "", s.Order)
