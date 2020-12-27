@@ -195,13 +195,14 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	if err != nil {
 		return nil, err
 	}
-	charCollector.Wait()
 
 	classJobCollector := collectors.BuildClassJobCollector(s.meta, s.getProfileSelectors(), &charData)
 	err = classJobCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/class_job/", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
+
+	charCollector.Wait()
 	classJobCollector.Wait()
 
 	return &charData, nil
