@@ -139,7 +139,7 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	now := time.Now()
 	charData := models.Character{ID: id, ParseDate: now}
 
-	charCollector := collectors.BuildCharacterCollector(s.meta, s.getProfileSelectors(), &charData)
+	charCollector := collectors.BuildCharacterCollector(s.meta, s.getProfileSelectors(), s.getTitleTable(), &charData)
 	err := charCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d", s.lang, id))
 	if err != nil {
 		return nil, err
