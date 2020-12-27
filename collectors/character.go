@@ -1,6 +1,7 @@
 package collectors
 
 import (
+	"log"
 	"strconv"
 	"strings"
 
@@ -262,7 +263,6 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 	}
 
 	for partRef, partSelector := range parts {
-		// Closures are fun
 		currRef := partRef
 		currSelector := partSelector
 
@@ -272,28 +272,68 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 			currRef.Creator = currSelector.CreatorName.Parse(e)[0]
 		})
 		c.OnHTML(currSelector.Stain.Selector, func(e *colly.HTMLElement) {
-			currRef.Dye = 0
+			name := currSelector.Stain.Parse(e)[0]
+			item := itemTableLookup(itemTable, name)
+			if item != nil {
+				currRef.Dye = item.Id()
+			}
 		})
 		c.OnHTML(currSelector.Name.Selector, func(e *colly.HTMLElement) {
-			currRef.ID = 0
+			name := currSelector.Name.Parse(e)[0]
+
+			if strings.HasSuffix(name, "") { // HQ icon; 3-byte character
+				currRef.HQ = true
+				name = name[0 : len(name)-3]
+			}
+
+			item := itemTableLookup(itemTable, name)
+			if item != nil {
+				currRef.Name = name
+				currRef.ID = item.Id()
+				currRef.NameEN = string(item.NameEn())
+				currRef.NameJA = string(item.NameJa())
+				currRef.NameDE = string(item.NameDe())
+				currRef.NameFR = string(item.NameFr())
+			}
 		})
 
-		materiaCallback := func(e *colly.HTMLElement) {
-			currRef.Materia = append(currRef.Materia, 0)
+		materiaSelectors := []*selectors.SelectorInfo{
+			&currSelector.Materia1,
+			&currSelector.Materia2,
+			&currSelector.Materia3,
+			&currSelector.Materia4,
+			&currSelector.Materia5,
 		}
-		c.OnHTML(currSelector.Materia1.Selector, materiaCallback)
-		c.OnHTML(currSelector.Materia2.Selector, materiaCallback)
-		c.OnHTML(currSelector.Materia3.Selector, materiaCallback)
-		c.OnHTML(currSelector.Materia4.Selector, materiaCallback)
-		c.OnHTML(currSelector.Materia5.Selector, materiaCallback)
+		for _, materiaSelector := range materiaSelectors {
+			materiaCallback := func(e *colly.HTMLElement) {
+				name := materiaSelector.ParseInnerHTML(e)[0]
+				item := itemTableLookup(itemTable, name)
+				if item != nil {
+					currRef.Materia = append(currRef.Materia, item.Id())
+				}
+			}
+			c.OnHTML(materiaSelector.Selector, materiaCallback)
+		}
 
 		c.OnHTML(currSelector.MirageName.Selector, func(e *colly.HTMLElement) {
-			currRef.Mirage = 0
+			name := currSelector.MirageName.Parse(e)[0]
+			item := itemTableLookup(itemTable, name)
+			if item != nil {
+				currRef.Mirage = item.Id()
+			}
 		})
 	}
 
 	c.OnHTML(partSelectors.SoulCrystal.Name.Selector, func(e *colly.HTMLElement) {
-		partRefs.SoulCrystal.ID = 0
+		partRefs.SoulCrystal.Name = partSelectors.SoulCrystal.Name.Parse(e)[0]
+		item := itemTableLookup(itemTable, partRefs.SoulCrystal.Name)
+		if item != nil {
+			partRefs.SoulCrystal.ID = item.Id()
+			partRefs.SoulCrystal.NameEN = string(item.NameEn())
+			partRefs.SoulCrystal.NameJA = string(item.NameJa())
+			partRefs.SoulCrystal.NameDE = string(item.NameDe())
+			partRefs.SoulCrystal.NameFR = string(item.NameFr())
+		}
 	})
 
 	c.OnHTML(charSelectors.ActiveClassJobLevel.Selector, func(e *colly.HTMLElement) {
@@ -305,4 +345,31 @@ func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.Profile
 	})
 
 	return c
+}
+
+func itemTableLookup(itemTable *exports.ItemTable, name string) *exports.Item {
+	nameLower := strings.ToLower(name)
+
+	nItems := itemTable.ItemsLength()
+	for i := 0; i < nItems; i++ {
+		item := exports.Item{}
+		itemTable.Items(&item, i)
+
+		nameEn := string(item.NameEn())
+		nameDe := string(item.NameDe())
+		nameFr := string(item.NameFr())
+		nameJa := string(item.NameJa())
+
+		nameEnLower := strings.ToLower(nameEn)
+		nameDeLower := strings.ToLower(nameDe)
+		nameFrLower := strings.ToLower(nameFr)
+		nameJaLower := strings.ToLower(nameJa)
+
+		if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
+			return &item
+		}
+	}
+
+	log.Println(name)
+	return nil
 }

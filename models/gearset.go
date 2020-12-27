@@ -4,11 +4,18 @@ import "github.com/karashiiro/godestone/data/baseparam"
 
 // GearItem represents information about a single gear item on a character.
 type GearItem struct {
+	Name    string
 	Creator string
 	Dye     uint32
 	ID      uint32
+	HQ      bool
 	Materia []uint32
 	Mirage  uint32
+
+	NameEN string
+	NameJA string
+	NameDE string
+	NameFR string
 }
 
 // GearItemBuild represents a full gearset on a character. All gear items can be nil.
