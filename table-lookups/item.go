@@ -20,12 +20,13 @@ func ItemTableLookup(itemTable *exports.ItemTable, name string) *exports.Item {
 		nameFr := string(item.NameFr())
 		nameJa := string(item.NameJa())
 
-		nameEnLower := strings.ToLower(nameEn)
-		nameDeLower := strings.ToLower(nameDe)
-		nameFrLower := strings.ToLower(nameFr)
-		nameJaLower := strings.ToLower(nameJa)
-
-		if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
+		if listContains(
+			nameLower,
+			nameEn,
+			nameDe,
+			nameFr,
+			nameJa,
+		) {
 			return &item
 		}
 	}
