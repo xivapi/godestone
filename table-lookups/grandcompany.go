@@ -25,7 +25,9 @@ func GrandCompanyTableLookup(grandCompanyTable *exports.GrandCompanyTable, name 
 		nameDeLower := strings.ToLower(nameDe)
 		nameFrLower := strings.ToLower(nameFr)
 
-		if nameEnLower == nameLower || nameJaLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower {
+		// This is different for GCs compared to the other tables because of inconsistency in the presence/absence
+		// of definite articles in various languages.
+		if strings.Contains(nameEnLower, nameLower) || strings.Contains(nameJaLower, nameLower) || strings.Contains(nameDeLower, nameLower) || strings.Contains(nameFrLower, nameLower) {
 			return &gc
 		}
 	}
