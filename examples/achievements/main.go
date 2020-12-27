@@ -20,7 +20,8 @@ func main() {
 		if achievement.Error != nil {
 			log.Fatalln(achievement.Error)
 		}
+
 		log.Println(achievement)
-		log.Println(achievement.TotalAchievementInfo)
+		log.Println(achievement.AllAchievementInfo)
 	}
 }
