@@ -19,7 +19,7 @@ import (
 )
 
 // BuildCharacterCollector builds the collector used for processing the page.
-func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, titleTable *exports.TitleTable, charData *models.Character) *colly.Collector {
+func BuildCharacterCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, itemTable *exports.ItemTable, titleTable *exports.TitleTable, charData *models.Character) *colly.Collector {
 	c := colly.NewCollector()
 	c.UserAgent = meta.UserAgentDesktop
 	c.IgnoreRobotsTxt = true
