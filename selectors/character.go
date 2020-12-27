@@ -8,10 +8,13 @@ import (
 
 // AchievementSelectors represents all CSS selectors associated with character achievements.
 type AchievementSelectors struct {
-	List                SelectorInfo `json:"LIST"`
-	Entry               SelectorInfo `json:"ENTRY"`
-	ID                  SelectorInfo `json:"ID"`
-	Time                SelectorInfo `json:"TIME"`
+	Root  SelectorInfo `json:"ROOT"`
+	Entry struct {
+		Root SelectorInfo `json:"ROOT"`
+		Name SelectorInfo `json:"NAME"`
+		ID   SelectorInfo `json:"ID"`
+		Time SelectorInfo `json:"TIME"`
+	} `json:"ENTRY"`
 	ListNextButton      SelectorInfo `json:"LIST_NEXT_BUTTON"`
 	PageInfo            SelectorInfo `json:"PAGE_INFO"`
 	TotalAchievements   SelectorInfo `json:"TOTAL_ACHIEVEMENTS"`

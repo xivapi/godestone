@@ -2,6 +2,7 @@ package godestone
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 	"time"
 
@@ -38,6 +39,37 @@ func failIfGCInvalid(t *testing.T, label string, input grandcompany.GrandCompany
 }
 
 var characterIds = []uint32{11166211, 9426169, 9575452}
+
+func TestFetchCharacterAchievements(t *testing.T) {
+	for _, lang := range langCodes {
+		s := NewScraper(lang)
+
+		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
+			for _, id := range characterIds {
+				t.Run("Character ID "+fmt.Sprint(id), func(t *testing.T) {
+					for achievement := range s.FetchCharacterAchievements(id) {
+						if achievement.Error != nil {
+							if lang == SiteLang("zh") { // A-OK, there is no Chinese website
+								return
+							} else if achievement.AllAchievementInfo.Private && achievement.Error.Error() == http.StatusText(http.StatusForbidden) {
+								return
+							}
+
+							t.Errorf(achievement.Error.Error())
+						}
+
+						failIfNumberZero(t, "Achievement ID", int64(achievement.ID))
+						failIfStringEmpty(t, "Achievement name", achievement.Name)
+						failIfStringEmpty(t, "Achievement English name", achievement.NameEN)
+						failIfStringEmpty(t, "Achievement Japanese name", achievement.NameJA)
+						failIfStringEmpty(t, "Achievement German name", achievement.NameDE)
+						failIfStringEmpty(t, "Achievement French name", achievement.NameFR)
+					}
+				})
+			}
+		})
+	}
+}
 
 func TestFetchCharacterMinions(t *testing.T) {
 	for _, lang := range langCodes {

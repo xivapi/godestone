@@ -28,10 +28,11 @@ type Scraper struct {
 	searchSelectors    *selectors.SearchSelectors
 	fcSelectors        *selectors.FreeCompanySelectors
 
-	itemTable   *exports.ItemTable
-	minionTable *exports.MinionTable
-	mountTable  *exports.MountTable
-	titleTable  *exports.TitleTable
+	achievementTable *exports.AchievementTable
+	itemTable        *exports.ItemTable
+	minionTable      *exports.MinionTable
+	mountTable       *exports.MountTable
+	titleTable       *exports.TitleTable
 }
 
 // NewScraper creates a new instance of the Scraper.
@@ -86,6 +87,15 @@ func (s *Scraper) getFreeCompanySelectors() *selectors.FreeCompanySelectors {
 		s.fcSelectors = selectors.LoadFreeCompanySelectors()
 	}
 	return s.fcSelectors
+}
+
+func (s *Scraper) getAchievementTable() *exports.AchievementTable {
+	if s.achievementTable == nil {
+		data, _ := exports.Asset("achievement_table.bin")
+		achievementTable := exports.GetRootAsAchievementTable(data, 0)
+		s.achievementTable = achievementTable
+	}
+	return s.achievementTable
 }
 
 func (s *Scraper) getItemTable() *exports.ItemTable {
@@ -227,16 +237,21 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 	output := make(chan *models.AchievementInfo)
 
 	go func() {
-		achievementCollector := collectors.BuildAchievementCollector(s.meta, s.getProfileSelectors(), output)
+		achievementCollector := collectors.BuildAchievementCollector(s.meta, s.getProfileSelectors(), s.getAchievementTable(), output)
 		err := achievementCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/achievement/", s.lang, id))
 		if err != nil {
-			output <- &models.AchievementInfo{
-				Error: err,
+			aai := &models.AllAchievementInfo{}
+			errAi := &models.AchievementInfo{
+				AllAchievementInfo: aai,
+				Error:              err,
 			}
-			close(output)
-			return
-		}
 
+			if err.Error() == http.StatusText(http.StatusForbidden) {
+				aai.Private = true
+			}
+
+			output <- errAi
+		}
 		achievementCollector.Wait()
 
 		close(output)
@@ -317,10 +332,7 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 			output <- &models.FreeCompanyMember{
 				Error: err,
 			}
-			close(output)
-			return
 		}
-
 		fcMembersCollector.Wait()
 
 		close(output)
@@ -342,10 +354,7 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 			output <- &models.FreeCompanySearchResult{
 				Error: err,
 			}
-			close(output)
-			return
 		}
-
 		searchCollector.Wait()
 
 		close(output)
@@ -367,10 +376,7 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 			output <- &models.CharacterSearchResult{
 				Error: err,
 			}
-			close(output)
-			return
 		}
-
 		searchCollector.Wait()
 
 		close(output)
@@ -392,10 +398,7 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 			output <- &models.CWLSSearchResult{
 				Error: err,
 			}
-			close(output)
-			return
 		}
-
 		searchCollector.Wait()
 
 		close(output)
@@ -417,10 +420,7 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 			output <- &models.LinkshellSearchResult{
 				Error: err,
 			}
-			close(output)
-			return
 		}
-
 		searchCollector.Wait()
 
 		close(output)
@@ -442,10 +442,7 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 			output <- &models.PVPTeamSearchResult{
 				Error: err,
 			}
-			close(output)
-			return
 		}
-
 		searchCollector.Wait()
 
 		close(output)
