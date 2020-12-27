@@ -61,11 +61,6 @@ type Character struct {
 	World string
 }
 
-// CharacterExtended represents enriched information available about a character on The Lodestone.
-type CharacterExtended struct {
-	//
-}
-
 // CharacterSearchResult contains data from the character search page about a character.
 type CharacterSearchResult struct {
 	Error error
