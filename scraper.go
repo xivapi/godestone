@@ -42,7 +42,9 @@ type Scraper struct {
 	tribeTable        *exports.TribeTable
 }
 
-// NewScraper creates a new instance of the Scraper.
+// NewScraper creates a new instance of the Scraper. Do note that all five language-versions of the website
+// are on the same physical servers in Japan. Changing the language of the website will not meaningfully
+// improve response times.
 func NewScraper(lang SiteLang) *Scraper {
 	metaBytes, _ := css.Asset("meta.json")
 	meta := models.Meta{}
@@ -195,7 +197,9 @@ func (s *Scraper) getTribeTable() *exports.TribeTable {
 	return s.tribeTable
 }
 
-// FetchCharacter returns character information for the provided Lodestone ID.
+// FetchCharacter returns character information for the provided Lodestone ID. This function makes
+// two requests: one to the base character profile, and another to the class and job page, returning
+// an error if either request fails.
 func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	now := time.Now()
 	charData := models.Character{ID: id, ParseDate: now}
@@ -450,7 +454,9 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 	return output
 }
 
-// SearchFreeCompanies returns a channel of searchable Free Companies.
+// SearchFreeCompanies returns a channel of searchable Free Companies. Please note that searches are notoriously
+// poor, and often return exact matches far down in the results, or else return no search results when search
+// results should be present.
 func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *models.FreeCompanySearchResult {
 	output := make(chan *models.FreeCompanySearchResult)
 
