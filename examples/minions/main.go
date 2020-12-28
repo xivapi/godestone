@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	s := godestone.NewScraper(godestone.EN)
+	s := godestone.NewScraper(godestone.DE)
 
 	id, err := strconv.ParseUint(os.Args[1], 10, 32)
 	if err != nil {
