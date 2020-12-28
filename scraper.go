@@ -374,7 +374,8 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 	return output
 }
 
-// FetchLinkshell returns linkshell information for the provided linkshell ID.
+// FetchLinkshell returns linkshell information for the provided linkshell ID. The error is returned if the
+// request fails.
 func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
 	now := time.Now()
 	ls := models.Linkshell{ID: id, ParseDate: now}
@@ -389,7 +390,8 @@ func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
 	return &ls, nil
 }
 
-// FetchCWLS returns CWLS information for the provided CWLS ID.
+// FetchCWLS returns CWLS information for the provided CWLS ID. The error is returned if the
+// request fails.
 func (s *Scraper) FetchCWLS(id string) (*models.CWLS, error) {
 	now := time.Now()
 	cwls := models.CWLS{ID: id, ParseDate: now}
@@ -404,7 +406,8 @@ func (s *Scraper) FetchCWLS(id string) (*models.CWLS, error) {
 	return &cwls, nil
 }
 
-// FetchPVPTeam returns PVP team information for the provided PVP team ID.
+// FetchPVPTeam returns PVP team information for the provided PVP team ID. The error is returned if the
+// request fails.
 func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
 	now := time.Now()
 	pvpTeam := models.PVPTeam{ID: id, ParseDate: now}
@@ -419,7 +422,8 @@ func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
 	return &pvpTeam, nil
 }
 
-// FetchFreeCompany returns Free Company information for the provided Free Company ID.
+// FetchFreeCompany returns Free Company information for the provided Free Company ID. The error is returned if the
+// request fails.
 func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
 	now := time.Now()
 	fc := models.FreeCompany{ID: id, ParseDate: now}
@@ -440,7 +444,8 @@ func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
 	return &fc, nil
 }
 
-// FetchFreeCompanyMembers returns Free Company member information for the provided Free Company ID.
+// FetchFreeCompanyMembers returns Free Company member information for the provided Free Company ID. The error
+// is returned if the request fails.
 func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMember {
 	output := make(chan *models.FreeCompanyMember)
 
