@@ -14,7 +14,7 @@ Just add the package to your `go.mod` or run `go get github.com/karashiiro/godes
 ## Usage
 Refer to the [`examples/`](examples) folder for basic usage.
 
-## Development
+## Contributing
 Make sure to checkout the submodules if you are changing pack information.
 
 ### Dependencies
