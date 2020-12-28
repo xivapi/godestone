@@ -17,6 +17,7 @@ func BuildFreeCompanySearchCollector(
 	meta *models.Meta,
 	searchSelectors *selectors.SearchSelectors,
 	grandCompanyTable *exports.GrandCompanyTable,
+	pageInfo *models.PageInfo,
 	output chan *models.FreeCompanySearchResult,
 ) *colly.Collector {
 	c := colly.NewCollector(
@@ -31,6 +32,18 @@ func BuildFreeCompanySearchCollector(
 
 	c.OnHTML(fcSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := fcSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
+
+		pi := fcSearchSelectors.PageInfo.ParseThroughChildren(container)
+		if len(pi) > 1 {
+			curPage, err := strconv.Atoi(pi[0])
+			if err == nil {
+				pageInfo.CurrentPage = curPage
+			}
+			totalPages, err := strconv.Atoi(pi[1])
+			if err == nil {
+				pageInfo.TotalPages = totalPages
+			}
+		}
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
 			nextFC := models.FreeCompanySearchResult{

@@ -26,3 +26,9 @@ type GenderedEntity struct {
 	NameFeminineDE  string
 	NameFeminineFR  string
 }
+
+// PageInfo represents pagination information in a search.
+type PageInfo struct {
+	CurrentPage int
+	TotalPages  int
+}
