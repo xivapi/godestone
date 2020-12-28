@@ -12,8 +12,8 @@ Go scraper for The Lodestone.
 Make sure to checkout the submodules if you are changing pack information.
 
 ### Dependencies
-* [`flatc`](https://google.github.io/flatbuffers)
-* [`go-bindata`](https://github.com/go-bindata/go-bindata)
+  * [`flatc`](https://google.github.io/flatbuffers)
+  * [`go-bindata`](https://github.com/go-bindata/go-bindata)
 
 ### Repacking
 To repack the submodules, just run `generate.sh`.
