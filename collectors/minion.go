@@ -1,12 +1,11 @@
 package collectors
 
 import (
-	"strings"
-
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
+	lookups "github.com/karashiiro/godestone/table-lookups"
 )
 
 // BuildMinionCollector builds the collector used for processing the page.
@@ -19,37 +18,18 @@ func BuildMinionCollector(meta *models.Meta, profSelectors *selectors.ProfileSel
 
 	c.OnHTML(minionSelectors.Minions.Root.Selector, func(e *colly.HTMLElement) {
 		name := minionSelectors.Minions.Name.ParseThroughChildren(e)[0]
-		nameLower := strings.ToLower(name)
-
 		icon := minionSelectors.Minions.Icon.ParseThroughChildren(e)[0]
 
-		nMinions := minionTable.MinionsLength()
-		for i := 0; i < nMinions; i++ {
-			minion := exports.Minion{}
-			minionTable.Minions(&minion, i)
+		m := lookups.MinionTableLookup(minionTable, name)
+		output <- &models.Minion{
+			ID:   m.Id(),
+			Name: name,
+			Icon: icon,
 
-			nameEn := string(minion.NameEn())
-			nameDe := string(minion.NameDe())
-			nameFr := string(minion.NameFr())
-			nameJa := string(minion.NameJa())
-
-			nameEnLower := strings.ToLower(nameEn)
-			nameDeLower := strings.ToLower(nameDe)
-			nameFrLower := strings.ToLower(nameFr)
-			nameJaLower := strings.ToLower(nameJa)
-
-			if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
-				output <- &models.Minion{
-					ID:   minion.Id(),
-					Name: name,
-					Icon: icon,
-
-					NameEN: nameEn,
-					NameDE: nameDe,
-					NameFR: nameFr,
-					NameJA: nameJa,
-				}
-			}
+			NameEN: string(m.NameEn()),
+			NameDE: string(m.NameDe()),
+			NameFR: string(m.NameFr()),
+			NameJA: string(m.NameJa()),
 		}
 	})
 
