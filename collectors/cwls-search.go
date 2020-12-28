@@ -10,11 +10,17 @@ import (
 )
 
 // BuildCWLSSearchCollector builds the collector used for processing the page.
-func BuildCWLSSearchCollector(meta *models.Meta, searchSelectors *selectors.SearchSelectors, output chan *models.CWLSSearchResult) *colly.Collector {
+func BuildCWLSSearchCollector(
+	meta *models.Meta,
+	lastURI string,
+	searchSelectors *selectors.SearchSelectors,
+	output chan *models.CWLSSearchResult,
+) *colly.Collector {
 	c := colly.NewCollector(
-		colly.MaxDepth(21),
+		colly.MaxDepth(41),
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
+		colly.AllowURLRevisit(),
 	)
 	dur, _ := time.ParseDuration("60s")
 	c.SetRequestTimeout(dur)
@@ -22,6 +28,7 @@ func BuildCWLSSearchCollector(meta *models.Meta, searchSelectors *selectors.Sear
 	cwlsSearchSelectors := searchSelectors.CWLS
 	entrySelectors := cwlsSearchSelectors.Entry
 
+	revisitedOnce := false
 	c.OnHTML(cwlsSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := cwlsSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
@@ -41,8 +48,16 @@ func BuildCWLSSearchCollector(meta *models.Meta, searchSelectors *selectors.Sear
 			output <- &nextCWLS
 		})
 
-		if nextURI != "javascript:void(0);" && nextURI != "" /* "Your search yielded no results." */ {
+		if nextURI != "javascript:void(0);" {
 			err := container.Request.Visit(nextURI)
+			if err != nil {
+				output <- &models.CWLSSearchResult{
+					Error: err,
+				}
+			}
+		} else if !revisitedOnce && nextURI != "" /* "Your search yielded no results." */ {
+			revisitedOnce = true
+			err := container.Request.Visit(lastURI)
 			if err != nil {
 				output <- &models.CWLSSearchResult{
 					Error: err,

@@ -11,11 +11,17 @@ import (
 )
 
 // BuildCharacterSearchCollector builds the collector used for processing the page.
-func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors.SearchSelectors, output chan *models.CharacterSearchResult) *colly.Collector {
+func BuildCharacterSearchCollector(
+	meta *models.Meta,
+	lastURI string,
+	searchSelectors *selectors.SearchSelectors,
+	output chan *models.CharacterSearchResult,
+) *colly.Collector {
 	c := colly.NewCollector(
-		colly.MaxDepth(21),
+		colly.MaxDepth(41),
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
+		colly.AllowURLRevisit(),
 	)
 	dur, _ := time.ParseDuration("60s")
 	c.SetRequestTimeout(dur)
@@ -23,6 +29,7 @@ func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors
 	charSearchSelectors := searchSelectors.Character
 	entrySelectors := charSearchSelectors.Entry
 
+	revisitedOnce := false
 	c.OnHTML(charSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := charSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
@@ -50,8 +57,16 @@ func BuildCharacterSearchCollector(meta *models.Meta, searchSelectors *selectors
 			output <- &nextCharacter
 		})
 
-		if nextURI != "javascript:void(0);" && nextURI != "" /* "Your search yielded no results." */ {
+		if nextURI != "javascript:void(0);" {
 			err := container.Request.Visit(nextURI)
+			if err != nil {
+				output <- &models.CharacterSearchResult{
+					Error: err,
+				}
+			}
+		} else if !revisitedOnce && nextURI != "" /* "Your search yielded no results." */ {
+			revisitedOnce = true
+			err := container.Request.Visit(lastURI)
 			if err != nil {
 				output <- &models.CharacterSearchResult{
 					Error: err,

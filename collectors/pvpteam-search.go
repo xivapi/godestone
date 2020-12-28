@@ -9,11 +9,17 @@ import (
 )
 
 // BuildPVPTeamSearchCollector builds the collector used for processing the page.
-func BuildPVPTeamSearchCollector(meta *models.Meta, searchSelectors *selectors.SearchSelectors, output chan *models.PVPTeamSearchResult) *colly.Collector {
+func BuildPVPTeamSearchCollector(
+	meta *models.Meta,
+	lastURI string,
+	searchSelectors *selectors.SearchSelectors,
+	output chan *models.PVPTeamSearchResult,
+) *colly.Collector {
 	c := colly.NewCollector(
-		colly.MaxDepth(21),
+		colly.MaxDepth(41),
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
+		colly.AllowURLRevisit(),
 	)
 	dur, _ := time.ParseDuration("60s")
 	c.SetRequestTimeout(dur)
@@ -21,6 +27,7 @@ func BuildPVPTeamSearchCollector(meta *models.Meta, searchSelectors *selectors.S
 	pvpTeamSearchSelectors := searchSelectors.PVPTeam
 	entrySelectors := pvpTeamSearchSelectors.Entry
 
+	revisitedOnce := false
 	c.OnHTML(pvpTeamSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := pvpTeamSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
@@ -39,8 +46,16 @@ func BuildPVPTeamSearchCollector(meta *models.Meta, searchSelectors *selectors.S
 			output <- &nextTeam
 		})
 
-		if nextURI != "javascript:void(0);" && nextURI != "" /* "Your search yielded no results." */ {
+		if nextURI != "javascript:void(0);" {
 			err := container.Request.Visit(nextURI)
+			if err != nil {
+				output <- &models.PVPTeamSearchResult{
+					Error: err,
+				}
+			}
+		} else if !revisitedOnce && nextURI != "" /* "Your search yielded no results." */ {
+			revisitedOnce = true
+			err := container.Request.Visit(lastURI)
 			if err != nil {
 				output <- &models.PVPTeamSearchResult{
 					Error: err,
