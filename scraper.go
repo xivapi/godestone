@@ -272,7 +272,13 @@ func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 	done := make(chan bool, 1)
 
 	go func() {
-		minionCollector := collectors.BuildMinionCollector(s.meta, s.getProfileSelectors(), s.getMinionTable(), output)
+		minionCollector := collectors.BuildMinionCollector(
+			s.meta,
+			s.getProfileSelectors(),
+			s.getMinionTable(),
+			string(s.lang),
+			output,
+		)
 
 		err := minionCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/minion/", s.lang, id))
 		if err != nil && err.Error() != http.StatusText(http.StatusNotFound) {
