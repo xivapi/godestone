@@ -14,9 +14,8 @@ type NamedEntity struct {
 
 // GenderedEntity represents an instance of an object with masculine and feminine names.
 type GenderedEntity struct {
-	ID     uint32
-	Name   string
-	Prefix bool
+	ID   uint32
+	Name string
 
 	NameMasculineEN string
 	NameMasculineJA string

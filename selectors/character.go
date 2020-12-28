@@ -53,7 +53,11 @@ type CharacterSelectors struct {
 	ActiveClassJobLevel SelectorInfo `json:"ACTIVE_CLASSJOB_LEVEL"`
 	Avatar              SelectorInfo `json:"AVATAR"`
 	Bio                 SelectorInfo `json:"BIO"`
-	FreeCompany         struct {
+	ClassJobIcons       struct {
+		Root SelectorInfo `json:"ROOT"`
+		Icon SelectorInfo `json:"ICON"`
+	} `json:"CLASSJOB_ICONS"`
+	FreeCompany struct {
 		Name       SelectorInfo `json:"NAME"`
 		IconLayers struct {
 			Bottom SelectorInfo `json:"BOTTOM"`
@@ -156,9 +160,9 @@ type ClassJobSelectors struct {
 		Name   SelectorInfo `json:"NAME"`
 	} `json:"BOZJA"`
 	Eureka struct {
-		Level  SelectorInfo `json:"LEVEL"`
-		Mettle SelectorInfo `json:"METTLE"`
-		Name   SelectorInfo `json:"NAME"`
+		Level SelectorInfo `json:"LEVEL"`
+		Exp   SelectorInfo `json:"EXP"`
+		Name  SelectorInfo `json:"NAME"`
 	} `json:"EUREKA"`
 	Paladin       OneClassJobSelectors `json:"PALADIN"`
 	Warrior       OneClassJobSelectors `json:"WARRIOR"`
