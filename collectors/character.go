@@ -153,56 +153,23 @@ func BuildCharacterCollector(
 
 	c.OnHTML(charSelectors.Title.Selector, func(e *colly.HTMLElement) {
 		titleText := charSelectors.Title.Parse(e)[0]
-		titleTextLower := strings.ToLower(titleText)
+		t := lookups.TitleTableLookup(titleTable, titleText)
 
-		nTitles := titleTable.TitlesLength()
-		for i := 0; i < nTitles; i++ {
-			title := exports.Title{}
-			titleTable.Titles(&title, i)
+		charData.Title = &models.Title{
+			GenderedEntity: &models.GenderedEntity{
+				ID:   t.Id(),
+				Name: titleText,
 
-			nameMasculineEn := string(title.NameMasculineEn())
-			nameMasculineDe := string(title.NameMasculineDe())
-			nameMasculineFr := string(title.NameMasculineFr())
-			nameMasculineJa := string(title.NameMasculineJa())
-			nameFeminineEn := string(title.NameFeminineEn())
-			nameFeminineDe := string(title.NameFeminineDe())
-			nameFeminineFr := string(title.NameFeminineFr())
-			nameFeminineJa := string(title.NameFeminineJa())
-
-			nameMasculineEnLower := strings.ToLower(nameMasculineEn)
-			nameMasculineDeLower := strings.ToLower(nameMasculineDe)
-			nameMasculineFrLower := strings.ToLower(nameMasculineFr)
-			nameMasculineJaLower := strings.ToLower(nameMasculineJa)
-			nameFeminineEnLower := strings.ToLower(nameFeminineEn)
-			nameFeminineDeLower := strings.ToLower(nameFeminineDe)
-			nameFeminineFrLower := strings.ToLower(nameFeminineFr)
-			nameFeminineJaLower := strings.ToLower(nameFeminineJa)
-
-			if nameMasculineEnLower == titleTextLower ||
-				nameMasculineDeLower == titleTextLower ||
-				nameMasculineFrLower == titleTextLower ||
-				nameMasculineJaLower == titleTextLower ||
-				nameFeminineEnLower == titleTextLower ||
-				nameFeminineDeLower == titleTextLower ||
-				nameFeminineFrLower == titleTextLower ||
-				nameFeminineJaLower == titleTextLower {
-				charData.Title = &models.Title{
-					GenderedEntity: &models.GenderedEntity{
-						ID:   title.Id(),
-						Name: titleText,
-
-						NameMasculineEN: nameMasculineEn,
-						NameMasculineDE: nameMasculineDe,
-						NameMasculineFR: nameMasculineFr,
-						NameMasculineJA: nameMasculineJa,
-						NameFeminineEN:  nameFeminineEn,
-						NameFeminineDE:  nameFeminineDe,
-						NameFeminineFR:  nameFeminineFr,
-						NameFeminineJA:  nameFeminineJa,
-					},
-					Prefix: title.IsPrefix(),
-				}
-			}
+				NameMasculineEN: string(t.NameMasculineEn()),
+				NameMasculineDE: string(t.NameMasculineDe()),
+				NameMasculineFR: string(t.NameMasculineFr()),
+				NameMasculineJA: string(t.NameMasculineJa()),
+				NameFeminineEN:  string(t.NameFeminineEn()),
+				NameFeminineDE:  string(t.NameFeminineDe()),
+				NameFeminineFR:  string(t.NameFeminineFr()),
+				NameFeminineJA:  string(t.NameFeminineJa()),
+			},
+			Prefix: t.IsPrefix(),
 		}
 	})
 
