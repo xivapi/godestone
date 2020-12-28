@@ -343,7 +343,10 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 	return mounts, nil
 }
 
-// FetchCharacterAchievements returns unlocked achievement information for the provided Lodestone ID.
+// FetchCharacterAchievements returns unlocked achievement information for the provided Lodestone ID. The error
+// is returned if the request fails with anything other than a 403. A 403 will be raised when the character's
+// achievements are private. Instead of raising an error, the object in the return channel will have its
+// private flag set to `true`.
 func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.AchievementInfo {
 	output := make(chan *models.AchievementInfo)
 
