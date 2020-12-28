@@ -263,7 +263,9 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	return &charData, nil
 }
 
-// FetchCharacterMinions returns unlocked minion information for the provided Lodestone ID.
+// FetchCharacterMinions returns unlocked minion information for the provided Lodestone ID. The error is returned
+// if the request fails with anything other than a 404. A 404 can result from a character not existing, but it can
+// also result from a character not having any minions.
 func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 	output := make(chan *models.Minion)
 	errors := make(chan error, 1)
@@ -301,7 +303,9 @@ func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 	return minions, nil
 }
 
-// FetchCharacterMounts returns unlocked mount information for the provided Lodestone ID.
+// FetchCharacterMounts returns unlocked mount information for the provided Lodestone ID. The error is returned
+// if the request fails with anything other than a 404. A 404 can result from a character not existing, but it can
+// also result from a character not having any mounts.
 func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 	output := make(chan *models.Mount)
 	errors := make(chan error, 1)
