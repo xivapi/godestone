@@ -456,7 +456,8 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 
 // SearchFreeCompanies returns a channel of searchable Free Companies. Please note that searches are notoriously
 // poor, and often return exact matches far down in the results, or else return no search results when search
-// results should be present.
+// results should be present. This library does one retry on each failure, but this is not a guarantee that
+// all search results will be returned.
 func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *models.FreeCompanySearchResult {
 	output := make(chan *models.FreeCompanySearchResult)
 
@@ -484,7 +485,10 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 	return output
 }
 
-// SearchCharacters returns a channel of searchable characters.
+// SearchCharacters returns a channel of searchable characters. Please note that searches are notoriously
+// poor, and often return exact matches far down in the results, or else return no search results when search
+// results should be present. This library does one retry on each failure, but this is not a guarantee that
+// all search results will be returned.
 func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.CharacterSearchResult {
 	output := make(chan *models.CharacterSearchResult)
 
@@ -517,7 +521,10 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 	return output
 }
 
-// SearchCWLS returns a channel of searchable crossworld linkshells.
+// SearchCWLS returns a channel of searchable crossworld linkshells. Please note that searches are notoriously
+// poor, and often return exact matches far down in the results, or else return no search results when search
+// results should be present. This library does one retry on each failure, but this is not a guarantee that
+// all search results will be returned.
 func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchResult {
 	output := make(chan *models.CWLSSearchResult)
 
@@ -544,7 +551,10 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 	return output
 }
 
-// SearchLinkshells returns a channel of searchable linkshells.
+// SearchLinkshells returns a channel of searchable linkshells. Please note that searches are notoriously
+// poor, and often return exact matches far down in the results, or else return no search results when search
+// results should be present. This library does one retry on each failure, but this is not a guarantee that
+// all search results will be returned.
 func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.LinkshellSearchResult {
 	output := make(chan *models.LinkshellSearchResult)
 
@@ -571,7 +581,10 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 	return output
 }
 
-// SearchPVPTeams returns a channel of searchable PVP teams.
+// SearchPVPTeams returns a channel of searchable PVP teams. Please note that searches are notoriously
+// poor, and often return exact matches far down in the results, or else return no search results when search
+// results should be present. This library does one retry on each failure, but this is not a guarantee that
+// all search results will be returned.
 func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTeamSearchResult {
 	output := make(chan *models.PVPTeamSearchResult)
 
