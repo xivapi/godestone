@@ -186,19 +186,21 @@ func BuildCharacterCollector(
 				nameFeminineDeLower == titleTextLower ||
 				nameFeminineFrLower == titleTextLower ||
 				nameFeminineJaLower == titleTextLower {
-				charData.Title = &models.GenderedEntity{
-					ID:     title.Id(),
-					Name:   titleText,
-					Prefix: title.IsPrefix(),
+				charData.Title = &models.Title{
+					GenderedEntity: &models.GenderedEntity{
+						ID:   title.Id(),
+						Name: titleText,
 
-					NameMasculineEN: nameMasculineEn,
-					NameMasculineDE: nameMasculineDe,
-					NameMasculineFR: nameMasculineFr,
-					NameMasculineJA: nameMasculineJa,
-					NameFeminineEN:  nameFeminineEn,
-					NameFeminineDE:  nameFeminineDe,
-					NameFeminineFR:  nameFeminineFr,
-					NameFeminineJA:  nameFeminineJa,
+						NameMasculineEN: nameMasculineEn,
+						NameMasculineDE: nameMasculineDe,
+						NameMasculineFR: nameMasculineFr,
+						NameMasculineJA: nameMasculineJa,
+						NameFeminineEN:  nameFeminineEn,
+						NameFeminineDE:  nameFeminineDe,
+						NameFeminineFR:  nameFeminineFr,
+						NameFeminineJA:  nameFeminineJa,
+					},
+					Prefix: title.IsPrefix(),
 				}
 			}
 		}

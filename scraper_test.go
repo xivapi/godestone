@@ -12,6 +12,12 @@ import (
 
 var langCodes []SiteLang = []SiteLang{EN, JA, FR, DE, SiteLang("zh")}
 
+func failIfNil(t *testing.T, label string, input interface{}) {
+	if input == nil {
+		t.Errorf(fmt.Sprintf("%s is nil; expected non-nil object", label))
+	}
+}
+
 func failIfStringEmpty(t *testing.T, label string, input string) {
 	if input == "" {
 		t.Errorf(fmt.Sprintf("%s is empty; expected non-empty string", label))
@@ -56,6 +62,10 @@ func TestFetchCharacter(t *testing.T) {
 						t.Errorf(err.Error())
 					}
 
+					failIfNil(t, "Character active ClassJob", c.ActiveClassJob)
+					for _, cj := range c.ClassJobs {
+						failIfNumberZero(t, "Character ClassJob ID for "+cj.Name, int64(cj.ClassID))
+					}
 					failIfStringEmpty(t, "Character avatar", c.Avatar)
 					failIfStringEmpty(t, "Character DC", c.DC)
 					failIfNumberZero(t, "Character gender", int64(c.Gender))

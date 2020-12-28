@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/collectors"
 	"github.com/karashiiro/godestone/pack/css"
 	"github.com/karashiiro/godestone/pack/exports"
@@ -212,18 +213,47 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 		&charData,
 	)
 
+	charSelectors := s.profileSelectors.Character
+
+	icon := ""
+	charCollector.OnHTML(charSelectors.ActiveClassJob.Selector, func(e *colly.HTMLElement) {
+		icon = charSelectors.ActiveClassJob.Parse(e)[0]
+	})
+
+	activeClassJobName := ""
+	charCollector.OnHTML(charSelectors.ClassJobIcons.Root.Selector, func(container *colly.HTMLElement) {
+		container.ForEach(charSelectors.ClassJobIcons.Icon.Selector, func(i int, e *colly.HTMLElement) {
+			thisIcon := charSelectors.ClassJobIcons.Icon.ParseThroughChildren(container)[0]
+			if icon == thisIcon {
+				activeClassJobName = e.Attr("data-tooltip")
+			}
+		})
+	})
+
 	err := charCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
 
-	classJobCollector := collectors.BuildClassJobCollector(s.meta, s.getProfileSelectors(), &charData)
+	classJobCollector := collectors.BuildClassJobCollector(
+		s.meta,
+		s.getProfileSelectors(),
+		s.getClassJobTable(),
+		&charData,
+	)
 	err = classJobCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/class_job/", s.lang, id))
 	if err != nil {
 		return nil, err
 	}
 
 	charCollector.Wait()
+
+	for _, cj := range charData.ClassJobs {
+		if cj.Name == activeClassJobName {
+			charData.ActiveClassJob = cj
+		}
+	}
+
 	classJobCollector.Wait()
 
 	return &charData, nil

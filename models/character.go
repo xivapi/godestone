@@ -7,6 +7,13 @@ import (
 	"github.com/karashiiro/godestone/data/gender"
 )
 
+// Title represents a character title.
+type Title struct {
+	*GenderedEntity
+
+	Prefix bool
+}
+
 // Character represents the information available about a character on The Lodestone.
 type Character struct {
 	ActiveClassJob    *ClassJob
@@ -29,7 +36,7 @@ type Character struct {
 	Portrait          string
 	PvPTeamID         string
 	Race              *GenderedEntity
-	Title             *GenderedEntity
+	Title             *Title
 	Town              *NamedEntity
 	Tribe             *GenderedEntity
 	World             string
