@@ -9,6 +9,7 @@ import (
 // MinionTableLookup searches the provided table for the minion that matches the provided name.
 func MinionTableLookup(minionTable *exports.MinionTable, name string) *exports.Minion {
 	nameLower := strings.ToLower(name)
+	nameLower = strings.Replace(nameLower, "beseeltes", "beseelt", 1) // Thanks, German
 
 	nMinions := minionTable.MinionsLength()
 	for i := 0; i < nMinions; i++ {
@@ -24,6 +25,7 @@ func MinionTableLookup(minionTable *exports.MinionTable, name string) *exports.M
 			nameLower,
 			nameEn,
 			nameDe,
+			"Schwarzes "+nameDe,
 			nameFr,
 			nameJa,
 		) {
