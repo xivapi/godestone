@@ -7,9 +7,24 @@ import (
 )
 
 // MinionTableLookup searches the provided table for the minion that matches the provided name.
-func MinionTableLookup(minionTable *exports.MinionTable, name string) *exports.Minion {
+func MinionTableLookup(minionTable *exports.MinionTable, name string, lang string) *exports.Minion {
 	nameLower := strings.ToLower(name)
-	nameLower = strings.Replace(nameLower, "beseeltes", "beseelt", 1) // Thanks, German
+
+	// Thanks, German
+	// If anyone knows how to properly handle this, a PR would be more than welcome.
+	if lang == "de" {
+		nameLower = strings.Replace(nameLower, "blaublütiger ", "baby-", 1)
+		nameLower = strings.Replace(nameLower, "es ", " ", 1)
+		if !strings.HasPrefix(nameLower, "seite") {
+			nameLower = strings.Replace(nameLower, "e ", " ", 1)
+		}
+		nameLower = strings.Replace(nameLower, "er ", " ", 1)
+		nameLower = strings.Replace(nameLower, " d ", " der ", 1)
+		if strings.Contains(nameLower, "chocobo-küken") {
+			parts := strings.Split(nameLower, " ")
+			nameLower = parts[len(parts)-1]
+		}
+	}
 
 	nMinions := minionTable.MinionsLength()
 	for i := 0; i < nMinions; i++ {
@@ -25,7 +40,6 @@ func MinionTableLookup(minionTable *exports.MinionTable, name string) *exports.M
 			nameLower,
 			nameEn,
 			nameDe,
-			"Schwarzes "+nameDe,
 			nameFr,
 			nameJa,
 		) {

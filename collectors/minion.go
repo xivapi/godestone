@@ -9,7 +9,13 @@ import (
 )
 
 // BuildMinionCollector builds the collector used for processing the page.
-func BuildMinionCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, minionTable *exports.MinionTable, output chan *models.Minion) *colly.Collector {
+func BuildMinionCollector(
+	meta *models.Meta,
+	profSelectors *selectors.ProfileSelectors,
+	minionTable *exports.MinionTable,
+	lang string,
+	output chan *models.Minion,
+) *colly.Collector {
 	c := colly.NewCollector()
 	c.UserAgent = meta.UserAgentMobile
 	c.IgnoreRobotsTxt = true
@@ -20,16 +26,18 @@ func BuildMinionCollector(meta *models.Meta, profSelectors *selectors.ProfileSel
 		name := minionSelectors.Minions.Name.ParseThroughChildren(e)[0]
 		icon := minionSelectors.Minions.Icon.ParseThroughChildren(e)[0]
 
-		m := lookups.MinionTableLookup(minionTable, name)
-		output <- &models.Minion{
-			ID:   m.Id(),
-			Name: name,
-			Icon: icon,
+		m := lookups.MinionTableLookup(minionTable, name, lang)
+		if m != nil {
+			output <- &models.Minion{
+				ID:   m.Id(),
+				Name: name,
+				Icon: icon,
 
-			NameEN: string(m.NameEn()),
-			NameDE: string(m.NameDe()),
-			NameFR: string(m.NameFr()),
-			NameJA: string(m.NameJa()),
+				NameEN: string(m.NameEn()),
+				NameDE: string(m.NameDe()),
+				NameFR: string(m.NameFr()),
+				NameJA: string(m.NameJa()),
+			}
 		}
 	})
 
