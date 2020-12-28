@@ -477,20 +477,33 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 	go func() {
 		searchCollector := collectors.BuildFreeCompanySearchCollector(
 			s.meta,
-			uri,
 			s.getSearchSelectors(),
 			s.getGrandCompanyTable(),
 			output,
 		)
 
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			output <- &models.FreeCompanySearchResult{
-				Error: err,
-			}
+		done := make(chan bool, 20)
+		for i := 1; i <= 20; i++ {
+			nextURI := uri + fmt.Sprintf("&page=%d", i)
+			go func() {
+				err := searchCollector.Visit(nextURI)
+				if err != nil {
+					err = searchCollector.Visit(nextURI)
+					if err != nil {
+						output <- &models.FreeCompanySearchResult{
+							Error: err,
+						}
+					}
+				}
+				done <- true
+			}()
 		}
-		searchCollector.Wait()
 
+		for i := 1; i <= 20; i++ {
+			<-done
+		}
+
+		searchCollector.Wait()
 		close(output)
 	}()
 
@@ -514,19 +527,32 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 	go func() {
 		searchCollector := collectors.BuildCharacterSearchCollector(
 			s.meta,
-			uri,
 			s.getSearchSelectors(),
 			output,
 		)
 
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			output <- &models.CharacterSearchResult{
-				Error: err,
-			}
+		done := make(chan bool, 20)
+		for i := 1; i <= 20; i++ {
+			nextURI := uri + fmt.Sprintf("&page=%d", i)
+			go func() {
+				err := searchCollector.Visit(nextURI)
+				if err != nil {
+					err = searchCollector.Visit(nextURI)
+					if err != nil {
+						output <- &models.CharacterSearchResult{
+							Error: err,
+						}
+					}
+				}
+				done <- true
+			}()
 		}
-		searchCollector.Wait()
 
+		for i := 1; i <= 20; i++ {
+			<-done
+		}
+
+		searchCollector.Wait()
 		close(output)
 	}()
 
@@ -544,19 +570,32 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 	go func() {
 		searchCollector := collectors.BuildCWLSSearchCollector(
 			s.meta,
-			uri,
 			s.getSearchSelectors(),
 			output,
 		)
 
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			output <- &models.CWLSSearchResult{
-				Error: err,
-			}
+		done := make(chan bool, 20)
+		for i := 1; i <= 20; i++ {
+			nextURI := uri + fmt.Sprintf("&page=%d", i)
+			go func() {
+				err := searchCollector.Visit(nextURI)
+				if err != nil {
+					err = searchCollector.Visit(nextURI)
+					if err != nil {
+						output <- &models.CWLSSearchResult{
+							Error: err,
+						}
+					}
+				}
+				done <- true
+			}()
 		}
-		searchCollector.Wait()
 
+		for i := 1; i <= 20; i++ {
+			<-done
+		}
+
+		searchCollector.Wait()
 		close(output)
 	}()
 
@@ -574,19 +613,32 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 	go func() {
 		searchCollector := collectors.BuildLinkshellSearchCollector(
 			s.meta,
-			uri,
 			s.getSearchSelectors(),
 			output,
 		)
 
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			output <- &models.LinkshellSearchResult{
-				Error: err,
-			}
+		done := make(chan bool, 20)
+		for i := 1; i <= 20; i++ {
+			nextURI := uri + fmt.Sprintf("&page=%d", i)
+			go func() {
+				err := searchCollector.Visit(nextURI)
+				if err != nil {
+					err = searchCollector.Visit(nextURI)
+					if err != nil {
+						output <- &models.LinkshellSearchResult{
+							Error: err,
+						}
+					}
+				}
+				done <- true
+			}()
 		}
-		searchCollector.Wait()
 
+		for i := 1; i <= 20; i++ {
+			<-done
+		}
+
+		searchCollector.Wait()
 		close(output)
 	}()
 
@@ -604,19 +656,32 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 	go func() {
 		searchCollector := collectors.BuildPVPTeamSearchCollector(
 			s.meta,
-			uri,
 			s.getSearchSelectors(),
 			output,
 		)
 
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			output <- &models.PVPTeamSearchResult{
-				Error: err,
-			}
+		done := make(chan bool, 20)
+		for i := 1; i <= 20; i++ {
+			nextURI := uri + fmt.Sprintf("&page=%d", i)
+			go func() {
+				err := searchCollector.Visit(nextURI)
+				if err != nil {
+					err = searchCollector.Visit(nextURI)
+					if err != nil {
+						output <- &models.PVPTeamSearchResult{
+							Error: err,
+						}
+					}
+				}
+				done <- true
+			}()
 		}
-		searchCollector.Wait()
 
+		for i := 1; i <= 20; i++ {
+			<-done
+		}
+
+		searchCollector.Wait()
 		close(output)
 	}()
 

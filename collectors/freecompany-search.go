@@ -15,24 +15,20 @@ import (
 // BuildFreeCompanySearchCollector builds the collector used for processing the page.
 func BuildFreeCompanySearchCollector(
 	meta *models.Meta,
-	lastURI string,
 	searchSelectors *selectors.SearchSelectors,
 	grandCompanyTable *exports.GrandCompanyTable,
 	output chan *models.FreeCompanySearchResult,
 ) *colly.Collector {
 	c := colly.NewCollector(
-		colly.MaxDepth(41),
+		colly.MaxDepth(2),
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.AllowURLRevisit(),
 	)
-	dur, _ := time.ParseDuration("60s")
-	c.SetRequestTimeout(dur)
 
 	fcSearchSelectors := searchSelectors.FreeCompany
 	entrySelectors := fcSearchSelectors.Entry
 
-	revisitedOnce := false
 	c.OnHTML(fcSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := fcSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
@@ -85,18 +81,10 @@ func BuildFreeCompanySearchCollector(
 			output <- &nextFC
 		})
 
-		if nextURI != "javascript:void(0);" {
-			lastURI = nextURI
-			revisitedOnce = false
-			err := container.Request.Visit(nextURI)
-			if err != nil {
-				output <- &models.FreeCompanySearchResult{
-					Error: err,
-				}
-			}
-		} else if !revisitedOnce && nextURI != "" /* "Your search yielded no results." */ {
-			revisitedOnce = true
-			err := container.Request.Visit(lastURI)
+		revisited := false
+		if !revisited && nextURI == "" {
+			revisited = true
+			err := c.Visit(container.Request.URL.String())
 			if err != nil {
 				output <- &models.FreeCompanySearchResult{
 					Error: err,

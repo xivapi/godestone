@@ -2,7 +2,6 @@ package collectors
 
 import (
 	"strconv"
-	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/models"
@@ -12,23 +11,19 @@ import (
 // BuildLinkshellSearchCollector builds the collector used for processing the page.
 func BuildLinkshellSearchCollector(
 	meta *models.Meta,
-	lastURI string,
 	searchSelectors *selectors.SearchSelectors,
 	output chan *models.LinkshellSearchResult,
 ) *colly.Collector {
 	c := colly.NewCollector(
-		colly.MaxDepth(41),
+		colly.MaxDepth(2),
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.AllowURLRevisit(),
 	)
-	dur, _ := time.ParseDuration("60s")
-	c.SetRequestTimeout(dur)
 
 	lsSearchSelectors := searchSelectors.Linkshell
 	entrySelectors := lsSearchSelectors.Entry
 
-	revisitedOnce := false
 	c.OnHTML(lsSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := lsSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
 
@@ -51,16 +46,10 @@ func BuildLinkshellSearchCollector(
 			output <- &nextLinkshell
 		})
 
-		if nextURI != "javascript:void(0);" {
-			err := container.Request.Visit(nextURI)
-			if err != nil {
-				output <- &models.LinkshellSearchResult{
-					Error: err,
-				}
-			}
-		} else if !revisitedOnce && nextURI != "" /* "Your search yielded no results." */ {
-			revisitedOnce = true
-			err := container.Request.Visit(lastURI)
+		revisited := false
+		if !revisited && nextURI == "" {
+			revisited = true
+			err := c.Visit(container.Request.URL.String())
 			if err != nil {
 				output <- &models.LinkshellSearchResult{
 					Error: err,
