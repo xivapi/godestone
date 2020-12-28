@@ -475,15 +475,29 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
+		pageInfo := &models.PageInfo{TotalPages: 20}
+
 		searchCollector := collectors.BuildFreeCompanySearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
 			s.getGrandCompanyTable(),
+			pageInfo,
 			output,
 		)
 
-		done := make(chan bool, 20)
-		for i := 1; i <= 20; i++ {
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			err = searchCollector.Visit(uri)
+			if err != nil {
+				output <- &models.FreeCompanySearchResult{
+					Error: err,
+				}
+			}
+		}
+		searchCollector.Wait()
+
+		done := make(chan bool, pageInfo.TotalPages-1)
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
 				err := searchCollector.Visit(nextURI)
@@ -499,11 +513,10 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 			}()
 		}
 
-		for i := 1; i <= 20; i++ {
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
 		}
 
-		searchCollector.Wait()
 		close(output)
 	}()
 
@@ -525,14 +538,28 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 	)
 
 	go func() {
+		pageInfo := &models.PageInfo{TotalPages: 20}
+
 		searchCollector := collectors.BuildCharacterSearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
+			pageInfo,
 			output,
 		)
 
-		done := make(chan bool, 20)
-		for i := 1; i <= 20; i++ {
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			err = searchCollector.Visit(uri)
+			if err != nil {
+				output <- &models.CharacterSearchResult{
+					Error: err,
+				}
+			}
+		}
+		searchCollector.Wait()
+
+		done := make(chan bool, pageInfo.TotalPages-1)
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
 				err := searchCollector.Visit(nextURI)
@@ -548,11 +575,10 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 			}()
 		}
 
-		for i := 1; i <= 20; i++ {
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
 		}
 
-		searchCollector.Wait()
 		close(output)
 	}()
 
@@ -568,14 +594,28 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
+		pageInfo := &models.PageInfo{TotalPages: 20}
+
 		searchCollector := collectors.BuildCWLSSearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
+			pageInfo,
 			output,
 		)
 
-		done := make(chan bool, 20)
-		for i := 1; i <= 20; i++ {
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			err = searchCollector.Visit(uri)
+			if err != nil {
+				output <- &models.CWLSSearchResult{
+					Error: err,
+				}
+			}
+		}
+		searchCollector.Wait()
+
+		done := make(chan bool, pageInfo.TotalPages-1)
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
 				err := searchCollector.Visit(nextURI)
@@ -591,11 +631,10 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 			}()
 		}
 
-		for i := 1; i <= 20; i++ {
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
 		}
 
-		searchCollector.Wait()
 		close(output)
 	}()
 
@@ -611,14 +650,28 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
+		pageInfo := &models.PageInfo{TotalPages: 20}
+
 		searchCollector := collectors.BuildLinkshellSearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
+			pageInfo,
 			output,
 		)
 
-		done := make(chan bool, 20)
-		for i := 1; i <= 20; i++ {
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			err = searchCollector.Visit(uri)
+			if err != nil {
+				output <- &models.LinkshellSearchResult{
+					Error: err,
+				}
+			}
+		}
+		searchCollector.Wait()
+
+		done := make(chan bool, pageInfo.TotalPages-1)
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
 				err := searchCollector.Visit(nextURI)
@@ -634,11 +687,10 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 			}()
 		}
 
-		for i := 1; i <= 20; i++ {
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
 		}
 
-		searchCollector.Wait()
 		close(output)
 	}()
 
@@ -654,14 +706,28 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
+		pageInfo := &models.PageInfo{TotalPages: 20}
+
 		searchCollector := collectors.BuildPVPTeamSearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
+			pageInfo,
 			output,
 		)
 
-		done := make(chan bool, 20)
-		for i := 1; i <= 20; i++ {
+		err := searchCollector.Visit(uri)
+		if err != nil {
+			err = searchCollector.Visit(uri)
+			if err != nil {
+				output <- &models.PVPTeamSearchResult{
+					Error: err,
+				}
+			}
+		}
+		searchCollector.Wait()
+
+		done := make(chan bool, pageInfo.TotalPages-1)
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
 				err := searchCollector.Visit(nextURI)
@@ -677,11 +743,10 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 			}()
 		}
 
-		for i := 1; i <= 20; i++ {
+		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
 		}
 
-		searchCollector.Wait()
 		close(output)
 	}()
 

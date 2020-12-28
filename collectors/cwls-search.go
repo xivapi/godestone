@@ -12,6 +12,7 @@ import (
 func BuildCWLSSearchCollector(
 	meta *models.Meta,
 	searchSelectors *selectors.SearchSelectors,
+	pageInfo *models.PageInfo,
 	output chan *models.CWLSSearchResult,
 ) *colly.Collector {
 	c := colly.NewCollector(
@@ -26,6 +27,18 @@ func BuildCWLSSearchCollector(
 
 	c.OnHTML(cwlsSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := cwlsSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
+
+		pi := cwlsSearchSelectors.PageInfo.ParseThroughChildren(container)
+		if len(pi) > 1 {
+			curPage, err := strconv.Atoi(pi[0])
+			if err == nil {
+				pageInfo.CurrentPage = curPage
+			}
+			totalPages, err := strconv.Atoi(pi[1])
+			if err == nil {
+				pageInfo.TotalPages = totalPages
+			}
+		}
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
 			nextCWLS := models.CWLSSearchResult{

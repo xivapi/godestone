@@ -1,6 +1,8 @@
 package collectors
 
 import (
+	"strconv"
+
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/selectors"
@@ -10,6 +12,7 @@ import (
 func BuildPVPTeamSearchCollector(
 	meta *models.Meta,
 	searchSelectors *selectors.SearchSelectors,
+	pageInfo *models.PageInfo,
 	output chan *models.PVPTeamSearchResult,
 ) *colly.Collector {
 	c := colly.NewCollector(
@@ -24,6 +27,18 @@ func BuildPVPTeamSearchCollector(
 
 	c.OnHTML(pvpTeamSearchSelectors.Root.Selector, func(container *colly.HTMLElement) {
 		nextURI := pvpTeamSearchSelectors.ListNextButton.ParseThroughChildren(container)[0]
+
+		pi := pvpTeamSearchSelectors.PageInfo.ParseThroughChildren(container)
+		if len(pi) > 1 {
+			curPage, err := strconv.Atoi(pi[0])
+			if err == nil {
+				pageInfo.CurrentPage = curPage
+			}
+			totalPages, err := strconv.Atoi(pi[1])
+			if err == nil {
+				pageInfo.TotalPages = totalPages
+			}
+		}
 
 		container.ForEach(entrySelectors.Root.Selector, func(i int, e *colly.HTMLElement) {
 			nextTeam := models.PVPTeamSearchResult{
