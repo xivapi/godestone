@@ -464,6 +464,7 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 	go func() {
 		searchCollector := collectors.BuildFreeCompanySearchCollector(
 			s.meta,
+			uri,
 			s.getSearchSelectors(),
 			s.getGrandCompanyTable(),
 			output,
@@ -495,7 +496,12 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 	)
 
 	go func() {
-		searchCollector := collectors.BuildCharacterSearchCollector(s.meta, s.getSearchSelectors(), output)
+		searchCollector := collectors.BuildCharacterSearchCollector(
+			s.meta,
+			uri,
+			s.getSearchSelectors(),
+			output,
+		)
 
 		err := searchCollector.Visit(uri)
 		if err != nil {
@@ -517,7 +523,12 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
-		searchCollector := collectors.BuildCWLSSearchCollector(s.meta, s.getSearchSelectors(), output)
+		searchCollector := collectors.BuildCWLSSearchCollector(
+			s.meta,
+			uri,
+			s.getSearchSelectors(),
+			output,
+		)
 
 		err := searchCollector.Visit(uri)
 		if err != nil {
@@ -539,7 +550,12 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
-		searchCollector := collectors.BuildLinkshellSearchCollector(s.meta, s.getSearchSelectors(), output)
+		searchCollector := collectors.BuildLinkshellSearchCollector(
+			s.meta,
+			uri,
+			s.getSearchSelectors(),
+			output,
+		)
 
 		err := searchCollector.Visit(uri)
 		if err != nil {
@@ -561,7 +577,12 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
-		searchCollector := collectors.BuildPVPTeamSearchCollector(s.meta, s.getSearchSelectors(), output)
+		searchCollector := collectors.BuildPVPTeamSearchCollector(
+			s.meta,
+			uri,
+			s.getSearchSelectors(),
+			output,
+		)
 
 		err := searchCollector.Visit(uri)
 		if err != nil {
