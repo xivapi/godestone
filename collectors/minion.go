@@ -16,9 +16,11 @@ func BuildMinionCollector(
 	lang string,
 	output chan *models.Minion,
 ) *colly.Collector {
-	c := colly.NewCollector()
-	c.UserAgent = meta.UserAgentMobile
-	c.IgnoreRobotsTxt = true
+	c := colly.NewCollector(
+		colly.UserAgent(meta.UserAgentMobile),
+		colly.IgnoreRobotsTxt(),
+		colly.Async(),
+	)
 
 	minionSelectors := profSelectors.Minion
 

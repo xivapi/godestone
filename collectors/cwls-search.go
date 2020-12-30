@@ -20,6 +20,7 @@ func BuildCWLSSearchCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.AllowURLRevisit(),
+		colly.Async(),
 	)
 
 	cwlsSearchSelectors := searchSelectors.CWLS

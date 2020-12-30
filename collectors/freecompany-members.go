@@ -15,6 +15,7 @@ func BuildFreeCompanyMembersCollector(meta *models.Meta, fcSelectors *selectors.
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.MaxDepth(50),
 		colly.IgnoreRobotsTxt(),
+		colly.Async(),
 	)
 
 	membersSelectors := fcSelectors.Members

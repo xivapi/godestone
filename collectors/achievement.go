@@ -17,6 +17,7 @@ func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.Profi
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.MaxDepth(100), // Should be set to ceil(nAchievements / 50) + 1
+		colly.Async(),
 	)
 
 	achievementSelectors := profSelectors.Achievements

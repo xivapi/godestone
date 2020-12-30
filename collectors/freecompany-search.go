@@ -25,6 +25,7 @@ func BuildFreeCompanySearchCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.AllowURLRevisit(),
+		colly.Async(),
 	)
 
 	fcSearchSelectors := searchSelectors.FreeCompany

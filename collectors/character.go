@@ -28,9 +28,11 @@ func BuildCharacterCollector(
 	tribeTable *exports.TribeTable,
 	charData *models.Character,
 ) *colly.Collector {
-	c := colly.NewCollector()
-	c.UserAgent = meta.UserAgentDesktop
-	c.IgnoreRobotsTxt = true
+	c := colly.NewCollector(
+		colly.UserAgent(meta.UserAgentDesktop),
+		colly.IgnoreRobotsTxt(),
+		colly.Async(),
+	)
 
 	// BASIC DATA
 	charSelectors := profSelectors.Character

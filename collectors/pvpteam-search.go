@@ -20,6 +20,7 @@ func BuildPVPTeamSearchCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.AllowURLRevisit(),
+		colly.Async(),
 	)
 
 	pvpTeamSearchSelectors := searchSelectors.PVPTeam

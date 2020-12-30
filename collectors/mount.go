@@ -11,9 +11,11 @@ import (
 
 // BuildMountCollector builds the collector used for processing the page.
 func BuildMountCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, mountTable *exports.MountTable, output chan *models.Mount) *colly.Collector {
-	c := colly.NewCollector()
-	c.UserAgent = meta.UserAgentMobile
-	c.IgnoreRobotsTxt = true
+	c := colly.NewCollector(
+		colly.UserAgent(meta.UserAgentMobile),
+		colly.IgnoreRobotsTxt(),
+		colly.Async(),
+	)
 
 	mountSelectors := profSelectors.Mount
 

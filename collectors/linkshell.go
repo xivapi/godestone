@@ -14,6 +14,7 @@ func BuildLinkshellCollector(meta *models.Meta, lsSelectors *selectors.Linkshell
 	c := colly.NewCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
+		colly.Async(),
 	)
 
 	basicSelectors := lsSelectors.Basic

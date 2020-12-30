@@ -16,9 +16,11 @@ var nonDigits = regexp.MustCompile("[^\\d]")
 
 // BuildClassJobCollector builds the collector used for processing the page.
 func BuildClassJobCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, classJobTable *exports.ClassJobTable, charData *models.Character) *colly.Collector {
-	c := colly.NewCollector()
-	c.UserAgent = meta.UserAgentDesktop
-	c.IgnoreRobotsTxt = true
+	c := colly.NewCollector(
+		colly.UserAgent(meta.UserAgentDesktop),
+		colly.IgnoreRobotsTxt(),
+		colly.Async(),
+	)
 
 	classJobSelectors := profSelectors.ClassJob
 	charData.ClassJobs = make([]*models.ClassJob, 0)

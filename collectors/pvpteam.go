@@ -15,6 +15,7 @@ func BuildPVPTeamCollector(meta *models.Meta, pvpTeamSelectors *selectors.PVPTea
 	c := colly.NewCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
+		colly.Async(),
 	)
 
 	basicSelectors := pvpTeamSelectors.Basic
