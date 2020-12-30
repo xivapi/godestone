@@ -203,6 +203,7 @@ func (s *Scraper) getTribeTable() *exports.TribeTable {
 func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	now := time.Now()
 	charData := models.Character{ID: id, ParseDate: now}
+	errors := make(chan error, 2)
 
 	charCollector := collectors.BuildCharacterCollector(
 		s.meta,
@@ -216,6 +217,10 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 		s.getTribeTable(),
 		&charData,
 	)
+
+	charCollector.OnError(func(r *colly.Response, err error) {
+		errors <- err
+	})
 
 	charSelectors := s.profileSelectors.Character
 
@@ -233,11 +238,7 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 			}
 		})
 	})
-
-	err := charCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d", s.lang, id))
-	if err != nil {
-		return nil, err
-	}
+	charCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d", s.lang, id))
 
 	classJobCollector := collectors.BuildClassJobCollector(
 		s.meta,
@@ -245,20 +246,23 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 		s.getClassJobTable(),
 		&charData,
 	)
-	err = classJobCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/class_job/", s.lang, id))
-	if err != nil {
-		return nil, err
-	}
+	classJobCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/class_job/", s.lang, id))
 
 	charCollector.Wait()
+	classJobCollector.Wait()
+	close(errors)
+	select {
+	case err, ok := <-errors:
+		if ok {
+			return nil, err
+		}
+	}
 
 	for _, cj := range charData.ClassJobs {
 		if cj.Name == activeClassJobName {
 			charData.ActiveClassJob = cj
 		}
 	}
-
-	classJobCollector.Wait()
 
 	return &charData, nil
 }
@@ -518,6 +522,7 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 				done <- true
 			}()
 		}
+		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
@@ -580,6 +585,7 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 				done <- true
 			}()
 		}
+		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
@@ -636,6 +642,7 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 				done <- true
 			}()
 		}
+		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
@@ -692,6 +699,7 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 				done <- true
 			}()
 		}
+		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
@@ -748,6 +756,7 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 				done <- true
 			}()
 		}
+		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done

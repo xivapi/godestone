@@ -14,6 +14,7 @@ func BuildCWLSCollector(meta *models.Meta, cwlsSelectors *selectors.CWLSSelector
 	c := colly.NewCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
+		colly.Async(),
 	)
 
 	basicSelectors := cwlsSelectors.Basic

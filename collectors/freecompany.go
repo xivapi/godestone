@@ -23,6 +23,7 @@ func BuildFreeCompanyCollector(
 	c := colly.NewCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
+		colly.Async(),
 	)
 
 	basicSelectors := fcSelectors.Basic

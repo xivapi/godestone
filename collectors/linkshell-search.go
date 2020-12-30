@@ -20,6 +20,7 @@ func BuildLinkshellSearchCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.AllowURLRevisit(),
+		colly.Async(),
 	)
 
 	lsSearchSelectors := searchSelectors.Linkshell

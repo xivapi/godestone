@@ -21,6 +21,7 @@ func BuildCharacterSearchCollector(
 		colly.UserAgent(meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.AllowURLRevisit(),
+		colly.Async(),
 	)
 
 	charSearchSelectors := searchSelectors.Character
