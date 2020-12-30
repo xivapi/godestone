@@ -38,6 +38,7 @@ type Scraper struct {
 	minionTable       *exports.MinionTable
 	mountTable        *exports.MountTable
 	raceTable         *exports.RaceTable
+	repTable          *exports.ReputationTable
 	titleTable        *exports.TitleTable
 	townTable         *exports.TownTable
 	tribeTable        *exports.TribeTable
@@ -169,6 +170,15 @@ func (s *Scraper) getRaceTable() *exports.RaceTable {
 		s.raceTable = raceTable
 	}
 	return s.raceTable
+}
+
+func (s *Scraper) getReputationTable() *exports.ReputationTable {
+	if s.repTable == nil {
+		data, _ := exports.Asset("reputation_table.bin")
+		repTable := exports.GetRootAsReputationTable(data, 0)
+		s.repTable = repTable
+	}
+	return s.repTable
 }
 
 func (s *Scraper) getTitleTable() *exports.TitleTable {
@@ -467,6 +477,7 @@ func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
 		s.meta,
 		s.getFreeCompanySelectors(),
 		s.getGrandCompanyTable(),
+		s.getReputationTable(),
 		&fc,
 	)
 	fcCollector.OnError(func(r *colly.Response, err error) {
