@@ -283,12 +283,12 @@ func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 			string(s.lang),
 			output,
 		)
-
-		err := minionCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/minion/", s.lang, id))
-		if err != nil && err.Error() != http.StatusText(http.StatusNotFound) {
-			errors <- err
-		}
-
+		minionCollector.OnError(func(r *colly.Response, err error) {
+			if err.Error() != http.StatusText(http.StatusNotFound) {
+				errors <- err
+			}
+		})
+		minionCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/minion/", s.lang, id))
 		minionCollector.Wait()
 
 		close(output)
@@ -323,12 +323,12 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 
 	go func() {
 		mountCollector := collectors.BuildMountCollector(s.meta, s.getProfileSelectors(), s.getMountTable(), output)
-
-		err := mountCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/mount/", s.lang, id))
-		if err != nil && err.Error() != http.StatusText(http.StatusNotFound) {
-			errors <- err
-		}
-
+		mountCollector.OnError(func(r *colly.Response, err error) {
+			if err.Error() != http.StatusText(http.StatusNotFound) {
+				errors <- err
+			}
+		})
+		mountCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/mount/", s.lang, id))
 		mountCollector.Wait()
 
 		close(output)
@@ -362,8 +362,7 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 
 	go func() {
 		achievementCollector := collectors.BuildAchievementCollector(s.meta, s.getProfileSelectors(), s.getAchievementTable(), output)
-		err := achievementCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/achievement/", s.lang, id))
-		if err != nil {
+		achievementCollector.OnError(func(r *colly.Response, err error) {
 			aai := &models.AllAchievementInfo{}
 			errAi := &models.AchievementInfo{
 				AllAchievementInfo: aai,
@@ -375,9 +374,9 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 			}
 
 			output <- errAi
-		}
+		})
+		achievementCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/achievement/", s.lang, id))
 		achievementCollector.Wait()
-
 		close(output)
 	}()
 
@@ -389,13 +388,21 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
 	now := time.Now()
 	ls := models.Linkshell{ID: id, ParseDate: now}
+	errors := make(chan error, 1)
 
 	lsCollector := collectors.BuildLinkshellCollector(s.meta, s.getLinkshellSelectors(), &ls)
-	err := lsCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/linkshell/%s", s.lang, id))
-	if err != nil {
-		return nil, err
-	}
+	lsCollector.OnError(func(r *colly.Response, err error) {
+		errors <- err
+	})
+	lsCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/linkshell/%s", s.lang, id))
 	lsCollector.Wait()
+	close(errors)
+	select {
+	case err, ok := <-errors:
+		if ok {
+			return nil, err
+		}
+	}
 
 	return &ls, nil
 }
@@ -405,13 +412,21 @@ func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
 func (s *Scraper) FetchCWLS(id string) (*models.CWLS, error) {
 	now := time.Now()
 	cwls := models.CWLS{ID: id, ParseDate: now}
+	errors := make(chan error, 1)
 
 	cwlsCollector := collectors.BuildCWLSCollector(s.meta, s.getCWLSSelectors(), &cwls)
-	err := cwlsCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/crossworld_linkshell/%s", s.lang, id))
-	if err != nil {
-		return nil, err
-	}
+	cwlsCollector.OnError(func(r *colly.Response, err error) {
+		errors <- err
+	})
+	cwlsCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/crossworld_linkshell/%s", s.lang, id))
 	cwlsCollector.Wait()
+	close(errors)
+	select {
+	case err, ok := <-errors:
+		if ok {
+			return nil, err
+		}
+	}
 
 	return &cwls, nil
 }
@@ -421,13 +436,21 @@ func (s *Scraper) FetchCWLS(id string) (*models.CWLS, error) {
 func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
 	now := time.Now()
 	pvpTeam := models.PVPTeam{ID: id, ParseDate: now}
+	errors := make(chan error, 1)
 
 	pvpTeamCollector := collectors.BuildPVPTeamCollector(s.meta, s.getPVPTeamSelectors(), &pvpTeam)
-	err := pvpTeamCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/pvpteam/%s", s.lang, id))
-	if err != nil {
-		return nil, err
-	}
+	pvpTeamCollector.OnError(func(r *colly.Response, err error) {
+		errors <- err
+	})
+	pvpTeamCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/pvpteam/%s", s.lang, id))
 	pvpTeamCollector.Wait()
+	close(errors)
+	select {
+	case err, ok := <-errors:
+		if ok {
+			return nil, err
+		}
+	}
 
 	return &pvpTeam, nil
 }
@@ -437,6 +460,7 @@ func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
 func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
 	now := time.Now()
 	fc := models.FreeCompany{ID: id, ParseDate: now}
+	errors := make(chan error, 1)
 
 	fcCollector := collectors.BuildFreeCompanyCollector(
 		s.meta,
@@ -444,12 +468,18 @@ func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
 		s.getGrandCompanyTable(),
 		&fc,
 	)
-
-	err := fcCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/freecompany/%s", s.lang, id))
-	if err != nil {
-		return nil, err
-	}
+	fcCollector.OnError(func(r *colly.Response, err error) {
+		errors <- err
+	})
+	fcCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/freecompany/%s", s.lang, id))
 	fcCollector.Wait()
+	close(errors)
+	select {
+	case err, ok := <-errors:
+		if ok {
+			return nil, err
+		}
+	}
 
 	return &fc, nil
 }
@@ -461,15 +491,13 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 
 	go func() {
 		fcMembersCollector := collectors.BuildFreeCompanyMembersCollector(s.meta, s.getFreeCompanySelectors(), output)
-
-		err := fcMembersCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/freecompany/%s/member/", s.lang, id))
-		if err != nil {
+		fcMembersCollector.OnError(func(r *colly.Response, err error) {
 			output <- &models.FreeCompanyMember{
 				Error: err,
 			}
-		}
+		})
+		fcMembersCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/freecompany/%s/member/", s.lang, id))
 		fcMembersCollector.Wait()
-
 		close(output)
 	}()
 
