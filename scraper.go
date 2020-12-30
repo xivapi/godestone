@@ -514,6 +514,7 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		pageInfo := &models.PageInfo{TotalPages: 20}
+		revisited := map[string]bool{}
 
 		searchCollector := collectors.BuildFreeCompanySearchCollector(
 			s.meta,
@@ -522,35 +523,29 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 			pageInfo,
 			output,
 		)
-
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			err = searchCollector.Visit(uri)
-			if err != nil {
+		searchCollector.OnError(func(r *colly.Response, err error) {
+			url := r.Request.URL.String()
+			if !revisited[url] {
 				output <- &models.FreeCompanySearchResult{
 					Error: err,
 				}
+			} else {
+				searchCollector.Visit(url)
 			}
-		}
+			revisited[url] = true
+		})
+		searchCollector.Visit(uri)
 		searchCollector.Wait()
 
 		done := make(chan bool, pageInfo.TotalPages-1)
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
-				err := searchCollector.Visit(nextURI)
-				if err != nil {
-					err = searchCollector.Visit(nextURI)
-					if err != nil {
-						output <- &models.FreeCompanySearchResult{
-							Error: err,
-						}
-					}
-				}
+				searchCollector.Visit(nextURI)
+				searchCollector.Wait()
 				done <- true
 			}()
 		}
-		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
@@ -578,6 +573,7 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 
 	go func() {
 		pageInfo := &models.PageInfo{TotalPages: 20}
+		revisited := map[string]bool{}
 
 		searchCollector := collectors.BuildCharacterSearchCollector(
 			s.meta,
@@ -585,35 +581,29 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 			pageInfo,
 			output,
 		)
-
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			err = searchCollector.Visit(uri)
-			if err != nil {
+		searchCollector.OnError(func(r *colly.Response, err error) {
+			url := r.Request.URL.String()
+			if !revisited[url] {
 				output <- &models.CharacterSearchResult{
 					Error: err,
 				}
+			} else {
+				searchCollector.Visit(url)
 			}
-		}
+			revisited[url] = true
+		})
+		searchCollector.Visit(uri)
 		searchCollector.Wait()
 
 		done := make(chan bool, pageInfo.TotalPages-1)
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
-				err := searchCollector.Visit(nextURI)
-				if err != nil {
-					err = searchCollector.Visit(nextURI)
-					if err != nil {
-						output <- &models.CharacterSearchResult{
-							Error: err,
-						}
-					}
-				}
+				searchCollector.Visit(nextURI)
+				searchCollector.Wait()
 				done <- true
 			}()
 		}
-		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
@@ -635,6 +625,7 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		pageInfo := &models.PageInfo{TotalPages: 20}
+		revisited := map[string]bool{}
 
 		searchCollector := collectors.BuildCWLSSearchCollector(
 			s.meta,
@@ -642,35 +633,29 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 			pageInfo,
 			output,
 		)
-
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			err = searchCollector.Visit(uri)
-			if err != nil {
+		searchCollector.OnError(func(r *colly.Response, err error) {
+			url := r.Request.URL.String()
+			if !revisited[url] {
 				output <- &models.CWLSSearchResult{
 					Error: err,
 				}
+			} else {
+				searchCollector.Visit(url)
 			}
-		}
+			revisited[url] = true
+		})
+		searchCollector.Visit(uri)
 		searchCollector.Wait()
 
 		done := make(chan bool, pageInfo.TotalPages-1)
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
-				err := searchCollector.Visit(nextURI)
-				if err != nil {
-					err = searchCollector.Visit(nextURI)
-					if err != nil {
-						output <- &models.CWLSSearchResult{
-							Error: err,
-						}
-					}
-				}
+				searchCollector.Visit(nextURI)
+				searchCollector.Wait()
 				done <- true
 			}()
 		}
-		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
@@ -692,6 +677,7 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		pageInfo := &models.PageInfo{TotalPages: 20}
+		revisited := map[string]bool{}
 
 		searchCollector := collectors.BuildLinkshellSearchCollector(
 			s.meta,
@@ -699,35 +685,29 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 			pageInfo,
 			output,
 		)
-
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			err = searchCollector.Visit(uri)
-			if err != nil {
+		searchCollector.OnError(func(r *colly.Response, err error) {
+			url := r.Request.URL.String()
+			if !revisited[url] {
 				output <- &models.LinkshellSearchResult{
 					Error: err,
 				}
+			} else {
+				searchCollector.Visit(url)
 			}
-		}
+			revisited[url] = true
+		})
+		searchCollector.Visit(uri)
 		searchCollector.Wait()
 
 		done := make(chan bool, pageInfo.TotalPages-1)
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
-				err := searchCollector.Visit(nextURI)
-				if err != nil {
-					err = searchCollector.Visit(nextURI)
-					if err != nil {
-						output <- &models.LinkshellSearchResult{
-							Error: err,
-						}
-					}
-				}
+				searchCollector.Visit(nextURI)
+				searchCollector.Wait()
 				done <- true
 			}()
 		}
-		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
@@ -749,6 +729,7 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
 		pageInfo := &models.PageInfo{TotalPages: 20}
+		revisited := map[string]bool{}
 
 		searchCollector := collectors.BuildPVPTeamSearchCollector(
 			s.meta,
@@ -756,35 +737,29 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 			pageInfo,
 			output,
 		)
-
-		err := searchCollector.Visit(uri)
-		if err != nil {
-			err = searchCollector.Visit(uri)
-			if err != nil {
+		searchCollector.OnError(func(r *colly.Response, err error) {
+			url := r.Request.URL.String()
+			if !revisited[url] {
 				output <- &models.PVPTeamSearchResult{
 					Error: err,
 				}
+			} else {
+				searchCollector.Visit(url)
 			}
-		}
+			revisited[url] = true
+		})
+		searchCollector.Visit(uri)
 		searchCollector.Wait()
 
 		done := make(chan bool, pageInfo.TotalPages-1)
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			nextURI := uri + fmt.Sprintf("&page=%d", i)
 			go func() {
-				err := searchCollector.Visit(nextURI)
-				if err != nil {
-					err = searchCollector.Visit(nextURI)
-					if err != nil {
-						output <- &models.PVPTeamSearchResult{
-							Error: err,
-						}
-					}
-				}
+				searchCollector.Visit(nextURI)
+				searchCollector.Wait()
 				done <- true
 			}()
 		}
-		searchCollector.Wait()
 
 		for i := 2; i <= pageInfo.TotalPages; i++ {
 			<-done
