@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/data/reputation"
 	"github.com/karashiiro/godestone/data/role"
 	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/pack/exports"
@@ -18,6 +17,7 @@ func BuildFreeCompanyCollector(
 	meta *models.Meta,
 	fcSelectors *selectors.FreeCompanySelectors,
 	grandCompanyTable *exports.GrandCompanyTable,
+	repTable *exports.ReputationTable,
 	fc *models.FreeCompany,
 ) *colly.Collector {
 	c := colly.NewCollector(
@@ -210,7 +210,17 @@ func BuildFreeCompanyCollector(
 			}
 		})
 		c.OnHTML(curRep.Rank.Selector, func(e *colly.HTMLElement) {
-			rep.Rank = reputation.Parse(curRep.Rank.Parse(e)[0])
+			repName := curRep.Rank.Parse(e)[0]
+			r := lookups.ReputationTableLookup(repTable, repName)
+			rep.Rank = &models.NamedEntity{
+				ID:   r.Id(),
+				Name: repName,
+
+				NameEN: string(r.NameEn()),
+				NameJA: string(r.NameJa()),
+				NameDE: string(r.NameDe()),
+				NameFR: string(r.NameFr()),
+			}
 		})
 
 		fc.Reputation = append(fc.Reputation, rep)

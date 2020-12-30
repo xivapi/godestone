@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/karashiiro/godestone/data/gcrank"
-	"github.com/karashiiro/godestone/data/reputation"
 	"github.com/karashiiro/godestone/data/role"
 )
 
@@ -61,7 +60,7 @@ type FreeCompanyRanking struct {
 type FreeCompanyReputation struct {
 	GrandCompany *NamedEntity
 	Progress     uint8
-	Rank         reputation.Reputation
+	Rank         *NamedEntity
 }
 
 // FreeCompanySeekingInfo represents a particular FC's intentions for a recruit roles.
