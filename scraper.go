@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gocolly/colly/v2"
@@ -516,6 +517,8 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 		pageInfo := &models.PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
+		mu := sync.Mutex{}
+
 		searchCollector := collectors.BuildFreeCompanySearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
@@ -525,7 +528,8 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 		)
 		searchCollector.OnError(func(r *colly.Response, err error) {
 			url := r.Request.URL.String()
-			if !revisited[url] {
+			mu.Lock()
+			if revisited[url] {
 				output <- &models.FreeCompanySearchResult{
 					Error: err,
 				}
@@ -533,6 +537,7 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 				searchCollector.Visit(url)
 			}
 			revisited[url] = true
+			mu.Unlock()
 		})
 		searchCollector.Visit(uri)
 		searchCollector.Wait()
@@ -575,6 +580,8 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 		pageInfo := &models.PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
+		mu := sync.Mutex{}
+
 		searchCollector := collectors.BuildCharacterSearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
@@ -583,7 +590,8 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 		)
 		searchCollector.OnError(func(r *colly.Response, err error) {
 			url := r.Request.URL.String()
-			if !revisited[url] {
+			mu.Lock()
+			if revisited[url] {
 				output <- &models.CharacterSearchResult{
 					Error: err,
 				}
@@ -591,6 +599,7 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 				searchCollector.Visit(url)
 			}
 			revisited[url] = true
+			mu.Unlock()
 		})
 		searchCollector.Visit(uri)
 		searchCollector.Wait()
@@ -627,6 +636,8 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 		pageInfo := &models.PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
+		mu := sync.Mutex{}
+
 		searchCollector := collectors.BuildCWLSSearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
@@ -635,7 +646,8 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 		)
 		searchCollector.OnError(func(r *colly.Response, err error) {
 			url := r.Request.URL.String()
-			if !revisited[url] {
+			mu.Lock()
+			if revisited[url] {
 				output <- &models.CWLSSearchResult{
 					Error: err,
 				}
@@ -643,6 +655,7 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 				searchCollector.Visit(url)
 			}
 			revisited[url] = true
+			mu.Unlock()
 		})
 		searchCollector.Visit(uri)
 		searchCollector.Wait()
@@ -679,6 +692,8 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 		pageInfo := &models.PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
+		mu := sync.Mutex{}
+
 		searchCollector := collectors.BuildLinkshellSearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
@@ -687,7 +702,8 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 		)
 		searchCollector.OnError(func(r *colly.Response, err error) {
 			url := r.Request.URL.String()
-			if !revisited[url] {
+			mu.Lock()
+			if revisited[url] {
 				output <- &models.LinkshellSearchResult{
 					Error: err,
 				}
@@ -695,6 +711,7 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 				searchCollector.Visit(url)
 			}
 			revisited[url] = true
+			mu.Unlock()
 		})
 		searchCollector.Visit(uri)
 		searchCollector.Wait()
@@ -731,6 +748,8 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 		pageInfo := &models.PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
+		mu := sync.Mutex{}
+
 		searchCollector := collectors.BuildPVPTeamSearchCollector(
 			s.meta,
 			s.getSearchSelectors(),
@@ -739,7 +758,8 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 		)
 		searchCollector.OnError(func(r *colly.Response, err error) {
 			url := r.Request.URL.String()
-			if !revisited[url] {
+			mu.Lock()
+			if revisited[url] {
 				output <- &models.PVPTeamSearchResult{
 					Error: err,
 				}
@@ -747,6 +767,7 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 				searchCollector.Visit(url)
 			}
 			revisited[url] = true
+			mu.Unlock()
 		})
 		searchCollector.Visit(uri)
 		searchCollector.Wait()
