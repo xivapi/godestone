@@ -40,7 +40,13 @@ func failIfOlderThanGameRelease(t *testing.T, label string, input time.Time) {
 
 func failIfGCInvalid(t *testing.T, label string, input *models.NamedEntity) {
 	if input == nil || input.Name == "" {
-		t.Errorf(fmt.Sprintf("%s is not a valid Grand Company; got %s", label, input.Name))
+		var got string
+		if input == nil {
+			got = "nil"
+		} else {
+			got = input.Name
+		}
+		t.Errorf(fmt.Sprintf("%s is not a valid Grand Company; got %s", label, got))
 	}
 }
 
@@ -62,6 +68,7 @@ func TestFetchCharacter(t *testing.T) {
 						}
 
 						t.Errorf(err.Error())
+						return
 					}
 
 					failIfNil(t, "Character active ClassJob", c.ActiveClassJob)
@@ -106,6 +113,7 @@ func TestFetchCharacterAchievements(t *testing.T) {
 							}
 
 							t.Errorf(achievement.Error.Error())
+							return
 						}
 
 						failIfNumberZero(t, "Achievement ID", int64(achievement.ID))
@@ -137,6 +145,7 @@ func TestFetchCharacterMinions(t *testing.T) {
 						}
 
 						t.Errorf(err.Error())
+						return
 					}
 
 					for _, minion := range minions {
@@ -170,6 +179,7 @@ func TestFetchCharacterMounts(t *testing.T) {
 						}
 
 						t.Errorf(err.Error())
+						return
 					}
 
 					for _, mount := range mounts {
@@ -205,6 +215,7 @@ func TestFetchLinkshell(t *testing.T) {
 						}
 
 						t.Errorf(err.Error())
+						return
 					}
 
 					failIfStringEmpty(t, "Linkshell name", ls.Name)
@@ -249,6 +260,7 @@ func TestFetchCWLS(t *testing.T) {
 						}
 
 						t.Errorf(err.Error())
+						return
 					}
 
 					failIfStringEmpty(t, "CWLS name", cwls.Name)
@@ -294,6 +306,7 @@ func TestFetchPVPTeam(t *testing.T) {
 						}
 
 						t.Errorf(err.Error())
+						return
 					}
 
 					failIfStringEmpty(t, "PVP team name", pvpTeam.Name)
@@ -341,6 +354,7 @@ func TestFetchFreeCompany(t *testing.T) {
 						}
 
 						t.Errorf(err.Error())
+						return
 					}
 
 					failIfStringEmpty(t, "FC active state", string(fc.Active))
@@ -372,6 +386,7 @@ func TestFetchFreeCompanyMembers(t *testing.T) {
 							}
 
 							t.Errorf(member.Error.Error())
+							return
 						}
 
 						failIfStringEmpty(t, "Member avatar", member.Avatar)
@@ -402,6 +417,7 @@ func TestSearchFreeCompanies(t *testing.T) {
 					}
 
 					t.Errorf(fc.Error.Error())
+					return
 				}
 
 				failIfStringEmpty(t, "FC active state", string(fc.Active))
@@ -434,6 +450,7 @@ func TestSearchCharacters(t *testing.T) {
 					}
 
 					t.Errorf(character.Error.Error())
+					return
 				}
 
 				failIfStringEmpty(t, "Character avatar", character.Avatar)
@@ -462,6 +479,7 @@ func TestSearchCWLS(t *testing.T) {
 					}
 
 					t.Errorf(cwls.Error.Error())
+					return
 				}
 
 				failIfStringEmpty(t, "CWLS ID", cwls.ID)
@@ -489,6 +507,7 @@ func TestSearchLinkshells(t *testing.T) {
 					}
 
 					t.Errorf(ls.Error.Error())
+					return
 				}
 
 				failIfStringEmpty(t, "Linkshell ID", ls.ID)
@@ -517,6 +536,7 @@ func TestSearchPVPTeams(t *testing.T) {
 					}
 
 					t.Errorf(ls.Error.Error())
+					return
 				}
 
 				failIfStringEmpty(t, "PVP team ID", ls.ID)

@@ -309,7 +309,7 @@ func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 		close(done)
 	}()
 
-	minions := []*models.Minion{}
+	var minions []*models.Minion
 	for minion := range output {
 		minions = append(minions, minion)
 	}
@@ -349,7 +349,7 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 		close(done)
 	}()
 
-	mounts := []*models.Mount{}
+	var mounts []*models.Mount
 	for mount := range output {
 		mounts = append(mounts, mount)
 	}
