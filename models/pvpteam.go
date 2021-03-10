@@ -31,7 +31,7 @@ type PVPTeamMember struct {
 
 // PVPTeamSearchResult represents basic PVP team information returned from a search.
 type PVPTeamSearchResult struct {
-	Error error
+	Error error `json:"-"`
 
 	Name        string
 	ID          string

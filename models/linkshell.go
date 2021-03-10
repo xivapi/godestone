@@ -29,7 +29,7 @@ type LinkshellMember struct {
 
 // LinkshellSearchResult represents basic linkshell information returned from a search.
 type LinkshellSearchResult struct {
-	Error error
+	Error error `json:"-"`
 
 	Name          string
 	ID            string

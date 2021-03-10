@@ -72,7 +72,7 @@ type FreeCompanySeekingInfo struct {
 
 // FreeCompanyMember represents information about a Free Company member.
 type FreeCompanyMember struct {
-	Error error
+	Error error `json:"-"`
 
 	Avatar   string
 	ID       uint32
@@ -108,7 +108,7 @@ type FreeCompany struct {
 
 // FreeCompanySearchResult represents all of the searchable information about an FC.
 type FreeCompanySearchResult struct {
-	Error error
+	Error error `json:"-"`
 
 	Active        FreeCompanyActiveState
 	ActiveMembers uint32
