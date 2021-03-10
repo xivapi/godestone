@@ -30,7 +30,7 @@ type CWLSMember struct {
 
 // CWLSSearchResult represents basic CWLS information returned from a search.
 type CWLSSearchResult struct {
-	Error error
+	Error error `json:"-"`
 
 	Name          string
 	ID            string

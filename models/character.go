@@ -44,7 +44,7 @@ type Character struct {
 
 // CharacterSearchResult contains data from the character search page about a character.
 type CharacterSearchResult struct {
-	Error error
+	Error error `json:"-"`
 
 	Avatar   string
 	ID       uint32

@@ -15,7 +15,7 @@ type AllAchievementInfo struct {
 type AchievementInfo struct {
 	*AllAchievementInfo
 
-	Error error
+	Error error `json:"-"`
 
 	Name string
 	ID   uint32
