@@ -50,7 +50,7 @@ func failIfGCInvalid(t *testing.T, label string, input *models.NamedEntity) {
 	}
 }
 
-var characterIds = []uint32{11166211, 9426169, 9575452}
+var characterIds = []uint32{11166211, 9426169, 9575452, 15590019}
 
 func TestFetchCharacter(t *testing.T) {
 	t.Parallel()

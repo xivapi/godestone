@@ -113,7 +113,10 @@ func BuildCharacterCollector(
 	c.OnHTML(charSelectors.RaceClanGender.Selector, func(e *colly.HTMLElement) {
 		values := charSelectors.RaceClanGender.ParseInnerHTML(e)
 
-		r := lookups.RaceTableLookup(raceTable, values[0])
+		// Miqo'te fix
+		raceName := strings.ReplaceAll(values[0], "&#39;", "'")
+
+		r := lookups.RaceTableLookup(raceTable, raceName)
 		charData.Race = &models.GenderedEntity{
 			ID:   r.Id(),
 			Name: values[0],
