@@ -1,10 +1,10 @@
 # godestone
 
-[![Documentation Badge](https://img.shields.io/badge/docs-pkg.go.dev-007D9C)](https://pkg.go.dev/github.com/karashiiro/godestone)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/28006e7fe175446db0fd8d38c92795b7)](https://app.codacy.com/gh/karashiiro/godestone?utm_source=github.com&utm_medium=referral&utm_content=karashiiro/godestone&utm_campaign=Badge_Grade)
-[![Go Report Card](https://goreportcard.com/badge/github.com/karashiiro/godestone)](https://goreportcard.com/report/github.com/karashiiro/godestone)
-[![Dependencies](https://img.shields.io/librariesio/github/karashiiro/godestone)](https://libraries.io/github/karashiiro/godestone)
-[![Repo Size](https://img.shields.io/github/repo-size/karashiiro/godestone)](https://github.com/karashiiro/godestone)
+[![Documentation Badge](https://img.shields.io/badge/docs-pkg.go.dev-007D9C)](https://pkg.go.dev/github.com/xivapi/godestone)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/28006e7fe175446db0fd8d38c92795b7)](https://app.codacy.com/gh/xivapi/godestone?utm_source=github.com&utm_medium=referral&utm_content=xivapi/godestone&utm_campaign=Badge_Grade)
+[![Go Report Card](https://goreportcard.com/badge/github.com/karashiiro/godestone)](https://goreportcard.com/report/github.com/xivapi/godestone)
+[![Dependencies](https://img.shields.io/librariesio/github/karashiiro/godestone)](https://libraries.io/github/xivapi/godestone)
+[![Repo Size](https://img.shields.io/github/repo-size/karashiiro/godestone)](https://github.com/xivapi/godestone)
 
 Go scraper for The Lodestone.
 
