@@ -5,6 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/xivapi/godestone/v2)](https://goreportcard.com/report/github.com/xivapi/godestone/v2)
 [![Dependencies](https://img.shields.io/librariesio/github/xivapi/godestone)](https://libraries.io/github/xivapi/godestone)
 [![Code Size](https://img.shields.io/github/languages/code-size/xivapi/godestone)](https://github.com/xivapi/godestone)
+[![Repo Size](https://img.shields.io/github/repo-size/xivapi/godestone)](https://github.com/xivapi/godestone)
 
 Go scraper for The Lodestone.
 
