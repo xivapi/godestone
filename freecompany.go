@@ -7,7 +7,7 @@ import (
 	"github.com/gocolly/colly/v2"
 	"github.com/xivapi/godestone/v2/data/gcrank"
 	"github.com/xivapi/godestone/v2/data/role"
-	"github.com/xivapi/godestone/v2/selectors"
+	"github.com/xivapi/godestone/v2/internal/selectors"
 )
 
 func (s *Scraper) buildFreeCompanyCollector(fc *FreeCompany) *colly.Collector {

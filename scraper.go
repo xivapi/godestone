@@ -9,8 +9,8 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/xivapi/godestone/v2/internal/pack/css"
+	"github.com/xivapi/godestone/v2/internal/selectors"
 	"github.com/xivapi/godestone/v2/provider"
-	"github.com/xivapi/godestone/v2/selectors"
 )
 
 // Scraper is the object through which interactions with The Lodestone are made.
