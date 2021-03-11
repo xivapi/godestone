@@ -300,8 +300,8 @@ func (s *Scraper) buildCharacterCollector(
 	}
 
 	c.OnHTML(partSelectors.SoulCrystal.Name.Selector, func(e *colly.HTMLElement) {
-		partRefs.SoulCrystal.Name = partSelectors.SoulCrystal.Name.Parse(e)[0]
-		item := s.dataProvider.Item(partRefs.SoulCrystal.Name)
+		name := partSelectors.SoulCrystal.Name.Parse(e)[0]
+		item := s.dataProvider.Item(name)
 		if item != nil {
 			partRefs.SoulCrystal.NamedEntity = item
 		}
