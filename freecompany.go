@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/data/gcrank"
-	"github.com/karashiiro/godestone/data/role"
-	"github.com/karashiiro/godestone/selectors"
+	"github.com/xivapi/godestone/data/gcrank"
+	"github.com/xivapi/godestone/data/role"
+	"github.com/xivapi/godestone/selectors"
 )
 
 func (s *Scraper) buildFreeCompanyCollector(fc *FreeCompany) *colly.Collector {

@@ -1,7 +1,7 @@
 package godestone
 
 import (
-	"github.com/karashiiro/godestone/pack/exports"
+	"github.com/xivapi/godestone/pack/exports"
 )
 
 // DataProvider represents a service implementation responsible for

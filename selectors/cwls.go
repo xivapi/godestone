@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/karashiiro/godestone/pack/css"
+	"github.com/xivapi/godestone/pack/css"
 )
 
 // CWLSBasicSelectors contains the CSS selectors for the basic information on the CWLS page.

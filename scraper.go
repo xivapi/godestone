@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/pack/css"
-	"github.com/karashiiro/godestone/pack/exports"
+	"github.com/xivapi/godestone/pack/css"
+	"github.com/xivapi/godestone/pack/exports"
 
-	"github.com/karashiiro/godestone/selectors"
+	"github.com/xivapi/godestone/selectors"
 )
 
 // Scraper is the object through which interactions with The Lodestone are made.

@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/karashiiro/godestone/pack/css"
+	"github.com/xivapi/godestone/pack/css"
 )
 
 // AchievementSelectors represents all CSS selectors associated with character achievements.

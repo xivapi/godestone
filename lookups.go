@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/karashiiro/godestone/pack/exports"
+	"github.com/xivapi/godestone/pack/exports"
 )
 
 func listContains(test string, list ...string) bool {
@@ -37,12 +37,13 @@ func (s *Scraper) achievementTableLookup(name string) *exports.Achievement {
 		nameFr := string(achievement.NameFr())
 		nameJa := string(achievement.NameJa())
 
-		nameEnLower := strings.ToLower(nameEn)
-		nameDeLower := strings.ToLower(nameDe)
-		nameFrLower := strings.ToLower(nameFr)
-		nameJaLower := strings.ToLower(nameJa)
-
-		if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
+		if listContains(
+			nameLower,
+			nameEn,
+			nameDe,
+			nameFr,
+			nameJa,
+		) {
 			return &achievement
 		}
 	}

@@ -1,4 +1,4 @@
-module github.com/karashiiro/godestone
+module github.com/xivapi/godestone
 
 go 1.15
 
