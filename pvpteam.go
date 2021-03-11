@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/data/gcrank"
+	"github.com/xivapi/godestone/data/gcrank"
 )
 
 func (s *Scraper) buildPVPTeamCollector(pvpTeam *PVPTeam) *colly.Collector {

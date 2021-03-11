@@ -3,10 +3,10 @@ package godestone
 import (
 	"time"
 
-	"github.com/karashiiro/godestone/data/baseparam"
-	"github.com/karashiiro/godestone/data/gcrank"
-	"github.com/karashiiro/godestone/data/gender"
-	"github.com/karashiiro/godestone/data/role"
+	"github.com/xivapi/godestone/data/baseparam"
+	"github.com/xivapi/godestone/data/gcrank"
+	"github.com/xivapi/godestone/data/gender"
+	"github.com/xivapi/godestone/data/role"
 )
 
 // NamedEntity represents an instance of an object with a name.
