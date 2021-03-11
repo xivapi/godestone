@@ -2,6 +2,7 @@ package godestone
 
 import (
 	"github.com/gocolly/colly/v2"
+	"github.com/xivapi/godestone/v2/internal/models"
 )
 
 func (s *Scraper) buildMinionCollector(output chan *Minion) *colly.Collector {
@@ -17,28 +18,28 @@ func (s *Scraper) buildMinionCollector(output chan *Minion) *colly.Collector {
 		name := minionSelectors.Minions.Name.ParseThroughChildren(e)[0]
 		icon := minionSelectors.Minions.Icon.ParseThroughChildren(e)[0]
 
-		m := s.minionTableLookup(name)
+		m := s.dataProvider.Minion(name)
 		if m == nil {
 			output <- &Minion{
-				ID:   0,
-				Name: name,
-				Icon: icon,
+				IconedNamedEntity: &IconedNamedEntity{
+					NamedEntity: &models.NamedEntity{
+						ID:   0,
+						Name: name,
 
-				NameEN: "",
-				NameDE: "",
-				NameFR: "",
-				NameJA: "",
+						NameEN: "",
+						NameDE: "",
+						NameFR: "",
+						NameJA: "",
+					},
+					Icon: icon,
+				},
 			}
 		} else {
 			output <- &Minion{
-				ID:   m.Id(),
-				Name: name,
-				Icon: icon,
-
-				NameEN: string(m.NameEn()),
-				NameDE: string(m.NameDe()),
-				NameFR: string(m.NameFr()),
-				NameJA: string(m.NameJa()),
+				IconedNamedEntity: &IconedNamedEntity{
+					NamedEntity: m,
+					Icon:        icon,
+				},
 			}
 		}
 	})
@@ -59,28 +60,28 @@ func (s *Scraper) buildMountCollector(output chan *Mount) *colly.Collector {
 		name := mountSelectors.Mounts.Name.ParseThroughChildren(e)[0]
 		icon := mountSelectors.Mounts.Icon.ParseThroughChildren(e)[0]
 
-		m := s.mountTableLookup(name)
+		m := s.dataProvider.Mount(name)
 		if m == nil {
 			output <- &Mount{
-				ID:   0,
-				Name: name,
-				Icon: icon,
+				IconedNamedEntity: &IconedNamedEntity{
+					NamedEntity: &models.NamedEntity{
+						ID:   0,
+						Name: name,
 
-				NameEN: "",
-				NameDE: "",
-				NameFR: "",
-				NameJA: "",
+						NameEN: "",
+						NameDE: "",
+						NameFR: "",
+						NameJA: "",
+					},
+					Icon: icon,
+				},
 			}
 		} else {
 			output <- &Mount{
-				ID:   m.Id(),
-				Name: name,
-				Icon: icon,
-
-				NameEN: string(m.NameEn()),
-				NameDE: string(m.NameDe()),
-				NameFR: string(m.NameFr()),
-				NameJA: string(m.NameJa()),
+				IconedNamedEntity: &IconedNamedEntity{
+					NamedEntity: m,
+					Icon:        icon,
+				},
 			}
 		}
 	})

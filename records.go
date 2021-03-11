@@ -7,33 +7,14 @@ import (
 	"github.com/xivapi/godestone/v2/data/gcrank"
 	"github.com/xivapi/godestone/v2/data/gender"
 	"github.com/xivapi/godestone/v2/data/role"
+	"github.com/xivapi/godestone/v2/internal/models"
 )
 
-// NamedEntity represents an instance of an object with a name.
-type NamedEntity struct {
-	ID   uint32
-	Name string
+// IconedNamedEntity represents an instance of an object with an icon and a name.
+type IconedNamedEntity struct {
+	*models.NamedEntity
+
 	Icon string
-
-	NameEN string
-	NameJA string
-	NameDE string
-	NameFR string
-}
-
-// GenderedEntity represents an instance of an object with masculine and feminine names.
-type GenderedEntity struct {
-	ID   uint32
-	Name string
-
-	NameMasculineEN string
-	NameMasculineJA string
-	NameMasculineDE string
-	NameMasculineFR string
-	NameFeminineEN  string
-	NameFeminineJA  string
-	NameFeminineDE  string
-	NameFeminineFR  string
 }
 
 // PageInfo represents pagination information in a search.
@@ -58,21 +39,14 @@ type AllAchievementInfo struct {
 
 // AchievementInfo represents information about a character's achievements.
 type AchievementInfo struct {
-	Name string
-	ID   uint32
-	Date time.Time
+	*models.NamedEntity
 
-	NameEN string
-	NameJA string
-	NameDE string
-	NameFR string
+	Date time.Time
 }
 
 // Title represents a character title.
 type Title struct {
-	*GenderedEntity
-
-	Prefix bool
+	*models.TitleInternal
 }
 
 // Character represents the information available about a character on The Lodestone.
@@ -89,17 +63,17 @@ type Character struct {
 	GearSet           *GearSet
 	Gender            gender.Gender
 	GrandCompanyInfo  *GrandCompanyInfo
-	GuardianDeity     *NamedEntity
+	GuardianDeity     *IconedNamedEntity
 	ID                uint32
 	Name              string
 	Nameday           string
 	ParseDate         time.Time
 	Portrait          string
 	PvPTeamID         string
-	Race              *GenderedEntity
+	Race              *models.GenderedEntity
 	Title             *Title
-	Town              *NamedEntity
-	Tribe             *GenderedEntity
+	Town              *IconedNamedEntity
+	Tribe             *models.GenderedEntity
 	World             string
 }
 
@@ -193,18 +167,13 @@ type Estate struct {
 
 // GearItem represents information about a single gear item on a character.
 type GearItem struct {
-	Name    string
+	*models.NamedEntity
+
 	Creator string
 	Dye     uint32
-	ID      uint32
 	HQ      bool
 	Materia []uint32
 	Mirage  uint32
-
-	NameEN string
-	NameJA string
-	NameDE string
-	NameFR string
 }
 
 // GearItemBuild represents a full gearset on a character. All gear items can be nil.
@@ -237,7 +206,7 @@ type GearSet struct {
 
 // GrandCompanyInfo represents Grand Company information about a character.
 type GrandCompanyInfo struct {
-	GrandCompany *NamedEntity
+	GrandCompany *models.NamedEntity
 	RankID       gcrank.GCRank
 }
 
@@ -292,9 +261,9 @@ type FreeCompanyRanking struct {
 
 // FreeCompanyReputation represents an FC's alignment with each Grand Company.
 type FreeCompanyReputation struct {
-	GrandCompany *NamedEntity
+	GrandCompany *models.NamedEntity
 	Progress     uint8
-	Rank         *NamedEntity
+	Rank         *models.NamedEntity
 }
 
 // FreeCompanySeekingInfo represents a particular FC's intentions for a recruit roles.
@@ -326,7 +295,7 @@ type FreeCompany struct {
 	Estate            *Estate
 	Focus             []*FreeCompanyFocusInfo
 	Formed            time.Time
-	GrandCompany      *NamedEntity
+	GrandCompany      *models.NamedEntity
 	ID                string
 	Name              string
 	ParseDate         time.Time
@@ -350,7 +319,7 @@ type FreeCompanySearchResult struct {
 	DC            string
 	Estate        string
 	Formed        time.Time
-	GrandCompany  *NamedEntity
+	GrandCompany  *models.NamedEntity
 	ID            string
 	Name          string
 	Recruitment   FreeCompanyRecruitingState
@@ -391,26 +360,12 @@ type LinkshellSearchResult struct {
 
 // Minion represents a minion.
 type Minion struct {
-	ID   uint32
-	Name string
-	Icon string
-
-	NameEN string
-	NameDE string
-	NameFR string
-	NameJA string
+	*IconedNamedEntity
 }
 
 // Mount represents a mount.
 type Mount struct {
-	ID   uint32
-	Name string
-	Icon string
-
-	NameEN string
-	NameDE string
-	NameFR string
-	NameJA string
+	*IconedNamedEntity
 }
 
 // PVPTeam represents information about a PVP team.

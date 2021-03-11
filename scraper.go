@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/xivapi/godestone/v2/internal/providers"
 	"github.com/xivapi/godestone/v2/pack/css"
-	"github.com/xivapi/godestone/v2/pack/exports"
 
 	"github.com/xivapi/godestone/v2/selectors"
 )
@@ -20,38 +20,28 @@ type Scraper struct {
 
 	meta *meta
 
+	dataProvider providers.DataProvider
+
 	cwlsSelectors      *selectors.CWLSSelectors
 	linkshellSelectors *selectors.LinkshellSelectors
 	profileSelectors   *selectors.ProfileSelectors
 	pvpTeamSelectors   *selectors.PVPTeamSelectors
 	searchSelectors    *selectors.SearchSelectors
 	fcSelectors        *selectors.FreeCompanySelectors
-
-	achievementTable  *exports.AchievementTable
-	classJobTable     *exports.ClassJobTable
-	deityTable        *exports.DeityTable
-	grandCompanyTable *exports.GrandCompanyTable
-	itemTable         *exports.ItemTable
-	minionTable       *exports.MinionTable
-	mountTable        *exports.MountTable
-	raceTable         *exports.RaceTable
-	repTable          *exports.ReputationTable
-	titleTable        *exports.TitleTable
-	townTable         *exports.TownTable
-	tribeTable        *exports.TribeTable
 }
 
 // NewScraper creates a new instance of the Scraper. Do note that all five language-versions of the website
 // are on the same physical servers in Japan. Changing the language of the website will not meaningfully
 // improve response times.
-func NewScraper(lang SiteLang) *Scraper {
+func NewScraper(dataProvider providers.DataProvider, lang SiteLang) *Scraper {
 	metaBytes, _ := css.Asset("meta.json")
 	meta := meta{}
 	json.Unmarshal(metaBytes, &meta)
 
 	return &Scraper{
-		lang: lang,
-		meta: &meta,
+		lang:         lang,
+		meta:         &meta,
+		dataProvider: dataProvider,
 	}
 }
 
@@ -95,114 +85,6 @@ func (s *Scraper) getFreeCompanySelectors() *selectors.FreeCompanySelectors {
 		s.fcSelectors = selectors.LoadFreeCompanySelectors()
 	}
 	return s.fcSelectors
-}
-
-func (s *Scraper) getAchievementTable() *exports.AchievementTable {
-	if s.achievementTable == nil {
-		data, _ := exports.Asset("achievement_table.bin")
-		achievementTable := exports.GetRootAsAchievementTable(data, 0)
-		s.achievementTable = achievementTable
-	}
-	return s.achievementTable
-}
-
-func (s *Scraper) getClassJobTable() *exports.ClassJobTable {
-	if s.classJobTable == nil {
-		data, _ := exports.Asset("classjob_table.bin")
-		classJobTable := exports.GetRootAsClassJobTable(data, 0)
-		s.classJobTable = classJobTable
-	}
-	return s.classJobTable
-}
-
-func (s *Scraper) getDeityTable() *exports.DeityTable {
-	if s.deityTable == nil {
-		data, _ := exports.Asset("deity_table.bin")
-		deityTable := exports.GetRootAsDeityTable(data, 0)
-		s.deityTable = deityTable
-	}
-	return s.deityTable
-}
-
-func (s *Scraper) getGrandCompanyTable() *exports.GrandCompanyTable {
-	if s.grandCompanyTable == nil {
-		data, _ := exports.Asset("gc_table.bin")
-		grandCompanyTable := exports.GetRootAsGrandCompanyTable(data, 0)
-		s.grandCompanyTable = grandCompanyTable
-	}
-	return s.grandCompanyTable
-}
-
-func (s *Scraper) getItemTable() *exports.ItemTable {
-	if s.itemTable == nil {
-		data, _ := exports.Asset("item_table.bin")
-		itemTable := exports.GetRootAsItemTable(data, 0)
-		s.itemTable = itemTable
-	}
-	return s.itemTable
-}
-
-func (s *Scraper) getMinionTable() *exports.MinionTable {
-	if s.minionTable == nil {
-		data, _ := exports.Asset("minion_table.bin")
-		minionTable := exports.GetRootAsMinionTable(data, 0)
-		s.minionTable = minionTable
-	}
-	return s.minionTable
-}
-
-func (s *Scraper) getMountTable() *exports.MountTable {
-	if s.mountTable == nil {
-		data, _ := exports.Asset("mount_table.bin")
-		mountTable := exports.GetRootAsMountTable(data, 0)
-		s.mountTable = mountTable
-	}
-	return s.mountTable
-}
-
-func (s *Scraper) getRaceTable() *exports.RaceTable {
-	if s.raceTable == nil {
-		data, _ := exports.Asset("race_table.bin")
-		raceTable := exports.GetRootAsRaceTable(data, 0)
-		s.raceTable = raceTable
-	}
-	return s.raceTable
-}
-
-func (s *Scraper) getReputationTable() *exports.ReputationTable {
-	if s.repTable == nil {
-		data, _ := exports.Asset("reputation_table.bin")
-		repTable := exports.GetRootAsReputationTable(data, 0)
-		s.repTable = repTable
-	}
-	return s.repTable
-}
-
-func (s *Scraper) getTitleTable() *exports.TitleTable {
-	if s.titleTable == nil {
-		data, _ := exports.Asset("title_table.bin")
-		titleTable := exports.GetRootAsTitleTable(data, 0)
-		s.titleTable = titleTable
-	}
-	return s.titleTable
-}
-
-func (s *Scraper) getTownTable() *exports.TownTable {
-	if s.townTable == nil {
-		data, _ := exports.Asset("town_table.bin")
-		townTable := exports.GetRootAsTownTable(data, 0)
-		s.townTable = townTable
-	}
-	return s.townTable
-}
-
-func (s *Scraper) getTribeTable() *exports.TribeTable {
-	if s.tribeTable == nil {
-		data, _ := exports.Asset("tribe_table.bin")
-		tribeTable := exports.GetRootAsTribeTable(data, 0)
-		s.tribeTable = tribeTable
-	}
-	return s.tribeTable
 }
 
 // FetchCharacter returns character information for the provided Lodestone ID. This function makes

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/xivapi/godestone/v2/internal/models"
 )
 
 func (s *Scraper) buildAchievementCollector(aai *AllAchievementInfo, output chan *AchievementInfo, errors chan error) *colly.Collector {
@@ -44,15 +45,12 @@ func (s *Scraper) buildAchievementCollector(aai *AllAchievementInfo, output chan
 			}
 
 			nextAchievement := &AchievementInfo{
-				Name: name,
+				NamedEntity: &models.NamedEntity{},
 			}
 
-			achievement := s.achievementTableLookup(name)
+			achievement := s.dataProvider.Achievement(name)
 			if achievement != nil {
-				nextAchievement.NameEN = string(achievement.NameEn())
-				nextAchievement.NameJA = string(achievement.NameJa())
-				nextAchievement.NameDE = string(achievement.NameDe())
-				nextAchievement.NameFR = string(achievement.NameFr())
+				nextAchievement.NamedEntity = achievement
 			}
 
 			idStr := entrySelectors.ID.ParseThroughChildren(e2)[0]

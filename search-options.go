@@ -57,18 +57,18 @@ func (s *CharacterOptions) BuildURI(
 	if s.Tribe != "" || s.Race != "" {
 		raceTribe := ""
 		if s.Tribe != "" {
-			t := scraper.tribeTableLookup(s.Tribe)
-			raceTribe = fmt.Sprintf("tribe_%d", t.Id())
+			t := scraper.dataProvider.Tribe(s.Tribe)
+			raceTribe = fmt.Sprintf("tribe_%d", t.ID)
 		} else if s.Race != "" {
-			r := scraper.raceTableLookup(s.Race)
-			raceTribe = fmt.Sprintf("race_%d", r.Id())
+			r := scraper.dataProvider.Race(s.Race)
+			raceTribe = fmt.Sprintf("race_%d", r.ID)
 		}
 		uriFormat += fmt.Sprintf("&race_tribe=%s", raceTribe)
 	}
 
 	if s.GrandCompany != "" {
-		gc := scraper.grandCompanyTableLookup(s.GrandCompany)
-		uriFormat += fmt.Sprintf("&gcid=%d", gc.Id())
+		gc := scraper.dataProvider.GrandCompany(s.GrandCompany)
+		uriFormat += fmt.Sprintf("&gcid=%d", gc.ID)
 	}
 
 	builtURI := fmt.Sprintf(uriFormat, lang, name, worldDC, "", s.Order)

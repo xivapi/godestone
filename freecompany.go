@@ -181,17 +181,8 @@ func (s *Scraper) buildFreeCompanyCollector(fc *FreeCompany) *colly.Collector {
 		rep := &FreeCompanyReputation{}
 		c.OnHTML(curRep.Name.Selector, func(e *colly.HTMLElement) {
 			gcName := curRep.Name.Parse(e)[0]
-			gc := s.grandCompanyTableLookup(gcName)
-
-			rep.GrandCompany = &NamedEntity{
-				ID:   gc.Id(),
-				Name: gcName,
-
-				NameEN: string(gc.NameEn()),
-				NameJA: string(gc.NameJa()),
-				NameDE: string(gc.NameDe()),
-				NameFR: string(gc.NameFr()),
-			}
+			gc := s.dataProvider.GrandCompany(gcName)
+			rep.GrandCompany = gc
 		})
 		c.OnHTML(curRep.Progress.Selector, func(e *colly.HTMLElement) {
 			progressStr := curRep.Progress.Parse(e)[0]
@@ -202,16 +193,8 @@ func (s *Scraper) buildFreeCompanyCollector(fc *FreeCompany) *colly.Collector {
 		})
 		c.OnHTML(curRep.Rank.Selector, func(e *colly.HTMLElement) {
 			repName := curRep.Rank.Parse(e)[0]
-			r := s.reputationTableLookup(repName)
-			rep.Rank = &NamedEntity{
-				ID:   r.Id(),
-				Name: repName,
-
-				NameEN: string(r.NameEn()),
-				NameJA: string(r.NameJa()),
-				NameDE: string(r.NameDe()),
-				NameFR: string(r.NameFr()),
-			}
+			r := s.dataProvider.Reputation(repName)
+			rep.Rank = r
 		})
 
 		fc.Reputation = append(fc.Reputation, rep)

@@ -4,11 +4,12 @@ import (
 	"log"
 	"os"
 
+	"github.com/karashiiro/bingode"
 	"github.com/xivapi/godestone/v2"
 )
 
 func main() {
-	s := godestone.NewScraper(godestone.EN)
+	s := godestone.NewScraper(bingode.New(), godestone.EN)
 
 	opts := godestone.CWLSOptions{
 		Name: os.Args[1],

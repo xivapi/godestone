@@ -5,11 +5,12 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/karashiiro/bingode"
 	"github.com/xivapi/godestone/v2"
 )
 
 func main() {
-	s := godestone.NewScraper(godestone.EN)
+	s := godestone.NewScraper(bingode.New(), godestone.EN)
 
 	id, err := strconv.ParseUint(os.Args[1], 10, 32)
 	if err != nil {
