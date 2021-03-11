@@ -9,7 +9,7 @@
 Go scraper for The Lodestone.
 
 ## Installation
-Just add the package to your `go.mod` or run `go get github.com/karashiiro/godestone`.
+Just add the package to your `go.mod` or run `go get github.com/xivapi/godestone`.
 
 ## Usage
 Refer to the [`examples/`](examples) folder for basic usage.
