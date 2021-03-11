@@ -4,7 +4,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/28006e7fe175446db0fd8d38c92795b7)](https://app.codacy.com/gh/karashiiro/godestone?utm_source=github.com&utm_medium=referral&utm_content=karashiiro/godestone&utm_campaign=Badge_Grade)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xivapi/godestone/v2)](https://goreportcard.com/report/github.com/xivapi/godestone/v2)
 [![Dependencies](https://img.shields.io/librariesio/github/xivapi/godestone)](https://libraries.io/github/xivapi/godestone)
-[![Repo Size](https://img.shields.io/github/repo-size/xivapi/godestone)](https://github.com/xivapi/godestone/v2)
+[![Repo Size](https://img.shields.io/github/repo-size/xivapi/godestone)](https://github.com/xivapi/godestone)
 
 Go scraper for The Lodestone.
 
