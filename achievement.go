@@ -7,7 +7,7 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
-func (s *Scraper) buildAchievementCollector(output chan *AchievementInfo) *colly.Collector {
+func (s *Scraper) buildAchievementCollector(aai *AllAchievementInfo, output chan *AchievementInfo, errors chan error) *colly.Collector {
 	c := colly.NewCollector(
 		colly.UserAgent(s.meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
@@ -17,19 +17,18 @@ func (s *Scraper) buildAchievementCollector(output chan *AchievementInfo) *colly
 
 	achievementSelectors := s.getProfileSelectors().Achievements
 
-	allAchievementInfo := &AllAchievementInfo{}
 	c.OnHTML(achievementSelectors.TotalAchievements.Selector, func(e *colly.HTMLElement) {
 		taStr := achievementSelectors.TotalAchievements.Parse(e)[0]
 		ta, err := strconv.ParseUint(taStr, 10, 32)
 		if err == nil {
-			allAchievementInfo.TotalAchievements = uint32(ta)
+			aai.TotalAchievements = uint32(ta)
 		}
 	})
 	c.OnHTML(achievementSelectors.AchievementPoints.Selector, func(e *colly.HTMLElement) {
 		apStr := achievementSelectors.AchievementPoints.Parse(e)[0]
 		ap, err := strconv.ParseUint(apStr, 10, 32)
 		if err == nil {
-			allAchievementInfo.TotalAchievementPoints = uint32(ap)
+			aai.TotalAchievementPoints = uint32(ap)
 		}
 	})
 
@@ -45,8 +44,7 @@ func (s *Scraper) buildAchievementCollector(output chan *AchievementInfo) *colly
 			}
 
 			nextAchievement := &AchievementInfo{
-				AllAchievementInfo: allAchievementInfo,
-				Name:               name,
+				Name: name,
 			}
 
 			achievement := s.achievementTableLookup(name)
@@ -75,9 +73,7 @@ func (s *Scraper) buildAchievementCollector(output chan *AchievementInfo) *colly
 		if nextURI != "javascript:void(0);" {
 			err := e1.Request.Visit(nextURI)
 			if err != nil {
-				output <- &AchievementInfo{
-					Error: err,
-				}
+				errors <- err
 			}
 		}
 	})
