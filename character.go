@@ -146,21 +146,40 @@ func (s *Scraper) buildCharacterCollector(
 		titleText := charSelectors.Title.Parse(e)[0]
 		t := s.titleTableLookup(titleText)
 
-		charData.Title = &Title{
-			GenderedEntity: &GenderedEntity{
-				ID:   t.Id(),
-				Name: titleText,
+		if t != nil {
+			charData.Title = &Title{
+				GenderedEntity: &GenderedEntity{
+					ID:   t.Id(),
+					Name: titleText,
 
-				NameMasculineEN: string(t.NameMasculineEn()),
-				NameMasculineDE: string(t.NameMasculineDe()),
-				NameMasculineFR: string(t.NameMasculineFr()),
-				NameMasculineJA: string(t.NameMasculineJa()),
-				NameFeminineEN:  string(t.NameFeminineEn()),
-				NameFeminineDE:  string(t.NameFeminineDe()),
-				NameFeminineFR:  string(t.NameFeminineFr()),
-				NameFeminineJA:  string(t.NameFeminineJa()),
-			},
-			Prefix: t.IsPrefix(),
+					NameMasculineEN: string(t.NameMasculineEn()),
+					NameMasculineDE: string(t.NameMasculineDe()),
+					NameMasculineFR: string(t.NameMasculineFr()),
+					NameMasculineJA: string(t.NameMasculineJa()),
+					NameFeminineEN:  string(t.NameFeminineEn()),
+					NameFeminineDE:  string(t.NameFeminineDe()),
+					NameFeminineFR:  string(t.NameFeminineFr()),
+					NameFeminineJA:  string(t.NameFeminineJa()),
+				},
+				Prefix: t.IsPrefix(),
+			}
+		} else {
+			charData.Title = &Title{
+				GenderedEntity: &GenderedEntity{
+					ID:   0,
+					Name: titleText,
+
+					NameMasculineEN: "",
+					NameMasculineDE: "",
+					NameMasculineFR: "",
+					NameMasculineJA: "",
+					NameFeminineEN:  "",
+					NameFeminineDE:  "",
+					NameFeminineFR:  "",
+					NameFeminineJA:  "",
+				},
+				Prefix: false,
+			}
 		}
 	})
 

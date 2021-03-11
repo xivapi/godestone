@@ -24,6 +24,32 @@ func removeBracketedPhrases(input string) string {
 	return bracketed.ReplaceAllString(input, "")
 }
 
+func (s *Scraper) achievementTableLookup(name string) *exports.Achievement {
+	nameLower := strings.ToLower(name)
+
+	nAchievements := s.getAchievementTable().AchievementsLength()
+	for i := 0; i < nAchievements; i++ {
+		achievement := exports.Achievement{}
+		s.getAchievementTable().Achievements(&achievement, i)
+
+		nameEn := string(achievement.NameEn())
+		nameDe := string(achievement.NameDe())
+		nameFr := string(achievement.NameFr())
+		nameJa := string(achievement.NameJa())
+
+		nameEnLower := strings.ToLower(nameEn)
+		nameDeLower := strings.ToLower(nameDe)
+		nameFrLower := strings.ToLower(nameFr)
+		nameJaLower := strings.ToLower(nameJa)
+
+		if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
+			return &achievement
+		}
+	}
+
+	return nil
+}
+
 func (s *Scraper) classJobTableLookup(name string) *exports.ClassJob {
 	nameLower := strings.ToLower(name)
 
