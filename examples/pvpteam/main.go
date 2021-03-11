@@ -5,11 +5,12 @@ import (
 	"log"
 	"os"
 
+	"github.com/karashiiro/bingode"
 	"github.com/xivapi/godestone/v2"
 )
 
 func main() {
-	s := godestone.NewScraper(godestone.EN)
+	s := godestone.NewScraper(bingode.New(), godestone.EN)
 
 	p, err := s.FetchPVPTeam(os.Args[1])
 	if err != nil {

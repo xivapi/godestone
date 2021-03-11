@@ -183,20 +183,8 @@ func (s *Scraper) buildFreeCompanySearchCollector(
 			}
 
 			gcName := entrySelectors.GrandCompany.ParseThroughChildren(e)[0]
-			gc := s.grandCompanyTableLookup(gcName)
-
-			nGCs := s.getGrandCompanyTable().GrandCompaniesLength()
-			for i := 0; i < nGCs; i++ {
-				nextFC.GrandCompany = &NamedEntity{
-					ID:   gc.Id(),
-					Name: gcName,
-
-					NameEN: string(gc.NameEn()),
-					NameJA: string(gc.NameJa()),
-					NameDE: string(gc.NameDe()),
-					NameFR: string(gc.NameFr()),
-				}
-			}
+			gc := s.dataProvider.GrandCompany(gcName)
+			nextFC.GrandCompany = gc
 
 			server := entrySelectors.Server.ParseThroughChildren(e)
 			nextFC.World = server[0]

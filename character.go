@@ -8,6 +8,7 @@ import (
 	"github.com/xivapi/godestone/v2/data/baseparam"
 	"github.com/xivapi/godestone/v2/data/gcrank"
 	"github.com/xivapi/godestone/v2/data/gender"
+	"github.com/xivapi/godestone/v2/internal/models"
 	"github.com/xivapi/godestone/v2/selectors"
 )
 
@@ -50,31 +51,16 @@ func (s *Scraper) buildCharacterCollector(
 		gcName := values[0]
 		gcRank := gcrank.Parse(values[1])
 
-		mgc := s.grandCompanyTableLookup(gcName)
-		gc := &NamedEntity{
-			ID:   mgc.Id(),
-			Name: gcName,
-
-			NameEN: string(mgc.NameEn()),
-			NameJA: string(mgc.NameJa()),
-			NameDE: string(mgc.NameDe()),
-			NameFR: string(mgc.NameFr()),
-		}
+		gc := s.dataProvider.GrandCompany(gcName)
 
 		charData.GrandCompanyInfo = &GrandCompanyInfo{GrandCompany: gc, RankID: gcRank}
 	})
 
-	charData.GuardianDeity = &NamedEntity{}
+	charData.GuardianDeity = &IconedNamedEntity{}
 	c.OnHTML(charSelectors.GuardianDeity.Name.Selector, func(e *colly.HTMLElement) {
 		name := charSelectors.GuardianDeity.Name.Parse(e)[0]
-		d := s.deityTableLookup(name)
-
-		charData.GuardianDeity.ID = d.Id()
-		charData.GuardianDeity.Name = name
-		charData.GuardianDeity.NameEN = string(d.NameEn())
-		charData.GuardianDeity.NameJA = string(d.NameJa())
-		charData.GuardianDeity.NameDE = string(d.NameDe())
-		charData.GuardianDeity.NameFR = string(d.NameFr())
+		d := s.dataProvider.Deity(name)
+		charData.GuardianDeity.NamedEntity = d
 	})
 	c.OnHTML(charSelectors.GuardianDeity.Icon.Selector, func(e *colly.HTMLElement) {
 		charData.GuardianDeity.Icon = charSelectors.GuardianDeity.Icon.Parse(e)[0]
@@ -102,35 +88,11 @@ func (s *Scraper) buildCharacterCollector(
 		// Miqo'te fix
 		raceName := strings.ReplaceAll(values[0], "&#39;", "'")
 
-		r := s.raceTableLookup(raceName)
-		charData.Race = &GenderedEntity{
-			ID:   r.Id(),
-			Name: values[0],
+		r := s.dataProvider.Race(raceName)
+		charData.Race = r
 
-			NameMasculineEN: string(r.NameMasculineEn()),
-			NameFeminineEN:  string(r.NameFeminineEn()),
-			NameMasculineJA: string(r.NameMasculineJa()),
-			NameFeminineJA:  string(r.NameFeminineJa()),
-			NameMasculineDE: string(r.NameMasculineDe()),
-			NameFeminineDE:  string(r.NameFeminineDe()),
-			NameMasculineFR: string(r.NameMasculineFr()),
-			NameFeminineFR:  string(r.NameFeminineFr()),
-		}
-
-		t := s.tribeTableLookup(values[1])
-		charData.Tribe = &GenderedEntity{
-			ID:   t.Id(),
-			Name: values[0],
-
-			NameMasculineEN: string(t.NameMasculineEn()),
-			NameFeminineEN:  string(t.NameFeminineEn()),
-			NameMasculineJA: string(t.NameMasculineJa()),
-			NameFeminineJA:  string(t.NameFeminineJa()),
-			NameMasculineDE: string(t.NameMasculineDe()),
-			NameFeminineDE:  string(t.NameFeminineDe()),
-			NameMasculineFR: string(t.NameMasculineFr()),
-			NameFeminineFR:  string(t.NameFeminineFr()),
-		}
+		t := s.dataProvider.Tribe(values[1])
+		charData.Tribe = t
 
 		charData.Gender = gender.Parse(values[2])
 	})
@@ -144,56 +106,38 @@ func (s *Scraper) buildCharacterCollector(
 
 	c.OnHTML(charSelectors.Title.Selector, func(e *colly.HTMLElement) {
 		titleText := charSelectors.Title.Parse(e)[0]
-		t := s.titleTableLookup(titleText)
+		t := s.dataProvider.Title(titleText)
 
 		if t != nil {
-			charData.Title = &Title{
-				GenderedEntity: &GenderedEntity{
-					ID:   t.Id(),
-					Name: titleText,
-
-					NameMasculineEN: string(t.NameMasculineEn()),
-					NameMasculineDE: string(t.NameMasculineDe()),
-					NameMasculineFR: string(t.NameMasculineFr()),
-					NameMasculineJA: string(t.NameMasculineJa()),
-					NameFeminineEN:  string(t.NameFeminineEn()),
-					NameFeminineDE:  string(t.NameFeminineDe()),
-					NameFeminineFR:  string(t.NameFeminineFr()),
-					NameFeminineJA:  string(t.NameFeminineJa()),
-				},
-				Prefix: t.IsPrefix(),
-			}
+			charData.Title = t
 		} else {
 			charData.Title = &Title{
-				GenderedEntity: &GenderedEntity{
-					ID:   0,
-					Name: titleText,
+				TitleInternal: &models.TitleInternal{
+					GenderedEntity: &models.GenderedEntity{
+						ID:   0,
+						Name: titleText,
 
-					NameMasculineEN: "",
-					NameMasculineDE: "",
-					NameMasculineFR: "",
-					NameMasculineJA: "",
-					NameFeminineEN:  "",
-					NameFeminineDE:  "",
-					NameFeminineFR:  "",
-					NameFeminineJA:  "",
+						NameMasculineEN: "",
+						NameMasculineDE: "",
+						NameMasculineFR: "",
+						NameMasculineJA: "",
+						NameFeminineEN:  "",
+						NameFeminineDE:  "",
+						NameFeminineFR:  "",
+						NameFeminineJA:  "",
+					},
+					Prefix: false,
 				},
-				Prefix: false,
 			}
 		}
 	})
 
-	charData.Town = &NamedEntity{}
+	charData.Town = &IconedNamedEntity{}
 	c.OnHTML(charSelectors.Town.Name.Selector, func(e *colly.HTMLElement) {
 		name := charSelectors.Town.Name.Parse(e)[0]
-		t := s.townTableLookup(name)
+		t := s.dataProvider.Town(name)
 
-		charData.Town.ID = t.Id()
-		charData.Town.Name = name
-		charData.Town.NameEN = string(t.NameEn())
-		charData.Town.NameJA = string(t.NameJa())
-		charData.Town.NameDE = string(t.NameDe())
-		charData.Town.NameFR = string(t.NameFr())
+		charData.Town.NamedEntity = t
 	})
 	c.OnHTML(charSelectors.Town.Icon.Selector, func(e *colly.HTMLElement) {
 		charData.Town.Icon = charSelectors.Town.Icon.Parse(e)[0]
@@ -307,9 +251,9 @@ func (s *Scraper) buildCharacterCollector(
 		})
 		c.OnHTML(currSelector.Stain.Selector, func(e *colly.HTMLElement) {
 			name := currSelector.Stain.Parse(e)[0]
-			item := s.itemTableLookup(name)
+			item := s.dataProvider.Item(name)
 			if item != nil {
-				currRef.Dye = item.Id()
+				currRef.Dye = item.ID
 			}
 		})
 		c.OnHTML(currSelector.Name.Selector, func(e *colly.HTMLElement) {
@@ -320,14 +264,9 @@ func (s *Scraper) buildCharacterCollector(
 				name = name[0 : len(name)-3]
 			}
 
-			item := s.itemTableLookup(name)
+			item := s.dataProvider.Item(name)
 			if item != nil {
-				currRef.Name = name
-				currRef.ID = item.Id()
-				currRef.NameEN = string(item.NameEn())
-				currRef.NameJA = string(item.NameJa())
-				currRef.NameDE = string(item.NameDe())
-				currRef.NameFR = string(item.NameFr())
+				currRef.NamedEntity = item
 			}
 		})
 
@@ -341,9 +280,9 @@ func (s *Scraper) buildCharacterCollector(
 		for _, materiaSelector := range materiaSelectors {
 			materiaCallback := func(e *colly.HTMLElement) {
 				name := materiaSelector.ParseInnerHTML(e)[0]
-				item := s.itemTableLookup(name)
+				item := s.dataProvider.Item(name)
 				if item != nil {
-					currRef.Materia = append(currRef.Materia, item.Id())
+					currRef.Materia = append(currRef.Materia, item.ID)
 				}
 			}
 			c.OnHTML(materiaSelector.Selector, materiaCallback)
@@ -351,22 +290,18 @@ func (s *Scraper) buildCharacterCollector(
 
 		c.OnHTML(currSelector.MirageName.Selector, func(e *colly.HTMLElement) {
 			name := currSelector.MirageName.Parse(e)[0]
-			item := s.itemTableLookup(name)
+			item := s.dataProvider.Item(name)
 			if item != nil {
-				currRef.Mirage = item.Id()
+				currRef.Mirage = item.ID
 			}
 		})
 	}
 
 	c.OnHTML(partSelectors.SoulCrystal.Name.Selector, func(e *colly.HTMLElement) {
 		partRefs.SoulCrystal.Name = partSelectors.SoulCrystal.Name.Parse(e)[0]
-		item := s.itemTableLookup(partRefs.SoulCrystal.Name)
+		item := s.dataProvider.Item(partRefs.SoulCrystal.Name)
 		if item != nil {
-			partRefs.SoulCrystal.ID = item.Id()
-			partRefs.SoulCrystal.NameEN = string(item.NameEn())
-			partRefs.SoulCrystal.NameJA = string(item.NameJa())
-			partRefs.SoulCrystal.NameDE = string(item.NameDe())
-			partRefs.SoulCrystal.NameFR = string(item.NameFr())
+			partRefs.SoulCrystal.NamedEntity = item
 		}
 	})
 
