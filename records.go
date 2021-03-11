@@ -58,10 +58,6 @@ type AllAchievementInfo struct {
 
 // AchievementInfo represents information about a character's achievements.
 type AchievementInfo struct {
-	*AllAchievementInfo
-
-	Error error `json:"-"`
-
 	Name string
 	ID   uint32
 	Date time.Time

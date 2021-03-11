@@ -2,7 +2,6 @@ package godestone
 
 import (
 	"fmt"
-	"net/http"
 	"testing"
 	"time"
 )
@@ -12,6 +11,12 @@ var langCodes []SiteLang = []SiteLang{EN, JA, FR, DE, SiteLang("zh")}
 func failIfNil(t *testing.T, label string, input interface{}) {
 	if input == nil {
 		t.Errorf(fmt.Sprintf("%s is nil; expected non-nil object", label))
+	}
+}
+
+func failIfFalse(t *testing.T, label string, input bool) {
+	if !input {
+		t.Errorf(fmt.Sprintf("%s is false; expected true", label))
 	}
 }
 
@@ -106,18 +111,27 @@ func TestFetchCharacterAchievements(t *testing.T) {
 			t.Parallel()
 			for _, id := range characterIds {
 				t.Run("Character ID "+fmt.Sprint(id), func(t *testing.T) {
-					for achievement := range s.FetchCharacterAchievements(id) {
-						if achievement.Error != nil {
-							if lang == SiteLang("zh") {
-								return
-							} else if achievement.AllAchievementInfo.Private && achievement.Error.Error() == http.StatusText(http.StatusForbidden) {
-								return
-							}
-
-							t.Errorf(achievement.Error.Error())
+					achievements, aai, err := s.FetchCharacterAchievements(id)
+					if err != nil {
+						if lang == SiteLang("zh") {
 							return
 						}
 
+						t.Errorf(err.Error())
+						return
+					}
+
+					if aai.TotalAchievementPoints > 0 {
+						failIfNumberZero(t, "Total achievements", int64(aai.TotalAchievements))
+						failIfFalse(t, "Achievements private", !aai.Private)
+					}
+
+					if aai.TotalAchievements > 0 {
+						failIfNumberZero(t, "Total achievement points", int64(aai.TotalAchievementPoints))
+						failIfFalse(t, "Achievements private", !aai.Private)
+					}
+
+					for _, achievement := range achievements {
 						failIfNumberZero(t, "Achievement ID", int64(achievement.ID))
 						failIfStringEmpty(t, "Achievement name", achievement.Name)
 						failIfStringEmpty(t, "Achievement English name", achievement.NameEN)

@@ -284,7 +284,7 @@ func (s *Scraper) FetchCharacterMinions(id uint32) ([]*Minion, error) {
 		close(done)
 	}()
 
-	var minions []*Minion
+	minions := make([]*Minion, 0)
 	for minion := range output {
 		minions = append(minions, minion)
 	}
@@ -324,7 +324,7 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*Mount, error) {
 		close(done)
 	}()
 
-	var mounts []*Mount
+	mounts := make([]*Mount, 0)
 	for mount := range output {
 		mounts = append(mounts, mount)
 	}
@@ -341,32 +341,44 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*Mount, error) {
 
 // FetchCharacterAchievements returns unlocked achievement information for the provided Lodestone ID. The error
 // is returned if the request fails with anything other than a 403. A 403 will be raised when the character's
-// achievements are private. Instead of raising an error, the object in the return channel will have its
-// private flag set to `true`.
-func (s *Scraper) FetchCharacterAchievements(id uint32) chan *AchievementInfo {
+// achievements are private.
+func (s *Scraper) FetchCharacterAchievements(id uint32) ([]*AchievementInfo, *AllAchievementInfo, error) {
 	output := make(chan *AchievementInfo)
+	errors := make(chan error, 1)
+	done := make(chan bool, 1)
+
+	allAchievementInfo := &AllAchievementInfo{}
 
 	go func() {
-		achievementCollector := s.buildAchievementCollector(output)
+		achievementCollector := s.buildAchievementCollector(allAchievementInfo, output, errors)
 		achievementCollector.OnError(func(r *colly.Response, err error) {
-			aai := &AllAchievementInfo{}
-			errAi := &AchievementInfo{
-				AllAchievementInfo: aai,
-				Error:              err,
+			if err.Error() != http.StatusText(http.StatusNotFound) {
+				errors <- err
 			}
-
-			if err.Error() == http.StatusText(http.StatusForbidden) {
-				aai.Private = true
-			}
-
-			output <- errAi
 		})
 		achievementCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/achievement/", s.lang, id))
 		achievementCollector.Wait()
+
 		close(output)
+		close(errors)
+
+		done <- true
+		close(done)
 	}()
 
-	return output
+	achievements := make([]*AchievementInfo, 0)
+	for achievement := range output {
+		achievements = append(achievements, achievement)
+	}
+
+	<-done
+	select {
+	case err, ok := <-errors:
+		if ok {
+			return nil, nil, err
+		}
+	}
+	return achievements, allAchievementInfo, nil
 }
 
 // FetchLinkshell returns linkshell information for the provided linkshell ID. The error is returned if the

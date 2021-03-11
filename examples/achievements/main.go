@@ -16,12 +16,13 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	for achievement := range s.FetchCharacterAchievements(uint32(id)) {
-		if achievement.Error != nil {
-			log.Fatalln(achievement.Error)
-		}
+	a, aai, err := s.FetchCharacterAchievements(uint32(id))
+	if err != nil {
+		log.Fatalln(err)
+	}
 
+	log.Println(aai)
+	for _, achievement := range a {
 		log.Println(achievement)
-		log.Println(achievement.AllAchievementInfo)
 	}
 }
