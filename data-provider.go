@@ -1,18 +1,15 @@
 package godestone
 
-import (
-	"github.com/xivapi/godestone/pack/exports"
-)
-
 // DataProvider represents a service implementation responsible for
 // converting our scraped data into a useful form.
 type DataProvider interface {
-	ClassJob(name string) *ClassJob
+	Achievement(name string) *NamedEntity
+	ClassJob(name string) *NamedEntity
 	Deity(name string) *NamedEntity
 	GrandCompany(name string) *NamedEntity
-	Item(name string) *exports.Item
-	Minion(name string) *Minion
-	Mount(name string) *Mount
+	Item(name string) *NamedEntity
+	Minion(name string) *NamedEntity
+	Mount(name string) *NamedEntity
 	Race(name string) *GenderedEntity
 	Reputation(name string) *NamedEntity
 	Title(name string) *Title
