@@ -6,15 +6,14 @@ import (
 	"os"
 
 	"github.com/karashiiro/godestone"
-	"github.com/karashiiro/godestone/search"
 )
 
 func main() {
 	s := godestone.NewScraper(godestone.EN)
 
-	opts := search.FreeCompanyOptions{}
+	opts := godestone.FreeCompanyOptions{}
 	if len(os.Args) > 1 {
-		opts = search.FreeCompanyOptions{
+		opts = godestone.FreeCompanyOptions{
 			Name: os.Args[1],
 		}
 	}

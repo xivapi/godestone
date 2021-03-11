@@ -12,3 +12,15 @@ const (
 	FR SiteLang = "fr"
 	DE SiteLang = "de"
 )
+
+// SearchLang represents character language for the purposes of search.
+type SearchLang uint8
+
+// Language
+const (
+	NoneLang SearchLang = 1 << iota
+	SearchJA
+	SearchEN
+	SearchDE
+	SearchFR
+)

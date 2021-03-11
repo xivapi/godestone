@@ -1,7 +1,6 @@
-package models
+package godestone
 
-// Meta is meta.
-type Meta struct {
+type meta struct {
 	Version          string `json:"version"`
 	UserAgentDesktop string `json:"userAgentDesktop"`
 	UserAgentMobile  string `json:"userAgentMobile"`

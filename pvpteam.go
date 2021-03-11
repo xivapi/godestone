@@ -1,4 +1,4 @@
-package collectors
+package godestone
 
 import (
 	"strconv"
@@ -6,19 +6,16 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/data/gcrank"
-	"github.com/karashiiro/godestone/models"
-	"github.com/karashiiro/godestone/selectors"
 )
 
-// BuildPVPTeamCollector builds the collector used for processing the page.
-func BuildPVPTeamCollector(meta *models.Meta, pvpTeamSelectors *selectors.PVPTeamSelectors, pvpTeam *models.PVPTeam) *colly.Collector {
+func (s *Scraper) buildPVPTeamCollector(pvpTeam *PVPTeam) *colly.Collector {
 	c := colly.NewCollector(
-		colly.UserAgent(meta.UserAgentDesktop),
+		colly.UserAgent(s.meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.Async(),
 	)
 
-	basicSelectors := pvpTeamSelectors.Basic
+	basicSelectors := s.getPVPTeamSelectors().Basic
 	c.OnHTML(basicSelectors.Name.Selector, func(e *colly.HTMLElement) {
 		pvpTeam.Name = basicSelectors.Name.Parse(e)[0]
 	})
@@ -35,7 +32,7 @@ func BuildPVPTeamCollector(meta *models.Meta, pvpTeamSelectors *selectors.PVPTea
 		}
 	})
 
-	pvpTeam.CrestLayers = &models.CrestLayers{}
+	pvpTeam.CrestLayers = &CrestLayers{}
 	c.OnHTML(basicSelectors.CrestLayers.Bottom.Selector, func(e *colly.HTMLElement) {
 		pvpTeam.CrestLayers.Bottom = basicSelectors.CrestLayers.Bottom.Parse(e)[0]
 	})
@@ -48,11 +45,11 @@ func BuildPVPTeamCollector(meta *models.Meta, pvpTeamSelectors *selectors.PVPTea
 		pvpTeam.CrestLayers.Top = basicSelectors.CrestLayers.Top.Parse(e)[0]
 	})
 
-	pvpTeam.Members = []*models.PVPTeamMember{}
-	membersSelectors := pvpTeamSelectors.Members
+	pvpTeam.Members = []*PVPTeamMember{}
+	membersSelectors := s.getPVPTeamSelectors().Members
 	c.OnHTML(membersSelectors.Root.Selector, func(e1 *colly.HTMLElement) {
 		e1.ForEach(membersSelectors.Entry.Root.Selector, func(i int, e2 *colly.HTMLElement) {
-			member := &models.PVPTeamMember{
+			member := &PVPTeamMember{
 				Avatar:   membersSelectors.Entry.Avatar.ParseThroughChildren(e2)[0],
 				Name:     membersSelectors.Entry.Name.ParseThroughChildren(e2)[0],
 				Rank:     gcrank.Parse(membersSelectors.Entry.Rank.ParseThroughChildren(e2)[0]),

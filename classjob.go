@@ -1,4 +1,4 @@
-package collectors
+package godestone
 
 import (
 	"regexp"
@@ -6,24 +6,20 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/models"
-	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
-	lookups "github.com/karashiiro/godestone/table-lookups"
 )
 
 var nonDigits = regexp.MustCompile("[^\\d]")
 
-// BuildClassJobCollector builds the collector used for processing the page.
-func BuildClassJobCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, classJobTable *exports.ClassJobTable, charData *models.Character) *colly.Collector {
+func (s *Scraper) buildClassJobCollector(charData *Character) *colly.Collector {
 	c := colly.NewCollector(
-		colly.UserAgent(meta.UserAgentDesktop),
+		colly.UserAgent(s.meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.Async(),
 	)
 
-	classJobSelectors := profSelectors.ClassJob
-	charData.ClassJobs = make([]*models.ClassJob, 0)
+	classJobSelectors := s.getProfileSelectors().ClassJob
+	charData.ClassJobs = make([]*ClassJob, 0)
 
 	cjRefs := []*selectors.OneClassJobSelectors{
 		&classJobSelectors.Paladin,
@@ -59,7 +55,7 @@ func BuildClassJobCollector(meta *models.Meta, profSelectors *selectors.ProfileS
 
 	for _, ref := range cjRefs {
 		curRef := ref
-		curCj := models.ClassJob{}
+		curCj := ClassJob{}
 
 		c.OnHTML(curRef.Exp.Selector, func(e *colly.HTMLElement) {
 			expStrs := curRef.Exp.Parse(e)
@@ -98,24 +94,24 @@ func BuildClassJobCollector(meta *models.Meta, profSelectors *selectors.ProfileS
 
 			curCj.IsSpecialized = strings.Contains(e.Attr("class"), "meister")
 
-			jobInfo := lookups.ClassJobTableLookup(classJobTable, names[0])
+			jobInfo := s.classJobTableLookup(names[0])
 			curCj.JobID = uint8(jobInfo.Id())
 
 			if len(names) > 1 {
-				classInfo := lookups.ClassJobTableLookup(classJobTable, names[1])
+				classInfo := s.classJobTableLookup(names[1])
 				curCj.ClassID = uint8(classInfo.Id())
 			} else {
 				curCj.ClassID = uint8(curCj.JobID)
 			}
 
-			cjInfo := lookups.ClassJobTableLookup(classJobTable, curCj.UnlockedState.Name)
+			cjInfo := s.classJobTableLookup(curCj.UnlockedState.Name)
 			curCj.UnlockedState.ID = uint8(cjInfo.Id())
 		})
 
 		charData.ClassJobs = append(charData.ClassJobs, &curCj)
 	}
 
-	cjb := &models.ClassJobBozja{}
+	cjb := &ClassJobBozja{}
 	c.OnHTML(classJobSelectors.Bozja.Level.Selector, func(e *colly.HTMLElement) {
 		levelStr := classJobSelectors.Bozja.Level.Parse(e)[0]
 		level, err := strconv.ParseUint(levelStr, 10, 8)
@@ -138,7 +134,7 @@ func BuildClassJobCollector(meta *models.Meta, profSelectors *selectors.ProfileS
 	})
 	charData.ClassJobBozjan = cjb
 
-	cje := &models.ClassJobEureka{}
+	cje := &ClassJobEureka{}
 	c.OnHTML(classJobSelectors.Eureka.Level.Selector, func(e *colly.HTMLElement) {
 		levelStr := classJobSelectors.Eureka.Level.Parse(e)[0]
 		level, err := strconv.ParseUint(levelStr, 10, 8)

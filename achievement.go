@@ -1,4 +1,4 @@
-package collectors
+package godestone
 
 import (
 	"strconv"
@@ -6,23 +6,20 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/pack/exports"
-	"github.com/karashiiro/godestone/selectors"
 )
 
-// BuildAchievementCollector builds the collector used for processing the page.
-func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.ProfileSelectors, achievementTable *exports.AchievementTable, output chan *models.AchievementInfo) *colly.Collector {
+func (s *Scraper) buildAchievementCollector(output chan *AchievementInfo) *colly.Collector {
 	c := colly.NewCollector(
-		colly.UserAgent(meta.UserAgentDesktop),
+		colly.UserAgent(s.meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.MaxDepth(100), // Should be set to ceil(nAchievements / 50) + 1
 		colly.Async(),
 	)
 
-	achievementSelectors := profSelectors.Achievements
+	achievementSelectors := s.getProfileSelectors().Achievements
 
-	allAchievementInfo := &models.AllAchievementInfo{}
+	allAchievementInfo := &AllAchievementInfo{}
 	c.OnHTML(achievementSelectors.TotalAchievements.Selector, func(e *colly.HTMLElement) {
 		taStr := achievementSelectors.TotalAchievements.Parse(e)[0]
 		ta, err := strconv.ParseUint(taStr, 10, 32)
@@ -50,15 +47,15 @@ func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.Profi
 			}
 			nameLower := strings.ToLower(name)
 
-			nextAchievement := &models.AchievementInfo{
+			nextAchievement := &AchievementInfo{
 				AllAchievementInfo: allAchievementInfo,
 				Name:               name,
 			}
 
-			nAchievements := achievementTable.AchievementsLength()
+			nAchievements := s.getAchievementTable().AchievementsLength()
 			for i := 0; i < nAchievements; i++ {
 				achievement := exports.Achievement{}
-				achievementTable.Achievements(&achievement, i)
+				s.getAchievementTable().Achievements(&achievement, i)
 
 				nameEn := string(achievement.NameEn())
 				nameDe := string(achievement.NameDe())
@@ -96,7 +93,7 @@ func BuildAchievementCollector(meta *models.Meta, profSelectors *selectors.Profi
 		if nextURI != "javascript:void(0);" {
 			err := e1.Request.Visit(nextURI)
 			if err != nil {
-				output <- &models.AchievementInfo{
+				output <- &AchievementInfo{
 					Error: err,
 				}
 			}
