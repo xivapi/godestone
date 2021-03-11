@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/xivapi/godestone/v2/pack/css"
+	"github.com/xivapi/godestone/v2/internal/pack/css"
 )
 
 // FreeCompanyBasicSelectors contains the CSS selectors for the basic information on the Free Company page.
