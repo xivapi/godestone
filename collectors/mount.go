@@ -24,15 +24,28 @@ func BuildMountCollector(meta *models.Meta, profSelectors *selectors.ProfileSele
 		icon := mountSelectors.Mounts.Icon.ParseThroughChildren(e)[0]
 
 		m := lookups.MountTableLookup(mountTable, name)
-		output <- &models.Mount{
-			ID:   m.Id(),
-			Name: name,
-			Icon: icon,
+		if m == nil {
+			output <- &models.Mount{
+				ID:   0,
+				Name: name,
+				Icon: icon,
 
-			NameEN: string(m.NameEn()),
-			NameDE: string(m.NameDe()),
-			NameFR: string(m.NameFr()),
-			NameJA: string(m.NameJa()),
+				NameEN: "",
+				NameDE: "",
+				NameFR: "",
+				NameJA: "",
+			}
+		} else {
+			output <- &models.Mount{
+				ID:   m.Id(),
+				Name: name,
+				Icon: icon,
+
+				NameEN: string(m.NameEn()),
+				NameDE: string(m.NameDe()),
+				NameFR: string(m.NameFr()),
+				NameJA: string(m.NameJa()),
+			}
 		}
 	})
 
