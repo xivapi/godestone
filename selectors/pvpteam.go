@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/xivapi/godestone/pack/css"
+	"github.com/xivapi/godestone/v2/pack/css"
 )
 
 // PVPTeamBasicSelectors contains the CSS selectors for the basic information on the PVP team page.

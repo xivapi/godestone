@@ -3,7 +3,7 @@ package selectors
 import (
 	"encoding/json"
 
-	"github.com/xivapi/godestone/pack/css"
+	"github.com/xivapi/godestone/v2/pack/css"
 )
 
 // CharacterSearchSelectors contains the CSS selectors for the character search interface.

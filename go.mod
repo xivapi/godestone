@@ -1,4 +1,4 @@
-module github.com/xivapi/godestone
+module github.com/xivapi/godestone/v2
 
 go 1.15
 

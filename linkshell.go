@@ -4,7 +4,7 @@ import (
 	"strconv"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/xivapi/godestone/data/gcrank"
+	"github.com/xivapi/godestone/v2/data/gcrank"
 )
 
 func (s *Scraper) buildLinkshellCollector(ls *Linkshell) *colly.Collector {

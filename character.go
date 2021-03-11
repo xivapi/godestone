@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/xivapi/godestone/data/baseparam"
-	"github.com/xivapi/godestone/data/gcrank"
-	"github.com/xivapi/godestone/data/gender"
-	"github.com/xivapi/godestone/selectors"
+	"github.com/xivapi/godestone/v2/data/baseparam"
+	"github.com/xivapi/godestone/v2/data/gcrank"
+	"github.com/xivapi/godestone/v2/data/gender"
+	"github.com/xivapi/godestone/v2/selectors"
 )
 
 func (s *Scraper) buildCharacterCollector(

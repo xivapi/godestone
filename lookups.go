@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/xivapi/godestone/pack/exports"
+	"github.com/xivapi/godestone/v2/pack/exports"
 )
 
 func listContains(test string, list ...string) bool {
