@@ -2,7 +2,7 @@ package godestone
 
 import (
 	"github.com/gocolly/colly/v2"
-	"github.com/xivapi/godestone/v2/internal/models"
+	"github.com/xivapi/godestone/v2/provider/models"
 )
 
 func (s *Scraper) buildMinionCollector(output chan *Minion) *colly.Collector {

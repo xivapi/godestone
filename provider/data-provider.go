@@ -1,6 +1,6 @@
-package providers
+package provider
 
-import "github.com/xivapi/godestone/v2/internal/models"
+import "github.com/xivapi/godestone/v2/provider/models"
 
 // DataProvider represents a service implementation responsible for
 // converting our scraped data into a useful form.

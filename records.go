@@ -7,7 +7,7 @@ import (
 	"github.com/xivapi/godestone/v2/data/gcrank"
 	"github.com/xivapi/godestone/v2/data/gender"
 	"github.com/xivapi/godestone/v2/data/role"
-	"github.com/xivapi/godestone/v2/internal/models"
+	"github.com/xivapi/godestone/v2/provider/models"
 )
 
 // IconedNamedEntity represents an instance of an object with an icon and a name.
