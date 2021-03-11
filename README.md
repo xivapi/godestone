@@ -14,9 +14,9 @@ Just add the package to your `go.mod` or run `go get github.com/xivapi/godestone
 Also be sure to install a data provider service to initialize the scraper.
 
 ## Data providers
-Package|Description
----|---
-[bingode](https://github.com/karashiiro/bingode)|A binary-packed data provider. Large and requires updates each patch, but works without relying on any websites besides The Lodestone.
+Package|Size|Description
+---|---|---
+[bingode](https://github.com/karashiiro/bingode)|![Code Size](https://img.shields.io/github/languages/code-size/karashiiro/bingode)|A binary-packed data provider. Large and requires updates each patch, but works without relying on any websites besides The Lodestone.
 
 ## Usage
 Refer to the [`examples/`](examples) folder for basic usage.
