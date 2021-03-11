@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/xivapi/godestone"
+	"github.com/xivapi/godestone/v2"
 )
 
 func main() {

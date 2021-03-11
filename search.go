@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/xivapi/godestone/data/gcrank"
+	"github.com/xivapi/godestone/v2/data/gcrank"
 )
 
 func (s *Scraper) buildCharacterSearchCollector(

@@ -5,7 +5,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/xivapi/godestone"
+	"github.com/xivapi/godestone/v2"
 )
 
 func main() {
