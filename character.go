@@ -8,7 +8,7 @@ import (
 	"github.com/xivapi/godestone/v2/data/baseparam"
 	"github.com/xivapi/godestone/v2/data/gcrank"
 	"github.com/xivapi/godestone/v2/data/gender"
-	"github.com/xivapi/godestone/v2/internal/models"
+	"github.com/xivapi/godestone/v2/provider/models"
 	"github.com/xivapi/godestone/v2/selectors"
 )
 
@@ -109,7 +109,9 @@ func (s *Scraper) buildCharacterCollector(
 		t := s.dataProvider.Title(titleText)
 
 		if t != nil {
-			charData.Title = t
+			charData.Title = &Title{
+				TitleInternal: t,
+			}
 		} else {
 			charData.Title = &Title{
 				TitleInternal: &models.TitleInternal{

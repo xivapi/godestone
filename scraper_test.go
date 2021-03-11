@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/karashiiro/bingode"
+	"github.com/xivapi/godestone/v2/provider"
+	"github.com/xivapi/godestone/v2/provider/models"
 )
 
 var langCodes []SiteLang = []SiteLang{EN, JA, FR, DE, SiteLang("zh")}
-var provider DataProvider = bingode.New()
+var bin provider.DataProvider = bingode.New()
 
 func failIfNil(t *testing.T, label string, input interface{}) {
 	if input == nil {
@@ -43,7 +45,7 @@ func failIfOlderThanGameRelease(t *testing.T, label string, input time.Time) {
 	}
 }
 
-func failIfGCInvalid(t *testing.T, label string, input *NamedEntity) {
+func failIfGCInvalid(t *testing.T, label string, input *models.NamedEntity) {
 	if input == nil || input.Name == "" {
 		var got string
 		if input == nil {
@@ -65,7 +67,7 @@ var characterIds = []uint32{
 func TestFetchCharacter(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -108,7 +110,7 @@ func TestFetchCharacter(t *testing.T) {
 func TestFetchCharacterAchievements(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -151,7 +153,7 @@ func TestFetchCharacterAchievements(t *testing.T) {
 func TestFetchCharacterMinions(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -185,7 +187,7 @@ func TestFetchCharacterMinions(t *testing.T) {
 func TestFetchCharacterMounts(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -221,7 +223,7 @@ var linkshellIds = []string{"20547673299961415", "19703248369746483", "104145741
 func TestFetchLinkshell(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -266,7 +268,7 @@ var cwlsIds = []string{
 func TestFetchCWLS(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -312,7 +314,7 @@ var pvpTeamIds = []string{
 func TestFetchPVPTeam(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -360,7 +362,7 @@ var fcIds = []string{
 func TestFetchFreeCompany(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -392,7 +394,7 @@ func TestFetchFreeCompany(t *testing.T) {
 func TestFetchFreeCompanyMembers(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -423,7 +425,7 @@ func TestFetchFreeCompanyMembers(t *testing.T) {
 func TestSearchFreeCompanies(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -456,7 +458,7 @@ func TestSearchFreeCompanies(t *testing.T) {
 func TestSearchCharacters(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -485,7 +487,7 @@ func TestSearchCharacters(t *testing.T) {
 func TestSearchCWLS(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -513,7 +515,7 @@ func TestSearchCWLS(t *testing.T) {
 func TestSearchLinkshells(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
@@ -542,7 +544,7 @@ func TestSearchLinkshells(t *testing.T) {
 func TestSearchPVPTeams(t *testing.T) {
 	t.Parallel()
 	for _, lang := range langCodes {
-		s := NewScraper(provider, lang)
+		s := NewScraper(bin, lang)
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()

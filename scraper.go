@@ -8,9 +8,8 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/xivapi/godestone/v2/internal/providers"
-	"github.com/xivapi/godestone/v2/pack/css"
-
+	"github.com/xivapi/godestone/v2/internal/pack/css"
+	"github.com/xivapi/godestone/v2/provider"
 	"github.com/xivapi/godestone/v2/selectors"
 )
 
@@ -20,7 +19,7 @@ type Scraper struct {
 
 	meta *meta
 
-	dataProvider providers.DataProvider
+	dataProvider provider.DataProvider
 
 	cwlsSelectors      *selectors.CWLSSelectors
 	linkshellSelectors *selectors.LinkshellSelectors
@@ -33,7 +32,7 @@ type Scraper struct {
 // NewScraper creates a new instance of the Scraper. Do note that all five language-versions of the website
 // are on the same physical servers in Japan. Changing the language of the website will not meaningfully
 // improve response times.
-func NewScraper(dataProvider providers.DataProvider, lang SiteLang) *Scraper {
+func NewScraper(dataProvider provider.DataProvider, lang SiteLang) *Scraper {
 	metaBytes, _ := css.Asset("meta.json")
 	meta := meta{}
 	json.Unmarshal(metaBytes, &meta)

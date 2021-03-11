@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/xivapi/godestone/v2/internal/models"
+	"github.com/xivapi/godestone/v2/provider/models"
 )
 
 func (s *Scraper) buildAchievementCollector(aai *AllAchievementInfo, output chan *AchievementInfo, errors chan error) *colly.Collector {
