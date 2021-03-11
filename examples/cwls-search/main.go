@@ -5,13 +5,12 @@ import (
 	"os"
 
 	"github.com/karashiiro/godestone"
-	"github.com/karashiiro/godestone/search"
 )
 
 func main() {
 	s := godestone.NewScraper(godestone.EN)
 
-	opts := search.CWLSOptions{
+	opts := godestone.CWLSOptions{
 		Name: os.Args[1],
 	}
 

@@ -5,9 +5,6 @@ import (
 	"net/http"
 	"testing"
 	"time"
-
-	"github.com/karashiiro/godestone/models"
-	"github.com/karashiiro/godestone/search"
 )
 
 var langCodes []SiteLang = []SiteLang{EN, JA, FR, DE, SiteLang("zh")}
@@ -38,7 +35,7 @@ func failIfOlderThanGameRelease(t *testing.T, label string, input time.Time) {
 	}
 }
 
-func failIfGCInvalid(t *testing.T, label string, input *models.NamedEntity) {
+func failIfGCInvalid(t *testing.T, label string, input *NamedEntity) {
 	if input == nil || input.Name == "" {
 		var got string
 		if input == nil {
@@ -413,7 +410,7 @@ func TestSearchFreeCompanies(t *testing.T) {
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
-			opts := search.FreeCompanyOptions{}
+			opts := FreeCompanyOptions{}
 
 			for fc := range s.SearchFreeCompanies(opts) {
 				if fc.Error != nil {
@@ -446,7 +443,7 @@ func TestSearchCharacters(t *testing.T) {
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
-			opts := search.CharacterOptions{}
+			opts := CharacterOptions{}
 
 			for character := range s.SearchCharacters(opts) {
 				if character.Error != nil {
@@ -475,7 +472,7 @@ func TestSearchCWLS(t *testing.T) {
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
-			opts := search.CWLSOptions{}
+			opts := CWLSOptions{}
 
 			for cwls := range s.SearchCWLS(opts) {
 				if cwls.Error != nil {
@@ -503,7 +500,7 @@ func TestSearchLinkshells(t *testing.T) {
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
-			opts := search.LinkshellOptions{}
+			opts := LinkshellOptions{}
 
 			for ls := range s.SearchLinkshells(opts) {
 				if ls.Error != nil {
@@ -532,7 +529,7 @@ func TestSearchPVPTeams(t *testing.T) {
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
-			opts := search.PVPTeamOptions{}
+			opts := PVPTeamOptions{}
 
 			for ls := range s.SearchPVPTeams(opts) {
 				if ls.Error != nil {

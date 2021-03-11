@@ -8,12 +8,9 @@ import (
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/collectors"
 	"github.com/karashiiro/godestone/pack/css"
 	"github.com/karashiiro/godestone/pack/exports"
-	"github.com/karashiiro/godestone/search"
 
-	"github.com/karashiiro/godestone/models"
 	"github.com/karashiiro/godestone/selectors"
 )
 
@@ -21,7 +18,7 @@ import (
 type Scraper struct {
 	lang SiteLang
 
-	meta *models.Meta
+	meta *meta
 
 	cwlsSelectors      *selectors.CWLSSelectors
 	linkshellSelectors *selectors.LinkshellSelectors
@@ -49,7 +46,7 @@ type Scraper struct {
 // improve response times.
 func NewScraper(lang SiteLang) *Scraper {
 	metaBytes, _ := css.Asset("meta.json")
-	meta := models.Meta{}
+	meta := meta{}
 	json.Unmarshal(metaBytes, &meta)
 
 	return &Scraper{
@@ -211,29 +208,18 @@ func (s *Scraper) getTribeTable() *exports.TribeTable {
 // FetchCharacter returns character information for the provided Lodestone ID. This function makes
 // two requests: one to the base character profile, and another to the class and job page, returning
 // an error if either request fails.
-func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
+func (s *Scraper) FetchCharacter(id uint32) (*Character, error) {
 	now := time.Now()
-	charData := models.Character{ID: id, ParseDate: now}
+	charData := Character{ID: id, ParseDate: now}
 	errors := make(chan error, 2)
 
-	charCollector := collectors.BuildCharacterCollector(
-		s.meta,
-		s.getProfileSelectors(),
-		s.getGrandCompanyTable(),
-		s.getItemTable(),
-		s.getTitleTable(),
-		s.getTownTable(),
-		s.getDeityTable(),
-		s.getRaceTable(),
-		s.getTribeTable(),
-		&charData,
-	)
+	charCollector := s.buildCharacterCollector(&charData)
 
 	charCollector.OnError(func(r *colly.Response, err error) {
 		errors <- err
 	})
 
-	charSelectors := s.profileSelectors.Character
+	charSelectors := s.getProfileSelectors().Character
 
 	icon := ""
 	charCollector.OnHTML(charSelectors.ActiveClassJob.Selector, func(e *colly.HTMLElement) {
@@ -251,12 +237,7 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 	})
 	charCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d", s.lang, id))
 
-	classJobCollector := collectors.BuildClassJobCollector(
-		s.meta,
-		s.getProfileSelectors(),
-		s.getClassJobTable(),
-		&charData,
-	)
+	classJobCollector := s.buildClassJobCollector(&charData)
 	classJobCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/class_job/", s.lang, id))
 
 	charCollector.Wait()
@@ -281,19 +262,13 @@ func (s *Scraper) FetchCharacter(id uint32) (*models.Character, error) {
 // FetchCharacterMinions returns unlocked minion information for the provided Lodestone ID. The error is returned
 // if the request fails with anything other than a 404. A 404 can result from a character not existing, but it can
 // also result from a character not having any minions.
-func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
-	output := make(chan *models.Minion)
+func (s *Scraper) FetchCharacterMinions(id uint32) ([]*Minion, error) {
+	output := make(chan *Minion)
 	errors := make(chan error, 1)
 	done := make(chan bool, 1)
 
 	go func() {
-		minionCollector := collectors.BuildMinionCollector(
-			s.meta,
-			s.getProfileSelectors(),
-			s.getMinionTable(),
-			string(s.lang),
-			output,
-		)
+		minionCollector := s.buildMinionCollector(output)
 		minionCollector.OnError(func(r *colly.Response, err error) {
 			if err.Error() != http.StatusText(http.StatusNotFound) {
 				errors <- err
@@ -309,7 +284,7 @@ func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 		close(done)
 	}()
 
-	var minions []*models.Minion
+	var minions []*Minion
 	for minion := range output {
 		minions = append(minions, minion)
 	}
@@ -327,13 +302,13 @@ func (s *Scraper) FetchCharacterMinions(id uint32) ([]*models.Minion, error) {
 // FetchCharacterMounts returns unlocked mount information for the provided Lodestone ID. The error is returned
 // if the request fails with anything other than a 404. A 404 can result from a character not existing, but it can
 // also result from a character not having any mounts.
-func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
-	output := make(chan *models.Mount)
+func (s *Scraper) FetchCharacterMounts(id uint32) ([]*Mount, error) {
+	output := make(chan *Mount)
 	errors := make(chan error, 1)
 	done := make(chan bool, 1)
 
 	go func() {
-		mountCollector := collectors.BuildMountCollector(s.meta, s.getProfileSelectors(), s.getMountTable(), output)
+		mountCollector := s.buildMountCollector(output)
 		mountCollector.OnError(func(r *colly.Response, err error) {
 			if err.Error() != http.StatusText(http.StatusNotFound) {
 				errors <- err
@@ -349,7 +324,7 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 		close(done)
 	}()
 
-	var mounts []*models.Mount
+	var mounts []*Mount
 	for mount := range output {
 		mounts = append(mounts, mount)
 	}
@@ -368,14 +343,14 @@ func (s *Scraper) FetchCharacterMounts(id uint32) ([]*models.Mount, error) {
 // is returned if the request fails with anything other than a 403. A 403 will be raised when the character's
 // achievements are private. Instead of raising an error, the object in the return channel will have its
 // private flag set to `true`.
-func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.AchievementInfo {
-	output := make(chan *models.AchievementInfo)
+func (s *Scraper) FetchCharacterAchievements(id uint32) chan *AchievementInfo {
+	output := make(chan *AchievementInfo)
 
 	go func() {
-		achievementCollector := collectors.BuildAchievementCollector(s.meta, s.getProfileSelectors(), s.getAchievementTable(), output)
+		achievementCollector := s.buildAchievementCollector(output)
 		achievementCollector.OnError(func(r *colly.Response, err error) {
-			aai := &models.AllAchievementInfo{}
-			errAi := &models.AchievementInfo{
+			aai := &AllAchievementInfo{}
+			errAi := &AchievementInfo{
 				AllAchievementInfo: aai,
 				Error:              err,
 			}
@@ -396,12 +371,12 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) chan *models.Achievement
 
 // FetchLinkshell returns linkshell information for the provided linkshell ID. The error is returned if the
 // request fails.
-func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
+func (s *Scraper) FetchLinkshell(id string) (*Linkshell, error) {
 	now := time.Now()
-	ls := models.Linkshell{ID: id, ParseDate: now}
+	ls := Linkshell{ID: id, ParseDate: now}
 	errors := make(chan error, 1)
 
-	lsCollector := collectors.BuildLinkshellCollector(s.meta, s.getLinkshellSelectors(), &ls)
+	lsCollector := s.buildLinkshellCollector(&ls)
 	lsCollector.OnError(func(r *colly.Response, err error) {
 		errors <- err
 	})
@@ -420,12 +395,12 @@ func (s *Scraper) FetchLinkshell(id string) (*models.Linkshell, error) {
 
 // FetchCWLS returns CWLS information for the provided CWLS ID. The error is returned if the
 // request fails.
-func (s *Scraper) FetchCWLS(id string) (*models.CWLS, error) {
+func (s *Scraper) FetchCWLS(id string) (*CWLS, error) {
 	now := time.Now()
-	cwls := models.CWLS{ID: id, ParseDate: now}
+	cwls := CWLS{ID: id, ParseDate: now}
 	errors := make(chan error, 1)
 
-	cwlsCollector := collectors.BuildCWLSCollector(s.meta, s.getCWLSSelectors(), &cwls)
+	cwlsCollector := s.buildCWLSCollector(&cwls)
 	cwlsCollector.OnError(func(r *colly.Response, err error) {
 		errors <- err
 	})
@@ -444,12 +419,12 @@ func (s *Scraper) FetchCWLS(id string) (*models.CWLS, error) {
 
 // FetchPVPTeam returns PVP team information for the provided PVP team ID. The error is returned if the
 // request fails.
-func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
+func (s *Scraper) FetchPVPTeam(id string) (*PVPTeam, error) {
 	now := time.Now()
-	pvpTeam := models.PVPTeam{ID: id, ParseDate: now}
+	pvpTeam := PVPTeam{ID: id, ParseDate: now}
 	errors := make(chan error, 1)
 
-	pvpTeamCollector := collectors.BuildPVPTeamCollector(s.meta, s.getPVPTeamSelectors(), &pvpTeam)
+	pvpTeamCollector := s.buildPVPTeamCollector(&pvpTeam)
 	pvpTeamCollector.OnError(func(r *colly.Response, err error) {
 		errors <- err
 	})
@@ -468,18 +443,12 @@ func (s *Scraper) FetchPVPTeam(id string) (*models.PVPTeam, error) {
 
 // FetchFreeCompany returns Free Company information for the provided Free Company ID. The error is returned if the
 // request fails.
-func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
+func (s *Scraper) FetchFreeCompany(id string) (*FreeCompany, error) {
 	now := time.Now()
-	fc := models.FreeCompany{ID: id, ParseDate: now}
+	fc := FreeCompany{ID: id, ParseDate: now}
 	errors := make(chan error, 1)
 
-	fcCollector := collectors.BuildFreeCompanyCollector(
-		s.meta,
-		s.getFreeCompanySelectors(),
-		s.getGrandCompanyTable(),
-		s.getReputationTable(),
-		&fc,
-	)
+	fcCollector := s.buildFreeCompanyCollector(&fc)
 	fcCollector.OnError(func(r *colly.Response, err error) {
 		errors <- err
 	})
@@ -498,13 +467,13 @@ func (s *Scraper) FetchFreeCompany(id string) (*models.FreeCompany, error) {
 
 // FetchFreeCompanyMembers returns Free Company member information for the provided Free Company ID. The error
 // is returned if the request fails.
-func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMember {
-	output := make(chan *models.FreeCompanyMember)
+func (s *Scraper) FetchFreeCompanyMembers(id string) chan *FreeCompanyMember {
+	output := make(chan *FreeCompanyMember)
 
 	go func() {
-		fcMembersCollector := collectors.BuildFreeCompanyMembersCollector(s.meta, s.getFreeCompanySelectors(), output)
+		fcMembersCollector := s.buildFreeCompanyMembersCollector(output)
 		fcMembersCollector.OnError(func(r *colly.Response, err error) {
-			output <- &models.FreeCompanyMember{
+			output <- &FreeCompanyMember{
 				Error: err,
 			}
 		})
@@ -520,20 +489,17 @@ func (s *Scraper) FetchFreeCompanyMembers(id string) chan *models.FreeCompanyMem
 // poor, and often return exact matches far down in the results, or else return no search results when search
 // results should be present. This library does one retry on each failure, but this is not a guarantee that
 // all search results will be returned.
-func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *models.FreeCompanySearchResult {
-	output := make(chan *models.FreeCompanySearchResult)
+func (s *Scraper) SearchFreeCompanies(opts FreeCompanyOptions) chan *FreeCompanySearchResult {
+	output := make(chan *FreeCompanySearchResult)
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
-		pageInfo := &models.PageInfo{TotalPages: 20}
+		pageInfo := &PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
 		mu := sync.Mutex{}
 
-		searchCollector := collectors.BuildFreeCompanySearchCollector(
-			s.meta,
-			s.getSearchSelectors(),
-			s.getGrandCompanyTable(),
+		searchCollector := s.buildFreeCompanySearchCollector(
 			pageInfo,
 			output,
 		)
@@ -541,7 +507,7 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 			url := r.Request.URL.String()
 			mu.Lock()
 			if revisited[url] {
-				output <- &models.FreeCompanySearchResult{
+				output <- &FreeCompanySearchResult{
 					Error: err,
 				}
 			} else {
@@ -577,25 +543,18 @@ func (s *Scraper) SearchFreeCompanies(opts search.FreeCompanyOptions) chan *mode
 // poor, and often return exact matches far down in the results, or else return no search results when search
 // results should be present. This library does one retry on each failure, but this is not a guarantee that
 // all search results will be returned.
-func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.CharacterSearchResult {
-	output := make(chan *models.CharacterSearchResult)
+func (s *Scraper) SearchCharacters(opts CharacterOptions) chan *CharacterSearchResult {
+	output := make(chan *CharacterSearchResult)
 
-	uri := opts.BuildURI(
-		s.getGrandCompanyTable(),
-		s.getRaceTable(),
-		s.getTribeTable(),
-		string(s.lang),
-	)
+	uri := opts.BuildURI(s, string(s.lang))
 
 	go func() {
-		pageInfo := &models.PageInfo{TotalPages: 20}
+		pageInfo := &PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
 		mu := sync.Mutex{}
 
-		searchCollector := collectors.BuildCharacterSearchCollector(
-			s.meta,
-			s.getSearchSelectors(),
+		searchCollector := s.buildCharacterSearchCollector(
 			pageInfo,
 			output,
 		)
@@ -603,7 +562,7 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 			url := r.Request.URL.String()
 			mu.Lock()
 			if revisited[url] {
-				output <- &models.CharacterSearchResult{
+				output <- &CharacterSearchResult{
 					Error: err,
 				}
 			} else {
@@ -639,19 +598,17 @@ func (s *Scraper) SearchCharacters(opts search.CharacterOptions) chan *models.Ch
 // poor, and often return exact matches far down in the results, or else return no search results when search
 // results should be present. This library does one retry on each failure, but this is not a guarantee that
 // all search results will be returned.
-func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchResult {
-	output := make(chan *models.CWLSSearchResult)
+func (s *Scraper) SearchCWLS(opts CWLSOptions) chan *CWLSSearchResult {
+	output := make(chan *CWLSSearchResult)
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
-		pageInfo := &models.PageInfo{TotalPages: 20}
+		pageInfo := &PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
 		mu := sync.Mutex{}
 
-		searchCollector := collectors.BuildCWLSSearchCollector(
-			s.meta,
-			s.getSearchSelectors(),
+		searchCollector := s.buildCWLSSearchCollector(
 			pageInfo,
 			output,
 		)
@@ -659,7 +616,7 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 			url := r.Request.URL.String()
 			mu.Lock()
 			if revisited[url] {
-				output <- &models.CWLSSearchResult{
+				output <- &CWLSSearchResult{
 					Error: err,
 				}
 			} else {
@@ -695,19 +652,17 @@ func (s *Scraper) SearchCWLS(opts search.CWLSOptions) chan *models.CWLSSearchRes
 // poor, and often return exact matches far down in the results, or else return no search results when search
 // results should be present. This library does one retry on each failure, but this is not a guarantee that
 // all search results will be returned.
-func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.LinkshellSearchResult {
-	output := make(chan *models.LinkshellSearchResult)
+func (s *Scraper) SearchLinkshells(opts LinkshellOptions) chan *LinkshellSearchResult {
+	output := make(chan *LinkshellSearchResult)
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
-		pageInfo := &models.PageInfo{TotalPages: 20}
+		pageInfo := &PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
 		mu := sync.Mutex{}
 
-		searchCollector := collectors.BuildLinkshellSearchCollector(
-			s.meta,
-			s.getSearchSelectors(),
+		searchCollector := s.buildLinkshellSearchCollector(
 			pageInfo,
 			output,
 		)
@@ -715,7 +670,7 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 			url := r.Request.URL.String()
 			mu.Lock()
 			if revisited[url] {
-				output <- &models.LinkshellSearchResult{
+				output <- &LinkshellSearchResult{
 					Error: err,
 				}
 			} else {
@@ -751,19 +706,17 @@ func (s *Scraper) SearchLinkshells(opts search.LinkshellOptions) chan *models.Li
 // poor, and often return exact matches far down in the results, or else return no search results when search
 // results should be present. This library does one retry on each failure, but this is not a guarantee that
 // all search results will be returned.
-func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTeamSearchResult {
-	output := make(chan *models.PVPTeamSearchResult)
+func (s *Scraper) SearchPVPTeams(opts PVPTeamOptions) chan *PVPTeamSearchResult {
+	output := make(chan *PVPTeamSearchResult)
 
 	uri := opts.BuildURI(string(s.lang))
 	go func() {
-		pageInfo := &models.PageInfo{TotalPages: 20}
+		pageInfo := &PageInfo{TotalPages: 20}
 		revisited := map[string]bool{}
 
 		mu := sync.Mutex{}
 
-		searchCollector := collectors.BuildPVPTeamSearchCollector(
-			s.meta,
-			s.getSearchSelectors(),
+		searchCollector := s.buildPVPTeamSearchCollector(
 			pageInfo,
 			output,
 		)
@@ -771,7 +724,7 @@ func (s *Scraper) SearchPVPTeams(opts search.PVPTeamOptions) chan *models.PVPTea
 			url := r.Request.URL.String()
 			mu.Lock()
 			if revisited[url] {
-				output <- &models.PVPTeamSearchResult{
+				output <- &PVPTeamSearchResult{
 					Error: err,
 				}
 			} else {

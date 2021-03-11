@@ -1,41 +1,27 @@
-package collectors
+package godestone
 
 import (
 	"strconv"
 	"strings"
 
-	lookups "github.com/karashiiro/godestone/table-lookups"
-
 	"github.com/gocolly/colly/v2"
 	"github.com/karashiiro/godestone/data/baseparam"
 	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/gender"
-	"github.com/karashiiro/godestone/models"
-	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
 )
 
-// BuildCharacterCollector builds the collector used for processing the page.
-func BuildCharacterCollector(
-	meta *models.Meta,
-	profSelectors *selectors.ProfileSelectors,
-	grandCompanyTable *exports.GrandCompanyTable,
-	itemTable *exports.ItemTable,
-	titleTable *exports.TitleTable,
-	townTable *exports.TownTable,
-	deityTable *exports.DeityTable,
-	raceTable *exports.RaceTable,
-	tribeTable *exports.TribeTable,
-	charData *models.Character,
+func (s *Scraper) buildCharacterCollector(
+	charData *Character,
 ) *colly.Collector {
 	c := colly.NewCollector(
-		colly.UserAgent(meta.UserAgentDesktop),
+		colly.UserAgent(s.meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.Async(),
 	)
 
 	// BASIC DATA
-	charSelectors := profSelectors.Character
+	charSelectors := s.getProfileSelectors().Character
 
 	c.OnHTML(charSelectors.Avatar.Selector, func(e *colly.HTMLElement) {
 		charData.Avatar = charSelectors.Avatar.Parse(e)[0]
@@ -64,8 +50,8 @@ func BuildCharacterCollector(
 		gcName := values[0]
 		gcRank := gcrank.Parse(values[1])
 
-		mgc := lookups.GrandCompanyTableLookup(grandCompanyTable, gcName)
-		gc := &models.NamedEntity{
+		mgc := s.grandCompanyTableLookup(gcName)
+		gc := &NamedEntity{
 			ID:   mgc.Id(),
 			Name: gcName,
 
@@ -75,13 +61,13 @@ func BuildCharacterCollector(
 			NameFR: string(mgc.NameFr()),
 		}
 
-		charData.GrandCompanyInfo = &models.GrandCompanyInfo{GrandCompany: gc, RankID: gcRank}
+		charData.GrandCompanyInfo = &GrandCompanyInfo{GrandCompany: gc, RankID: gcRank}
 	})
 
-	charData.GuardianDeity = &models.NamedEntity{}
+	charData.GuardianDeity = &NamedEntity{}
 	c.OnHTML(charSelectors.GuardianDeity.Name.Selector, func(e *colly.HTMLElement) {
 		name := charSelectors.GuardianDeity.Name.Parse(e)[0]
-		d := lookups.DeityTableLookup(deityTable, name)
+		d := s.deityTableLookup(name)
 
 		charData.GuardianDeity.ID = d.Id()
 		charData.GuardianDeity.Name = name
@@ -116,8 +102,8 @@ func BuildCharacterCollector(
 		// Miqo'te fix
 		raceName := strings.ReplaceAll(values[0], "&#39;", "'")
 
-		r := lookups.RaceTableLookup(raceTable, raceName)
-		charData.Race = &models.GenderedEntity{
+		r := s.raceTableLookup(raceName)
+		charData.Race = &GenderedEntity{
 			ID:   r.Id(),
 			Name: values[0],
 
@@ -131,8 +117,8 @@ func BuildCharacterCollector(
 			NameFeminineFR:  string(r.NameFeminineFr()),
 		}
 
-		t := lookups.TribeTableLookup(tribeTable, values[1])
-		charData.Tribe = &models.GenderedEntity{
+		t := s.tribeTableLookup(values[1])
+		charData.Tribe = &GenderedEntity{
 			ID:   t.Id(),
 			Name: values[0],
 
@@ -158,10 +144,10 @@ func BuildCharacterCollector(
 
 	c.OnHTML(charSelectors.Title.Selector, func(e *colly.HTMLElement) {
 		titleText := charSelectors.Title.Parse(e)[0]
-		t := lookups.TitleTableLookup(titleTable, titleText)
+		t := s.titleTableLookup(titleText)
 
-		charData.Title = &models.Title{
-			GenderedEntity: &models.GenderedEntity{
+		charData.Title = &Title{
+			GenderedEntity: &GenderedEntity{
 				ID:   t.Id(),
 				Name: titleText,
 
@@ -178,10 +164,10 @@ func BuildCharacterCollector(
 		}
 	})
 
-	charData.Town = &models.NamedEntity{}
+	charData.Town = &NamedEntity{}
 	c.OnHTML(charSelectors.Town.Name.Selector, func(e *colly.HTMLElement) {
 		name := charSelectors.Town.Name.Parse(e)[0]
-		t := lookups.TownTableLookup(townTable, name)
+		t := s.townTableLookup(name)
 
 		charData.Town.ID = t.Id()
 		charData.Town.Name = name
@@ -194,10 +180,10 @@ func BuildCharacterCollector(
 		charData.Town.Icon = charSelectors.Town.Icon.Parse(e)[0]
 	})
 
-	charData.GearSet = &models.GearSet{}
+	charData.GearSet = &GearSet{}
 
 	// ATTRIBUTES
-	attributeSelectors := profSelectors.Attributes
+	attributeSelectors := s.getProfileSelectors().Attributes
 	charData.GearSet.Attributes = map[baseparam.BaseParam]uint32{}
 
 	attributesMap := map[baseparam.BaseParam]*selectors.SelectorInfo{
@@ -254,28 +240,28 @@ func BuildCharacterCollector(
 	}
 
 	// GEAR PIECES
-	partRefs := &models.GearItemBuild{
-		Body:      &models.GearItem{},
-		Bracelets: &models.GearItem{},
-		Earrings:  &models.GearItem{},
-		Feet:      &models.GearItem{},
-		Hands:     &models.GearItem{},
-		Head:      &models.GearItem{},
-		Legs:      &models.GearItem{},
-		MainHand:  &models.GearItem{},
-		Necklace:  &models.GearItem{},
-		OffHand:   &models.GearItem{},
-		Ring1:     &models.GearItem{},
-		Ring2:     &models.GearItem{},
-		SoulCrystal: &models.GearItem{
+	partRefs := &GearItemBuild{
+		Body:      &GearItem{},
+		Bracelets: &GearItem{},
+		Earrings:  &GearItem{},
+		Feet:      &GearItem{},
+		Hands:     &GearItem{},
+		Head:      &GearItem{},
+		Legs:      &GearItem{},
+		MainHand:  &GearItem{},
+		Necklace:  &GearItem{},
+		OffHand:   &GearItem{},
+		Ring1:     &GearItem{},
+		Ring2:     &GearItem{},
+		SoulCrystal: &GearItem{
 			Materia: make([]uint32, 0),
 		},
-		Waist: &models.GearItem{},
+		Waist: &GearItem{},
 	}
 
 	charData.GearSet.Gear = partRefs
-	partSelectors := profSelectors.GearSet
-	parts := map[*models.GearItem]*selectors.GearSelectors{
+	partSelectors := s.getProfileSelectors().GearSet
+	parts := map[*GearItem]*selectors.GearSelectors{
 		partRefs.MainHand:  &partSelectors.MainHand,
 		partRefs.OffHand:   &partSelectors.OffHand,
 		partRefs.Head:      &partSelectors.Head,
@@ -302,7 +288,7 @@ func BuildCharacterCollector(
 		})
 		c.OnHTML(currSelector.Stain.Selector, func(e *colly.HTMLElement) {
 			name := currSelector.Stain.Parse(e)[0]
-			item := lookups.ItemTableLookup(itemTable, name)
+			item := s.itemTableLookup(name)
 			if item != nil {
 				currRef.Dye = item.Id()
 			}
@@ -315,7 +301,7 @@ func BuildCharacterCollector(
 				name = name[0 : len(name)-3]
 			}
 
-			item := lookups.ItemTableLookup(itemTable, name)
+			item := s.itemTableLookup(name)
 			if item != nil {
 				currRef.Name = name
 				currRef.ID = item.Id()
@@ -336,7 +322,7 @@ func BuildCharacterCollector(
 		for _, materiaSelector := range materiaSelectors {
 			materiaCallback := func(e *colly.HTMLElement) {
 				name := materiaSelector.ParseInnerHTML(e)[0]
-				item := lookups.ItemTableLookup(itemTable, name)
+				item := s.itemTableLookup(name)
 				if item != nil {
 					currRef.Materia = append(currRef.Materia, item.Id())
 				}
@@ -346,7 +332,7 @@ func BuildCharacterCollector(
 
 		c.OnHTML(currSelector.MirageName.Selector, func(e *colly.HTMLElement) {
 			name := currSelector.MirageName.Parse(e)[0]
-			item := lookups.ItemTableLookup(itemTable, name)
+			item := s.itemTableLookup(name)
 			if item != nil {
 				currRef.Mirage = item.Id()
 			}
@@ -355,7 +341,7 @@ func BuildCharacterCollector(
 
 	c.OnHTML(partSelectors.SoulCrystal.Name.Selector, func(e *colly.HTMLElement) {
 		partRefs.SoulCrystal.Name = partSelectors.SoulCrystal.Name.Parse(e)[0]
-		item := lookups.ItemTableLookup(itemTable, partRefs.SoulCrystal.Name)
+		item := s.itemTableLookup(partRefs.SoulCrystal.Name)
 		if item != nil {
 			partRefs.SoulCrystal.ID = item.Id()
 			partRefs.SoulCrystal.NameEN = string(item.NameEn())

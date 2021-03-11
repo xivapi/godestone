@@ -5,13 +5,12 @@ import (
 	"os"
 
 	"github.com/karashiiro/godestone"
-	"github.com/karashiiro/godestone/search"
 )
 
 func main() {
 	s := godestone.NewScraper(godestone.EN)
 
-	opts := search.PVPTeamOptions{
+	opts := godestone.PVPTeamOptions{
 		Name: os.Args[1],
 	}
 

@@ -1,34 +1,25 @@
-package collectors
+package godestone
 
 import (
 	"strconv"
 	"time"
 
 	"github.com/gocolly/colly/v2"
+	"github.com/karashiiro/godestone/data/gcrank"
 	"github.com/karashiiro/godestone/data/role"
-	"github.com/karashiiro/godestone/models"
-	"github.com/karashiiro/godestone/pack/exports"
 	"github.com/karashiiro/godestone/selectors"
-	lookups "github.com/karashiiro/godestone/table-lookups"
 )
 
-// BuildFreeCompanyCollector builds the collector used for processing the page.
-func BuildFreeCompanyCollector(
-	meta *models.Meta,
-	fcSelectors *selectors.FreeCompanySelectors,
-	grandCompanyTable *exports.GrandCompanyTable,
-	repTable *exports.ReputationTable,
-	fc *models.FreeCompany,
-) *colly.Collector {
+func (s *Scraper) buildFreeCompanyCollector(fc *FreeCompany) *colly.Collector {
 	c := colly.NewCollector(
-		colly.UserAgent(meta.UserAgentDesktop),
+		colly.UserAgent(s.meta.UserAgentDesktop),
 		colly.IgnoreRobotsTxt(),
 		colly.Async(),
 	)
 
-	basicSelectors := fcSelectors.Basic
+	basicSelectors := s.getFreeCompanySelectors().Basic
 	c.OnHTML(basicSelectors.ActiveState.Selector, func(e *colly.HTMLElement) {
-		fc.Active = models.FreeCompanyActiveState(basicSelectors.ActiveState.Parse(e)[0])
+		fc.Active = FreeCompanyActiveState(basicSelectors.ActiveState.Parse(e)[0])
 	})
 	c.OnHTML(basicSelectors.ActiveMemberCount.Selector, func(e *colly.HTMLElement) {
 		membersStr := basicSelectors.ActiveMemberCount.Parse(e)[0]
@@ -55,7 +46,7 @@ func BuildFreeCompanyCollector(
 		}
 	})
 	c.OnHTML(basicSelectors.Recruitment.Selector, func(e *colly.HTMLElement) {
-		fc.Recruitment = models.FreeCompanyRecruitingState(basicSelectors.Recruitment.Parse(e)[0])
+		fc.Recruitment = FreeCompanyRecruitingState(basicSelectors.Recruitment.Parse(e)[0])
 	})
 	c.OnHTML(basicSelectors.Server.Selector, func(e *colly.HTMLElement) {
 		worldDC := basicSelectors.Server.Parse(e)
@@ -70,7 +61,7 @@ func BuildFreeCompanyCollector(
 		fc.Tag = basicSelectors.Tag.Parse(e)[0]
 	})
 
-	fc.CrestLayers = &models.CrestLayers{}
+	fc.CrestLayers = &CrestLayers{}
 	c.OnHTML(basicSelectors.CrestLayers.Bottom.Selector, func(e *colly.HTMLElement) {
 		fc.CrestLayers.Bottom = basicSelectors.CrestLayers.Bottom.Parse(e)[0]
 	})
@@ -81,7 +72,7 @@ func BuildFreeCompanyCollector(
 		fc.CrestLayers.Top = basicSelectors.CrestLayers.Top.Parse(e)[0]
 	})
 
-	fc.Estate = &models.Estate{}
+	fc.Estate = &Estate{}
 	c.OnHTML(basicSelectors.Estate.NoEstate.Selector, func(e *colly.HTMLElement) {
 		fc.Estate = nil
 	})
@@ -95,7 +86,7 @@ func BuildFreeCompanyCollector(
 		fc.Estate.Plot = basicSelectors.Estate.Plot.Parse(e)[0]
 	})
 
-	fc.Ranking = &models.FreeCompanyRanking{}
+	fc.Ranking = &FreeCompanyRanking{}
 	c.OnHTML(basicSelectors.Ranking.Monthly.Selector, func(e *colly.HTMLElement) {
 		rankMonthStr := basicSelectors.Ranking.Monthly.Parse(e)[0]
 		rankMonth, err := strconv.ParseUint(rankMonthStr, 10, 32)
@@ -111,8 +102,8 @@ func BuildFreeCompanyCollector(
 		}
 	})
 
-	focusSelectors := fcSelectors.Focuses
-	fc.Focus = []*models.FreeCompanyFocusInfo{}
+	focusSelectors := s.getFreeCompanySelectors().Focuses
+	fc.Focus = []*FreeCompanyFocusInfo{}
 	c.OnHTML(focusSelectors.NotSpecified.Selector, func(e *colly.HTMLElement) {
 		fc.Focus = nil
 	})
@@ -131,12 +122,12 @@ func BuildFreeCompanyCollector(
 	for _, nextFocus := range focusSelectorsPtrs {
 		curFocus := nextFocus
 
-		info := &models.FreeCompanyFocusInfo{}
+		info := &FreeCompanyFocusInfo{}
 		c.OnHTML(curFocus.Icon.Selector, func(e *colly.HTMLElement) {
 			info.Icon = curFocus.Icon.Parse(e)[0]
 		})
 		c.OnHTML(curFocus.Name.Selector, func(e *colly.HTMLElement) {
-			info.Kind = models.FreeCompanyFocus(curFocus.Name.Parse(e)[0])
+			info.Kind = FreeCompanyFocus(curFocus.Name.Parse(e)[0])
 		})
 		c.OnHTML(curFocus.Status.Selector, func(e *colly.HTMLElement) {
 			// Dangerous; this can match if the regex is broken because the return value will be an empty string
@@ -146,8 +137,8 @@ func BuildFreeCompanyCollector(
 		fc.Focus = append(fc.Focus, info)
 	}
 
-	seekingSelectors := fcSelectors.Seeking
-	fc.Seeking = []*models.FreeCompanySeekingInfo{}
+	seekingSelectors := s.getFreeCompanySelectors().Seeking
+	fc.Seeking = []*FreeCompanySeekingInfo{}
 	c.OnHTML(seekingSelectors.NotSpecified.Selector, func(e *colly.HTMLElement) {
 		fc.Seeking = nil
 	})
@@ -162,7 +153,7 @@ func BuildFreeCompanyCollector(
 	for _, nextRole := range roleSelectorsPtrs {
 		curRole := nextRole
 
-		info := &models.FreeCompanySeekingInfo{}
+		info := &FreeCompanySeekingInfo{}
 		c.OnHTML(curRole.Icon.Selector, func(e *colly.HTMLElement) {
 			info.Icon = curRole.Icon.Parse(e)[0]
 		})
@@ -177,22 +168,22 @@ func BuildFreeCompanyCollector(
 		fc.Seeking = append(fc.Seeking, info)
 	}
 
-	repSelectors := fcSelectors.Reputation
+	repSelectors := s.getFreeCompanySelectors().Reputation
 	repSelectorsPtrs := []*selectors.FreeCompanyAlignmentSelectors{
 		&repSelectors.Maelstrom,
 		&repSelectors.Adders,
 		&repSelectors.Flames,
 	}
-	fc.Reputation = []*models.FreeCompanyReputation{}
+	fc.Reputation = []*FreeCompanyReputation{}
 	for _, nextRep := range repSelectorsPtrs {
 		curRep := nextRep
 
-		rep := &models.FreeCompanyReputation{}
+		rep := &FreeCompanyReputation{}
 		c.OnHTML(curRep.Name.Selector, func(e *colly.HTMLElement) {
 			gcName := curRep.Name.Parse(e)[0]
-			gc := lookups.GrandCompanyTableLookup(grandCompanyTable, gcName)
+			gc := s.grandCompanyTableLookup(gcName)
 
-			rep.GrandCompany = &models.NamedEntity{
+			rep.GrandCompany = &NamedEntity{
 				ID:   gc.Id(),
 				Name: gcName,
 
@@ -211,8 +202,8 @@ func BuildFreeCompanyCollector(
 		})
 		c.OnHTML(curRep.Rank.Selector, func(e *colly.HTMLElement) {
 			repName := curRep.Rank.Parse(e)[0]
-			r := lookups.ReputationTableLookup(repTable, repName)
-			rep.Rank = &models.NamedEntity{
+			r := s.reputationTableLookup(repName)
+			rep.Rank = &NamedEntity{
 				ID:   r.Id(),
 				Name: repName,
 
@@ -225,6 +216,52 @@ func BuildFreeCompanyCollector(
 
 		fc.Reputation = append(fc.Reputation, rep)
 	}
+
+	return c
+}
+
+func (s *Scraper) buildFreeCompanyMembersCollector(output chan *FreeCompanyMember) *colly.Collector {
+	c := colly.NewCollector(
+		colly.UserAgent(s.meta.UserAgentDesktop),
+		colly.MaxDepth(50),
+		colly.IgnoreRobotsTxt(),
+		colly.Async(),
+	)
+
+	membersSelectors := s.getFreeCompanySelectors().Members
+	c.OnHTML(membersSelectors.Root.Selector, func(container *colly.HTMLElement) {
+		nextURI := membersSelectors.ListNextButton.ParseThroughChildren(container)[0]
+
+		container.ForEach(membersSelectors.Entry.Root.Selector, func(i int, e *colly.HTMLElement) {
+			member := &FreeCompanyMember{
+				Avatar:   membersSelectors.Entry.Avatar.ParseThroughChildren(e)[0],
+				Name:     membersSelectors.Entry.Name.ParseThroughChildren(e)[0],
+				Rank:     gcrank.Parse(membersSelectors.Entry.Rank.ParseThroughChildren(e)[0]),
+				RankIcon: membersSelectors.Entry.RankIcon.ParseThroughChildren(e)[0],
+			}
+
+			worldDC := membersSelectors.Entry.Server.ParseThroughChildren(e)
+			member.World = worldDC[0]
+			member.DC = worldDC[1]
+
+			idStr := membersSelectors.Entry.ID.ParseThroughChildren(e)[0]
+			id, err := strconv.ParseUint(idStr, 10, 32)
+			if err == nil {
+				member.ID = uint32(id)
+			}
+
+			output <- member
+		})
+
+		if nextURI != "javascript:void(0);" {
+			err := container.Request.Visit(nextURI)
+			if err != nil {
+				output <- &FreeCompanyMember{
+					Error: err,
+				}
+			}
+		}
+	})
 
 	return c
 }
