@@ -55,6 +55,8 @@ github.com/karashiiro/bingode v1.0.0 h1:cm0FjKTbZAnkUm9I0Salxihzu23A9GWlfRl+42Qo
 github.com/karashiiro/bingode v1.0.0/go.mod h1:s+E5/RJnC5ZdFPUZjMgW5h1RByGfOwoCLgE1QYZSG6g=
 github.com/karashiiro/bingode v1.0.1 h1:zWZYkSDf4FYgncNZDyJIueQ5stE6EDbNogXJKJ9vCmw=
 github.com/karashiiro/bingode v1.0.1/go.mod h1:lzVTRMIEwNzxD46MOfDskypTi+zBu9QGrklE4cG+tLo=
+github.com/karashiiro/bingode v1.0.2 h1:0Ml10cqICBMWlwPSNf7YlTw6C0CpxDmeAf3BydrVlLc=
+github.com/karashiiro/bingode v1.0.2/go.mod h1:KvajV1nOhqF6CZyJZzPk3m7Pmt+4loFSdjLrEc/cBXY=
 github.com/kennygrant/sanitize v1.2.4 h1:gN25/otpP5vAsO2djbMhF/LQX6R7+O1TB4yv8NzpJ3o=
 github.com/kennygrant/sanitize v1.2.4/go.mod h1:LGsjYYtgxbetdg5owWB2mpgUL6e2nfw2eObZ0u0qvak=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
@@ -70,6 +72,7 @@ github.com/temoto/robotstxt v1.1.1 h1:Gh8RCs8ouX3hRSxxK7B1mO5RFByQ4CmJZDwgom++Ja
 github.com/temoto/robotstxt v1.1.1/go.mod h1:+1AmkuG3IYkh1kv0d2qEB9Le88ehNO0zwOr3ujewlOo=
 github.com/xivapi/godestone/v2 v2.0.0-pre2/go.mod h1:MsAbxcNYggVOsWa69FPeVZbaWcx1qCNlQGLe2jyUwQI=
 github.com/xivapi/godestone/v2 v2.0.0-pre4/go.mod h1:FumTOGegUSnnfSN8/R6+orShw5wtsgLET/jBBrA3lSw=
+github.com/xivapi/godestone/v2 v2.0.0/go.mod h1:U2V2b1c1+NjYbUvy7AwCyJWSaGDJ0U1fJFtxolgWTws=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
