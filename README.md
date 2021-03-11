@@ -9,16 +9,15 @@
 Go scraper for The Lodestone.
 
 ## Installation
-Just add the package to your `go.mod` or run `go get github.com/xivapi/godestone/v2`.
+Just add the package to your `go.mod` or run `go get github.com/xivapi/godestone`.
 
 ## Usage
 Refer to the [`examples/`](examples) folder for basic usage.
 
 ## Contributing
-Make sure to checkout the submodules if you are changing pack information.
+Make sure to checkout the submodules if you are changing CSS selector information.
 
 ### Dependencies
-  * [`flatc`](https://google.github.io/flatbuffers)
   * [`go-bindata`](https://github.com/go-bindata/go-bindata)
 
 ### Repacking
