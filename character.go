@@ -8,8 +8,8 @@ import (
 	"github.com/xivapi/godestone/v2/data/baseparam"
 	"github.com/xivapi/godestone/v2/data/gcrank"
 	"github.com/xivapi/godestone/v2/data/gender"
+	"github.com/xivapi/godestone/v2/internal/selectors"
 	"github.com/xivapi/godestone/v2/provider/models"
-	"github.com/xivapi/godestone/v2/selectors"
 )
 
 func (s *Scraper) buildCharacterCollector(

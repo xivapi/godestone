@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/xivapi/godestone/v2/selectors"
+	"github.com/xivapi/godestone/v2/internal/selectors"
 )
 
 var nonDigits = regexp.MustCompile("[^\\d]")
