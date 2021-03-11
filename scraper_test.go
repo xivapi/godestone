@@ -50,7 +50,12 @@ func failIfGCInvalid(t *testing.T, label string, input *models.NamedEntity) {
 	}
 }
 
-var characterIds = []uint32{11166211, 9426169, 9575452, 15590019}
+var characterIds = []uint32{
+	11166211, // Achievements private
+	9426169,  // No mounts/minions or achievements; missing most things
+	9575452,  // Pretty filled-out character; Miqo'te (the apostrophe screwed things up at one point)
+	23345328, // Failing mount
+}
 
 func TestFetchCharacter(t *testing.T) {
 	t.Parallel()

@@ -29,7 +29,18 @@ func BuildMinionCollector(
 		icon := minionSelectors.Minions.Icon.ParseThroughChildren(e)[0]
 
 		m := lookups.MinionTableLookup(minionTable, name, lang)
-		if m != nil {
+		if m == nil {
+			output <- &models.Minion{
+				ID:   0,
+				Name: name,
+				Icon: icon,
+
+				NameEN: "",
+				NameDE: "",
+				NameFR: "",
+				NameJA: "",
+			}
+		} else {
 			output <- &models.Minion{
 				ID:   m.Id(),
 				Name: name,
