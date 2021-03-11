@@ -2,11 +2,9 @@ package godestone
 
 import (
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/karashiiro/godestone/pack/exports"
 )
 
 func (s *Scraper) buildAchievementCollector(output chan *AchievementInfo) *colly.Collector {
@@ -45,34 +43,18 @@ func (s *Scraper) buildAchievementCollector(output chan *AchievementInfo) *colly
 			if name == "" {
 				name = nameOptions[1]
 			}
-			nameLower := strings.ToLower(name)
 
 			nextAchievement := &AchievementInfo{
 				AllAchievementInfo: allAchievementInfo,
 				Name:               name,
 			}
 
-			nAchievements := s.getAchievementTable().AchievementsLength()
-			for i := 0; i < nAchievements; i++ {
-				achievement := exports.Achievement{}
-				s.getAchievementTable().Achievements(&achievement, i)
-
-				nameEn := string(achievement.NameEn())
-				nameDe := string(achievement.NameDe())
-				nameFr := string(achievement.NameFr())
-				nameJa := string(achievement.NameJa())
-
-				nameEnLower := strings.ToLower(nameEn)
-				nameDeLower := strings.ToLower(nameDe)
-				nameFrLower := strings.ToLower(nameFr)
-				nameJaLower := strings.ToLower(nameJa)
-
-				if nameEnLower == nameLower || nameDeLower == nameLower || nameFrLower == nameLower || nameJaLower == nameLower {
-					nextAchievement.NameEN = nameEn
-					nextAchievement.NameJA = nameJa
-					nextAchievement.NameDE = nameDe
-					nextAchievement.NameFR = nameFr
-				}
+			achievement := s.achievementTableLookup(name)
+			if achievement != nil {
+				nextAchievement.NameEN = string(achievement.NameEn())
+				nextAchievement.NameJA = string(achievement.NameJa())
+				nextAchievement.NameDE = string(achievement.NameDe())
+				nextAchievement.NameFR = string(achievement.NameFr())
 			}
 
 			idStr := entrySelectors.ID.ParseThroughChildren(e2)[0]
