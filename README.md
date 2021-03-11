@@ -9,10 +9,13 @@
 Go scraper for The Lodestone.
 
 ## Installation
-Just add the package to your `go.mod` or run `go get github.com/xivapi/godestone`.
+Just add the package to your `go.mod` or run `go get github.com/xivapi/godestone/v2`.
 
 ## Usage
 Refer to the [`examples/`](examples) folder for basic usage.
+
+This library does not come with a data backing library (outside of testing). An instance of a data backing service is required to initialize the scraper.
+Currently, the only available data backing library is [bingode](https://github.com/karashiiro/bingode); more will be available in the future.
 
 ## Contributing
 Make sure to checkout the submodules if you are changing CSS selector information.
