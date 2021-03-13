@@ -51,16 +51,19 @@ func (s *Scraper) buildCharacterCollector(
 		gcName := values[0]
 		gcRank := gcrank.Parse(values[1])
 
-		gc := s.dataProvider.GrandCompany(gcName)
-
-		charData.GrandCompanyInfo = &GrandCompanyInfo{GrandCompany: gc, RankID: gcRank}
+		gc, err := s.dataProvider.GrandCompany(gcName)
+		if err == nil {
+			charData.GrandCompanyInfo = &GrandCompanyInfo{GrandCompany: gc, RankID: gcRank}
+		}
 	})
 
 	charData.GuardianDeity = &IconedNamedEntity{}
 	c.OnHTML(charSelectors.GuardianDeity.Name.Selector, func(e *colly.HTMLElement) {
 		name := charSelectors.GuardianDeity.Name.Parse(e)[0]
-		d := s.dataProvider.Deity(name)
-		charData.GuardianDeity.NamedEntity = d
+		d, err := s.dataProvider.Deity(name)
+		if err == nil {
+			charData.GuardianDeity.NamedEntity = d
+		}
 	})
 	c.OnHTML(charSelectors.GuardianDeity.Icon.Selector, func(e *colly.HTMLElement) {
 		charData.GuardianDeity.Icon = charSelectors.GuardianDeity.Icon.Parse(e)[0]
@@ -88,11 +91,15 @@ func (s *Scraper) buildCharacterCollector(
 		// Miqo'te fix
 		raceName := strings.ReplaceAll(values[0], "&#39;", "'")
 
-		r := s.dataProvider.Race(raceName)
-		charData.Race = r
+		r, err := s.dataProvider.Race(raceName)
+		if err == nil {
+			charData.Race = r
+		}
 
-		t := s.dataProvider.Tribe(values[1])
-		charData.Tribe = t
+		t, err := s.dataProvider.Tribe(values[1])
+		if err == nil {
+			charData.Tribe = t
+		}
 
 		charData.Gender = gender.Parse(values[2])
 	})
@@ -106,8 +113,7 @@ func (s *Scraper) buildCharacterCollector(
 
 	c.OnHTML(charSelectors.Title.Selector, func(e *colly.HTMLElement) {
 		titleText := charSelectors.Title.Parse(e)[0]
-		t := s.dataProvider.Title(titleText)
-
+		t, _ := s.dataProvider.Title(titleText)
 		if t != nil {
 			charData.Title = &Title{
 				TitleInternal: t,
@@ -137,9 +143,10 @@ func (s *Scraper) buildCharacterCollector(
 	charData.Town = &IconedNamedEntity{}
 	c.OnHTML(charSelectors.Town.Name.Selector, func(e *colly.HTMLElement) {
 		name := charSelectors.Town.Name.Parse(e)[0]
-		t := s.dataProvider.Town(name)
-
-		charData.Town.NamedEntity = t
+		t, err := s.dataProvider.Town(name)
+		if err == nil {
+			charData.Town.NamedEntity = t
+		}
 	})
 	c.OnHTML(charSelectors.Town.Icon.Selector, func(e *colly.HTMLElement) {
 		charData.Town.Icon = charSelectors.Town.Icon.Parse(e)[0]
@@ -253,8 +260,8 @@ func (s *Scraper) buildCharacterCollector(
 		})
 		c.OnHTML(currSelector.Stain.Selector, func(e *colly.HTMLElement) {
 			name := currSelector.Stain.Parse(e)[0]
-			item := s.dataProvider.Item(name)
-			if item != nil {
+			item, err := s.dataProvider.Item(name)
+			if err == nil {
 				currRef.Dye = item.ID
 			}
 		})
@@ -266,8 +273,8 @@ func (s *Scraper) buildCharacterCollector(
 				name = name[0 : len(name)-3]
 			}
 
-			item := s.dataProvider.Item(name)
-			if item != nil {
+			item, err := s.dataProvider.Item(name)
+			if err == nil {
 				currRef.NamedEntity = item
 			}
 		})
@@ -282,8 +289,8 @@ func (s *Scraper) buildCharacterCollector(
 		for _, materiaSelector := range materiaSelectors {
 			materiaCallback := func(e *colly.HTMLElement) {
 				name := materiaSelector.ParseInnerHTML(e)[0]
-				item := s.dataProvider.Item(name)
-				if item != nil {
+				item, err := s.dataProvider.Item(name)
+				if err == nil {
 					currRef.Materia = append(currRef.Materia, item.ID)
 				}
 			}
@@ -292,8 +299,8 @@ func (s *Scraper) buildCharacterCollector(
 
 		c.OnHTML(currSelector.MirageName.Selector, func(e *colly.HTMLElement) {
 			name := currSelector.MirageName.Parse(e)[0]
-			item := s.dataProvider.Item(name)
-			if item != nil {
+			item, err := s.dataProvider.Item(name)
+			if err == nil {
 				currRef.Mirage = item.ID
 			}
 		})
@@ -301,8 +308,8 @@ func (s *Scraper) buildCharacterCollector(
 
 	c.OnHTML(partSelectors.SoulCrystal.Name.Selector, func(e *colly.HTMLElement) {
 		name := partSelectors.SoulCrystal.Name.Parse(e)[0]
-		item := s.dataProvider.Item(name)
-		if item != nil {
+		item, err := s.dataProvider.Item(name)
+		if err == nil {
 			partRefs.SoulCrystal.NamedEntity = item
 		}
 	})

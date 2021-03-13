@@ -18,7 +18,7 @@ func (s *Scraper) buildMinionCollector(output chan *Minion) *colly.Collector {
 		name := minionSelectors.Minions.Name.ParseThroughChildren(e)[0]
 		icon := minionSelectors.Minions.Icon.ParseThroughChildren(e)[0]
 
-		m := s.dataProvider.Minion(name)
+		m, _ := s.dataProvider.Minion(name)
 		if m == nil {
 			output <- &Minion{
 				IconedNamedEntity: &IconedNamedEntity{
@@ -60,7 +60,7 @@ func (s *Scraper) buildMountCollector(output chan *Mount) *colly.Collector {
 		name := mountSelectors.Mounts.Name.ParseThroughChildren(e)[0]
 		icon := mountSelectors.Mounts.Icon.ParseThroughChildren(e)[0]
 
-		m := s.dataProvider.Mount(name)
+		m, _ := s.dataProvider.Mount(name)
 		if m == nil {
 			output <- &Mount{
 				IconedNamedEntity: &IconedNamedEntity{

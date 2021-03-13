@@ -94,18 +94,24 @@ func (s *Scraper) buildClassJobCollector(charData *Character) *colly.Collector {
 
 			curCj.IsSpecialized = strings.Contains(e.Attr("class"), "meister")
 
-			jobInfo := s.dataProvider.ClassJob(names[0])
-			curCj.JobID = uint8(jobInfo.ID)
+			jobInfo, err := s.dataProvider.ClassJob(names[0])
+			if err == nil {
+				curCj.JobID = uint8(jobInfo.ID)
+			}
 
 			if len(names) > 1 {
-				classInfo := s.dataProvider.ClassJob(names[1])
-				curCj.ClassID = uint8(classInfo.ID)
+				classInfo, err := s.dataProvider.ClassJob(names[1])
+				if err == nil {
+					curCj.ClassID = uint8(classInfo.ID)
+				}
 			} else {
 				curCj.ClassID = uint8(curCj.JobID)
 			}
 
-			cjInfo := s.dataProvider.ClassJob(curCj.UnlockedState.Name)
-			curCj.UnlockedState.ID = uint8(cjInfo.ID)
+			cjInfo, err := s.dataProvider.ClassJob(curCj.UnlockedState.Name)
+			if err == nil {
+				curCj.UnlockedState.ID = uint8(cjInfo.ID)
+			}
 		})
 
 		charData.ClassJobs = append(charData.ClassJobs, &curCj)

@@ -57,6 +57,7 @@ github.com/karashiiro/bingode v1.0.1 h1:zWZYkSDf4FYgncNZDyJIueQ5stE6EDbNogXJKJ9v
 github.com/karashiiro/bingode v1.0.1/go.mod h1:lzVTRMIEwNzxD46MOfDskypTi+zBu9QGrklE4cG+tLo=
 github.com/karashiiro/bingode v1.0.2 h1:0Ml10cqICBMWlwPSNf7YlTw6C0CpxDmeAf3BydrVlLc=
 github.com/karashiiro/bingode v1.0.2/go.mod h1:KvajV1nOhqF6CZyJZzPk3m7Pmt+4loFSdjLrEc/cBXY=
+github.com/karashiiro/bingode v1.1.0 h1:EF3XULVRYyF/BhmnzpvUknYnTukibHtILwV7CY0XnVY=
 github.com/karashiiro/bingode v1.1.0/go.mod h1:KvajV1nOhqF6CZyJZzPk3m7Pmt+4loFSdjLrEc/cBXY=
 github.com/kennygrant/sanitize v1.2.4 h1:gN25/otpP5vAsO2djbMhF/LQX6R7+O1TB4yv8NzpJ3o=
 github.com/kennygrant/sanitize v1.2.4/go.mod h1:LGsjYYtgxbetdg5owWB2mpgUL6e2nfw2eObZ0u0qvak=

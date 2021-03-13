@@ -181,8 +181,10 @@ func (s *Scraper) buildFreeCompanyCollector(fc *FreeCompany) *colly.Collector {
 		rep := &FreeCompanyReputation{}
 		c.OnHTML(curRep.Name.Selector, func(e *colly.HTMLElement) {
 			gcName := curRep.Name.Parse(e)[0]
-			gc := s.dataProvider.GrandCompany(gcName)
-			rep.GrandCompany = gc
+			gc, err := s.dataProvider.GrandCompany(gcName)
+			if err == nil {
+				rep.GrandCompany = gc
+			}
 		})
 		c.OnHTML(curRep.Progress.Selector, func(e *colly.HTMLElement) {
 			progressStr := curRep.Progress.Parse(e)[0]
@@ -193,8 +195,10 @@ func (s *Scraper) buildFreeCompanyCollector(fc *FreeCompany) *colly.Collector {
 		})
 		c.OnHTML(curRep.Rank.Selector, func(e *colly.HTMLElement) {
 			repName := curRep.Rank.Parse(e)[0]
-			r := s.dataProvider.Reputation(repName)
-			rep.Rank = r
+			r, err := s.dataProvider.Reputation(repName)
+			if err == nil {
+				rep.Rank = r
+			}
 		})
 
 		fc.Reputation = append(fc.Reputation, rep)

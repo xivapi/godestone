@@ -48,8 +48,8 @@ func (s *Scraper) buildAchievementCollector(aai *AllAchievementInfo, output chan
 				NamedEntity: &models.NamedEntity{},
 			}
 
-			achievement := s.dataProvider.Achievement(name)
-			if achievement != nil {
+			achievement, err := s.dataProvider.Achievement(name)
+			if err == nil {
 				nextAchievement.NamedEntity = achievement
 			}
 

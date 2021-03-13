@@ -183,8 +183,10 @@ func (s *Scraper) buildFreeCompanySearchCollector(
 			}
 
 			gcName := entrySelectors.GrandCompany.ParseThroughChildren(e)[0]
-			gc := s.dataProvider.GrandCompany(gcName)
-			nextFC.GrandCompany = gc
+			gc, err := s.dataProvider.GrandCompany(gcName)
+			if err == nil {
+				nextFC.GrandCompany = gc
+			}
 
 			server := entrySelectors.Server.ParseThroughChildren(e)
 			nextFC.World = server[0]
