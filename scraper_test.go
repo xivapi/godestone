@@ -6,12 +6,11 @@ import (
 	"time"
 
 	"github.com/karashiiro/bingode"
-	"github.com/xivapi/godestone/v2/provider"
 	"github.com/xivapi/godestone/v2/provider/models"
 )
 
-var langCodes []SiteLang = []SiteLang{EN, JA, FR, DE, SiteLang("zh")}
-var bin provider.DataProvider = bingode.New()
+var langCodes = []SiteLang{EN, JA, FR, DE, "zh"}
+var bin = bingode.New()
 
 func failIfNil(t *testing.T, label string, input interface{}) {
 	if input == nil {
