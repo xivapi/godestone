@@ -233,6 +233,7 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) ([]*AchievementInfo, *Al
 	go func() {
 		achievementCollector := s.buildAchievementCollector(allAchievementInfo, output, errors)
 		achievementCollector.OnError(func(r *colly.Response, err error) {
+			// 403
 			if err.Error() != http.StatusText(http.StatusForbidden) {
 				errors <- err
 			}
