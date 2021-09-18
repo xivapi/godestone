@@ -233,9 +233,11 @@ func (s *Scraper) FetchCharacterAchievements(id uint32) ([]*AchievementInfo, *Al
 	go func() {
 		achievementCollector := s.buildAchievementCollector(allAchievementInfo, output, errors)
 		achievementCollector.OnError(func(r *colly.Response, err error) {
-			// 403
 			if err.Error() != http.StatusText(http.StatusForbidden) {
 				errors <- err
+			} else {
+				// 403
+				allAchievementInfo.Private = true
 			}
 		})
 		achievementCollector.Visit(fmt.Sprintf("https://%s.finalfantasyxiv.com/lodestone/character/%d/achievement/", s.lang, id))
