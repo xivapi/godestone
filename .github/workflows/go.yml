@@ -6,11 +6,15 @@ on:
     paths:
       - "**.go"
       - "**.s"
+      - "**.mod"
+      - "**.sum"
   pull_request:
     branches: [ main ]
     paths:
       - "**.go"
       - "**.s"
+      - "**.mod"
+      - "**.sum"
 
 jobs:
 
