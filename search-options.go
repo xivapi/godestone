@@ -166,13 +166,13 @@ const (
 )
 
 func parseWorldDC(world string, dc string) string {
-	worldDC := dc
+	worldDC := ""
 	if len(world) != 0 {
-		worldDC = world
+		worldDC = strings.ToUpper(string(world[0])) + strings.ToLower(world[1:])
 	} else {
 		// DCs have the _dc_ prefix attached to them
-		if len(worldDC) != 0 && !strings.HasPrefix(worldDC, "_dc_") {
-			worldDC = "_dc_" + worldDC
+		if len(dc) != 0 && !strings.HasPrefix(dc, "_dc_") {
+			worldDC = "_dc_" + strings.ToUpper(string(dc[0])) + strings.ToLower(dc[1:])
 		}
 	}
 	return worldDC

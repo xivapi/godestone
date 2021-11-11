@@ -461,7 +461,9 @@ func TestSearchCharacters(t *testing.T) {
 
 		t.Run("SiteLang: "+string(lang), func(t *testing.T) {
 			t.Parallel()
-			opts := CharacterOptions{}
+			opts := CharacterOptions{
+				World: "leviathan",
+			}
 
 			for character := range s.SearchCharacters(opts) {
 				if character.Error != nil {
