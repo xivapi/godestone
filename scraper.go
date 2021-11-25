@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 
@@ -12,6 +13,14 @@ import (
 	"github.com/xivapi/godestone/v2/internal/selectors"
 	"github.com/xivapi/godestone/v2/provider"
 )
+
+// Used for a band-aid in the Character scraper
+var elementalLevelNames = map[string]struct{}{
+	"Elemental Level":    {},
+	"Elementarstufe":     {},
+	"Niveau élémentaire": {},
+	"エレメンタルレベル":          {},
+}
 
 // Scraper is the object through which interactions with The Lodestone are made.
 type Scraper struct {
@@ -131,10 +140,42 @@ func (s *Scraper) FetchCharacter(id uint32) (*Character, error) {
 		}
 	}
 
+	// Link the active classjob details from the classjob page
 	for _, cj := range charData.ClassJobs {
 		if cj.Name == activeClassJobName {
 			charData.ActiveClassJob = cj
 		}
+	}
+
+	// TODO: https://github.com/xivapi/godestone/issues/17 Ugly band-aid
+	// If the Bozja struct has Eureka data, we'll just move the data
+	// over and clear the Bozja struct for the time being. This is
+	// implemented as unintrusively as possible so that we can rip it
+	// out as soon as a better solution becomes available.
+	if _, ok := elementalLevelNames[charData.ClassJobBozjan.Name]; ok {
+		charData.ClassJobElemental.Level = charData.ClassJobBozjan.Level
+		charData.ClassJobElemental.Name = charData.ClassJobBozjan.Name
+
+		expStrs := s.profileSelectors.ClassJob.Eureka.Exp.Parse(charData.ClassJobBozjan.mettleRaw)
+		expStrs[0] = nonDigits.ReplaceAllString(expStrs[0], "")
+		expStrs[1] = nonDigits.ReplaceAllString(expStrs[1], "")
+
+		curExp, err := strconv.ParseUint(expStrs[0], 10, 32)
+		if err == nil {
+			charData.ClassJobElemental.ExpLevel = uint32(curExp)
+		}
+
+		maxExp, err := strconv.ParseUint(expStrs[1], 10, 32)
+		if err == nil {
+			charData.ClassJobElemental.ExpLevelMax = uint32(maxExp)
+		}
+
+		charData.ClassJobElemental.ExpLevelTogo = charData.ClassJobElemental.ExpLevelMax - charData.ClassJobElemental.ExpLevel
+
+		// Clear old data
+		charData.ClassJobBozjan.Level = 0
+		charData.ClassJobBozjan.Mettle = 0
+		charData.ClassJobBozjan.Name = ""
 	}
 
 	return &charData, nil

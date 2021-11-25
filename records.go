@@ -3,6 +3,7 @@ package godestone
 import (
 	"time"
 
+	"github.com/gocolly/colly/v2"
 	"github.com/xivapi/godestone/v2/data/baseparam"
 	"github.com/xivapi/godestone/v2/data/gcrank"
 	"github.com/xivapi/godestone/v2/data/gender"
@@ -106,9 +107,10 @@ type ClassJob struct {
 
 // ClassJobBozja represents character progression data in the Bozjan Southern Front.
 type ClassJobBozja struct {
-	Level  uint8
-	Mettle uint32
-	Name   string
+	Level     uint8
+	Mettle    uint32
+	mettleRaw *colly.HTMLElement // TODO: https://github.com/xivapi/godestone/issues/17
+	Name      string
 }
 
 // ClassJobEureka represents character progression data in Eureka.

@@ -128,6 +128,8 @@ func (s *Scraper) buildClassJobCollector(charData *Character) *colly.Collector {
 
 	c.OnHTML(classJobSelectors.Bozja.Mettle.Selector, func(e *colly.HTMLElement) {
 		mettleStr := classJobSelectors.Bozja.Mettle.Parse(e)[0]
+		cjb.mettleRaw = e // TODO: https://github.com/xivapi/godestone/issues/17
+
 		mettleStr = nonDigits.ReplaceAllString(mettleStr, "")
 		mettle, err := strconv.ParseUint(mettleStr, 10, 32)
 		if err == nil {
