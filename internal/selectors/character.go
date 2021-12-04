@@ -172,9 +172,11 @@ type ClassJobSelectors struct {
 	Dragoon       OneClassJobSelectors `json:"DRAGOON"`
 	Ninja         OneClassJobSelectors `json:"NINJA"`
 	Samurai       OneClassJobSelectors `json:"SAMURAI"`
+	Reaper        OneClassJobSelectors `json:"REAPER"`
 	WhiteMage     OneClassJobSelectors `json:"WHITEMAGE"`
 	Scholar       OneClassJobSelectors `json:"SCHOLAR"`
 	Astrologian   OneClassJobSelectors `json:"ASTROLOGIAN"`
+	Sage          OneClassJobSelectors `json:"SAGE"`
 	Bard          OneClassJobSelectors `json:"BARD"`
 	Machinist     OneClassJobSelectors `json:"MACHINIST"`
 	Dancer        OneClassJobSelectors `json:"DANCER"`
