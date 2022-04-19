@@ -32,3 +32,11 @@ type TitleInternal struct {
 
 	Prefix bool
 }
+
+// ClassJobInternal represents a ClassJob entry.
+type ClassJobInternal struct {
+	*NamedEntity
+
+	Parent   uint32
+	JobIndex uint32
+}

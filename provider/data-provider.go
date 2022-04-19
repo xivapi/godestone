@@ -9,7 +9,10 @@ type DataProvider interface {
 	Achievement(name string) (*models.NamedEntity, error)
 
 	// ClassJob returns expanded game data for the ClassJob with the specified name.
-	ClassJob(name string) (*models.NamedEntity, error)
+	ClassJob(name string) (*models.ClassJobInternal, error)
+
+	// JobForClass returns the job associated with the specified class name.
+	JobForClass(name string) (*models.ClassJobInternal, error)
 
 	// Deity returns expanded game data for the deity with the specified name.
 	Deity(name string) (*models.NamedEntity, error)

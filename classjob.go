@@ -9,7 +9,7 @@ import (
 	"github.com/xivapi/godestone/v2/internal/selectors"
 )
 
-var nonDigits = regexp.MustCompile("[^\\d]")
+var nonDigits = regexp.MustCompile(`[^\d]`)
 
 func (s *Scraper) buildClassJobCollector(charData *Character) *colly.Collector {
 	c := colly.NewCollector(
@@ -96,21 +96,37 @@ func (s *Scraper) buildClassJobCollector(charData *Character) *colly.Collector {
 
 			curCj.IsSpecialized = strings.Contains(e.Attr("class"), "meister")
 
-			jobInfo, err := s.dataProvider.ClassJob(names[0])
-			if err == nil {
-				curCj.JobID = uint8(jobInfo.ID)
-			}
-
 			if len(names) > 1 {
+				// "Job / Class"
+				jobInfo, err := s.dataProvider.ClassJob(names[0])
+				if err == nil {
+					curCj.JobID = uint8(jobInfo.ID)
+				}
+
 				classInfo, err := s.dataProvider.ClassJob(names[1])
 				if err == nil {
 					curCj.ClassID = uint8(classInfo.ID)
 				}
 			} else {
-				curCj.ClassID = uint8(curCj.JobID)
+				// "Job" or "Class"
+				cjInfo1, err := s.dataProvider.ClassJob(names[0])
+				if err == nil {
+					curCj.ClassID = uint8(cjInfo1.Parent) // Get the class (or job if there's no class)
+				}
+
+				if cjInfo1.JobIndex != 0 {
+					// This is already the job
+					curCj.JobID = uint8(cjInfo1.ID)
+				} else {
+					// This is a class; get the corresponding job
+					cjInfo2, err := s.dataProvider.JobForClass(names[0])
+					if err == nil {
+						curCj.JobID = uint8(cjInfo2.ID)
+					}
+				}
 			}
 
-			cjInfo, err := s.dataProvider.ClassJob(curCj.UnlockedState.Name)
+			cjInfo, err := s.dataProvider.ClassJob(names[0])
 			if err == nil {
 				curCj.UnlockedState.ID = uint8(cjInfo.ID)
 			}
