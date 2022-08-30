@@ -64,8 +64,8 @@ github.com/karashiiro/bingode v1.0.0/go.mod h1:s+E5/RJnC5ZdFPUZjMgW5h1RByGfOwoCL
 github.com/karashiiro/bingode v1.0.1/go.mod h1:lzVTRMIEwNzxD46MOfDskypTi+zBu9QGrklE4cG+tLo=
 github.com/karashiiro/bingode v1.1.0/go.mod h1:KvajV1nOhqF6CZyJZzPk3m7Pmt+4loFSdjLrEc/cBXY=
 github.com/karashiiro/bingode v1.4.0/go.mod h1:hqo75FudzAUtiCFw9Zp5H/PuWomw3NnSQx+un+BVQCk=
-github.com/karashiiro/bingode v1.5.1 h1:bDDd7XAMpMOuzZ/gvCDfZ1m5Nq+e8Xno8B6EPC+3iUQ=
-github.com/karashiiro/bingode v1.5.1/go.mod h1:f+0HwIKQgmhLPmCsBC2WttX3oJat9DvjMQMBgSQ9GO8=
+github.com/karashiiro/bingode v1.6.0 h1:VMviwoivupR4Qow2h/5c5vVIvGQxhuVcEoZG8Ch9Vtg=
+github.com/karashiiro/bingode v1.6.0/go.mod h1:f+0HwIKQgmhLPmCsBC2WttX3oJat9DvjMQMBgSQ9GO8=
 github.com/kennygrant/sanitize v1.2.4 h1:gN25/otpP5vAsO2djbMhF/LQX6R7+O1TB4yv8NzpJ3o=
 github.com/kennygrant/sanitize v1.2.4/go.mod h1:LGsjYYtgxbetdg5owWB2mpgUL6e2nfw2eObZ0u0qvak=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
