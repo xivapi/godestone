@@ -58,8 +58,9 @@ github.com/golang/protobuf v1.5.2/go.mod h1:XVQd3VNwM+JqD3oG2Ue2ip4fOMUkwXdXDdiu
 github.com/golang/protobuf v1.5.3 h1:KhyjKVUg7Usr/dYsdSqoFveMYd5ko72D+zANwlG1mmg=
 github.com/golang/protobuf v1.5.3/go.mod h1:XVQd3VNwM+JqD3oG2Ue2ip4fOMUkwXdXDdiuN0vRsmY=
 github.com/google/flatbuffers v1.12.0/go.mod h1:1AeVuKshWv4vARoZatz6mlQ0JxURH0Kv5+zNeJKJCa8=
-github.com/google/flatbuffers v2.0.6+incompatible h1:XHFReMv7nFFusa+CEokzWbzaYocKXI6C7hdU5Kgh9Lw=
 github.com/google/flatbuffers v2.0.6+incompatible/go.mod h1:1AeVuKshWv4vARoZatz6mlQ0JxURH0Kv5+zNeJKJCa8=
+github.com/google/flatbuffers v24.3.25+incompatible h1:CX395cjN9Kke9mmalRoL3d81AtFUxJM+yDthflgJGkI=
+github.com/google/flatbuffers v24.3.25+incompatible/go.mod h1:1AeVuKshWv4vARoZatz6mlQ0JxURH0Kv5+zNeJKJCa8=
 github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5aqRK0M=
 github.com/google/go-cmp v0.3.0/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
 github.com/google/go-cmp v0.3.1/go.mod h1:8QqcDgzrUqlUb/G2PQTWiueGozuR1884gddMywk6iLU=
@@ -71,10 +72,9 @@ github.com/karashiiro/bingode v1.0.0/go.mod h1:s+E5/RJnC5ZdFPUZjMgW5h1RByGfOwoCL
 github.com/karashiiro/bingode v1.0.1/go.mod h1:lzVTRMIEwNzxD46MOfDskypTi+zBu9QGrklE4cG+tLo=
 github.com/karashiiro/bingode v1.1.0/go.mod h1:KvajV1nOhqF6CZyJZzPk3m7Pmt+4loFSdjLrEc/cBXY=
 github.com/karashiiro/bingode v1.4.0/go.mod h1:hqo75FudzAUtiCFw9Zp5H/PuWomw3NnSQx+un+BVQCk=
-github.com/karashiiro/bingode v1.8.0 h1:uvNwR7sC4OvlykHjrOcsZJMZ+Wwm3YBxybgD8FpLfhQ=
-github.com/karashiiro/bingode v1.8.0/go.mod h1:f+0HwIKQgmhLPmCsBC2WttX3oJat9DvjMQMBgSQ9GO8=
-github.com/karashiiro/bingode v1.9.0 h1:C6YielYS6qTWq+AX6+in83ZmNf+q4Gn5OAhTR3HMhdM=
 github.com/karashiiro/bingode v1.9.0/go.mod h1:f+0HwIKQgmhLPmCsBC2WttX3oJat9DvjMQMBgSQ9GO8=
+github.com/karashiiro/bingode v1.10.0 h1:KpzifSIzz5qp0YO7Fz+Lh6013/TW141okY9GSSsLP94=
+github.com/karashiiro/bingode v1.10.0/go.mod h1:AEscswX5OrxQctez4TQUgfap1kAubf6fYsSsJd1zcCQ=
 github.com/kennygrant/sanitize v1.2.4 h1:gN25/otpP5vAsO2djbMhF/LQX6R7+O1TB4yv8NzpJ3o=
 github.com/kennygrant/sanitize v1.2.4/go.mod h1:LGsjYYtgxbetdg5owWB2mpgUL6e2nfw2eObZ0u0qvak=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
@@ -95,6 +95,7 @@ github.com/xivapi/godestone/v2 v2.0.0-pre4/go.mod h1:FumTOGegUSnnfSN8/R6+orShw5w
 github.com/xivapi/godestone/v2 v2.0.0/go.mod h1:U2V2b1c1+NjYbUvy7AwCyJWSaGDJ0U1fJFtxolgWTws=
 github.com/xivapi/godestone/v2 v2.1.0/go.mod h1:E8C4D6nzrajxyc44SPC6dRc2ko4JQvC3qHHDc0ol//I=
 github.com/xivapi/godestone/v2 v2.4.0/go.mod h1:Ax3PmDA5bkgSSsa6BzE7zG+p5y4a/4T2rHS+7oj7Wz8=
+github.com/xivapi/godestone/v2 v2.7.0/go.mod h1:Jo3WLBzhF6WfIZai+WiqRo+kphviPTBQ7aloMi/WNTE=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
