@@ -225,6 +225,7 @@ func (s *Scraper) buildFreeCompanyMembersCollector(output chan *FreeCompanyMembe
 				Name:     membersSelectors.Entry.Name.ParseThroughChildren(e)[0],
 				Rank:     gcrank.Parse(membersSelectors.Entry.Rank.ParseThroughChildren(e)[0]),
 				RankIcon: membersSelectors.Entry.RankIcon.ParseThroughChildren(e)[0],
+				FcRank:   membersSelectors.Entry.FcRank.ParseThroughChildren(e)[0],
 			}
 
 			worldDC := membersSelectors.Entry.Server.ParseThroughChildren(e)
