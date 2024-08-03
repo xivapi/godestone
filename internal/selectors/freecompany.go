@@ -45,7 +45,7 @@ type FreeCompanyMemberSelectors struct {
 		ID       SelectorInfo `json:"ID"`
 		Name     SelectorInfo `json:"NAME"`
 		Rank     SelectorInfo `json:"RANK"`
-		FcRank   SelectorInfo `json:"FC_RANK"`
+		FCRank   SelectorInfo `json:"FC_RANK"`
 		RankIcon SelectorInfo `json:"RANK_ICON"`
 		Server   SelectorInfo `json:"SERVER"`
 	} `json:"ENTRY"`

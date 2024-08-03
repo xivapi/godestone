@@ -283,7 +283,7 @@ type FreeCompanyMember struct {
 	ID       uint32
 	Name     string
 	Rank     gcrank.GCRank
-	FcRank   string
+	FCRank   string
 	RankIcon string
 	World    string
 	DC       string
