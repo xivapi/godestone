@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/PuerkitoBio/goquery v1.9.2
 	github.com/gocolly/colly/v2 v2.1.0
-	github.com/karashiiro/bingode v1.10.0
+	github.com/karashiiro/bingode v1.11.0
 )
 
 require (
