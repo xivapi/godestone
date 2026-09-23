@@ -32,6 +32,7 @@ func (s *Scraper) buildClassJobCollector(charData *Character) *colly.Collector {
 		&classJobSelectors.Samurai,
 		&classJobSelectors.Reaper,
 		&classJobSelectors.Viper,
+		&classJobSelectors.Beastmaster,
 		&classJobSelectors.WhiteMage,
 		&classJobSelectors.Scholar,
 		&classJobSelectors.Astrologian,
